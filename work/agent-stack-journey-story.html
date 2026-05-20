@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>PM Agentic Leverage — A Stack You Can Fork</title>
+<meta name="description" content="5 composable agents, 1 orchestration pattern, ready for the PM team to adopt." />
+<style>
+  /* ============================================================
+     Walmart Design System — self-contained, offline, WCAG 2.2 AA
+     ============================================================ */
+  :root{
+    --blue-100:#0053e2;
+    --blue-110:#0042b5;
+    --blue-130:#003386;
+    --spark-100:#ffc220;
+    --spark-10:#fff5d6;
+    --spark-140:#995213;
+    --green-100:#2a8703;
+    --red-100:#ea1100;
+    --gray-160:#1a1a1a;
+    --gray-100:#666666;
+    --gray-50:#cccccc;
+    --gray-20:#e6e6e6;
+    --gray-10:#f2f2f2;
+    --white:#ffffff;
+    --shadow:0 4px 14px rgba(0,0,0,.08), 0 1px 3px rgba(0,0,0,.06);
+    --radius:12px;
+    --slide-w:1180px;
+    --slide-h:700px;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--gray-10);color:var(--gray-160);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased;}
+  a{color:var(--blue-100)} a:hover{color:var(--blue-110)}
+  a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--spark-100); outline-offset:2px; border-radius:6px;}
+  button{font:inherit;cursor:pointer}
+
+  .progress{position:fixed;top:0;left:0;right:0;height:4px;z-index:50}
+  .progress__fill{height:100%;width:0;background:var(--blue-100);transition:width .3s ease}
+
+  .deck{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:36px 16px 80px}
+  .slide{
+    width:min(var(--slide-w),96vw);
+    min-height:min(var(--slide-h),78vh);
+    background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:48px 56px;position:relative;display:none;flex-direction:column;
+  }
+  .slide.is-active{display:flex;animation:fade .35s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .slide__num{position:absolute;top:18px;right:24px;font-size:13px;color:var(--gray-100);letter-spacing:.04em}
+  .slide__kicker{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--blue-100);background:#eaf1fd;padding:6px 12px;border-radius:999px;margin-bottom:14px}
+  .slide__title{font-size:40px;line-height:1.15;margin:0 0 14px;letter-spacing:-.01em;font-weight:700}
+  .slide__subtitle{font-size:20px;color:var(--gray-100);margin:0 0 24px;font-weight:400}
+  .slide__body{flex:1;display:flex;flex-direction:column;gap:18px}
+
+  /* Title slide */
+  .title-hero{flex:1;display:grid;grid-template-columns:1.4fr 1fr;gap:40px;align-items:center}
+  .title-hero h1{font-size:54px;line-height:1.05;margin:0 0 16px;letter-spacing:-.02em}
+  .title-hero h1 .accent{background:linear-gradient(180deg,transparent 60%,var(--spark-100) 60%);padding:0 4px}
+  .title-hero .lede{font-size:20px;color:var(--gray-160);margin:0 0 28px;line-height:1.4}
+  .title-hero .lede strong{color:var(--gray-160)}
+  .title-hero .meta{font-size:15px;color:var(--gray-100);border-top:1px solid var(--gray-20);padding-top:14px}
+  .title-hero .meta strong{display:block;font-size:17px;color:var(--gray-160);margin-bottom:2px}
+  .title-art{aspect-ratio:1/1;border-radius:24px;
+    background:radial-gradient(circle at 30% 30%,#4d8af0 0%,var(--blue-100) 45%,var(--blue-130) 100%);
+    position:relative;overflow:hidden;box-shadow:var(--shadow)}
+  .title-art svg{width:100%;height:100%}
+
+  /* Pull quote */
+  .pullquote{border-left:6px solid var(--spark-100);padding:20px 28px;background:var(--gray-10);border-radius:8px;
+    font-size:24px;line-height:1.4;color:var(--gray-160);font-weight:500;margin:0}
+  .pullquote--hero{font-size:28px;line-height:1.35}
+  .pullquote cite{display:block;margin-top:14px;font-size:15px;color:var(--gray-100);font-style:normal;font-weight:400}
+
+  /* Cards & grids */
+  .grid{display:grid;gap:16px}
+  .grid-2{grid-template-columns:repeat(2,1fr)}
+  .grid-3{grid-template-columns:repeat(3,1fr)}
+  .card{background:var(--white);border:1px solid var(--gray-20);border-radius:var(--radius);padding:18px}
+  .card h3{margin:0 0 8px;font-size:17px;display:flex;align-items:center;gap:10px}
+  .card h3 .ico{font-size:22px}
+  .card p{margin:0;color:var(--gray-100);font-size:14px;line-height:1.5}
+  .card--accent{border-left:4px solid var(--blue-100)}
+  .card--spark{border-left:4px solid var(--spark-100)}
+
+  /* Ask list */
+  .asks{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:8px}
+  .ask{padding:16px;background:#eaf1fd;border-radius:10px;border:1px solid #bcd2f7}
+  .ask .num{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;
+    background:var(--blue-100);color:var(--white);font-weight:700;font-size:13px;margin-bottom:8px}
+  .ask h4{margin:0 0 4px;font-size:15px}
+  .ask p{margin:0;font-size:13px;color:var(--gray-100);line-height:1.45}
+
+  /* Agent grid (5 agents) */
+  .agents{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+  .agent{background:var(--white);border:1px solid var(--gray-20);border-radius:var(--radius);padding:16px 14px;display:flex;flex-direction:column;gap:8px;border-top:4px solid var(--blue-100)}
+  .agent .ico{font-size:32px;line-height:1}
+  .agent h3{margin:0;font-size:15px}
+  .agent p{margin:0;font-size:13px;color:var(--gray-100);line-height:1.45}
+
+  /* Pattern cards (slide 4) */
+  .pattern{background:var(--white);border:1px solid var(--gray-20);border-radius:var(--radius);padding:18px;border-top:4px solid var(--spark-100)}
+  .pattern h3{margin:0 0 6px;font-size:17px;color:var(--gray-160)}
+  .pattern .lead{margin:0 0 10px;font-size:14px;color:var(--gray-100);line-height:1.5}
+  .pattern .ex{margin:0;padding:10px 12px;background:var(--gray-10);border-radius:8px;font-size:13px;color:var(--gray-160);border:1px solid var(--gray-20)}
+  .pattern .ex strong{color:var(--blue-100)}
+
+  /* Steps (slide 5) */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .step{padding:18px;background:var(--gray-10);border-radius:var(--radius);border-top:4px solid var(--blue-100);position:relative}
+  .step .num{position:absolute;top:-14px;left:14px;background:var(--blue-100);color:var(--white);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700}
+  .step h4{margin:8px 0 6px;font-size:16px}
+  .step p{margin:0;font-size:13.5px;color:var(--gray-100);line-height:1.5}
+  .step code{background:var(--white)}
+
+  /* Gaps list (slide 6) */
+  .gaps{display:grid;grid-template-columns:1fr;gap:12px}
+  .gap{display:grid;grid-template-columns:48px 1fr auto;gap:14px;align-items:center;
+    padding:16px;background:var(--white);border:1px solid var(--gray-20);border-radius:10px;border-left:4px solid var(--spark-100)}
+  .gap .ico{font-size:28px;text-align:center}
+  .gap h4{margin:0 0 2px;font-size:16px}
+  .gap p{margin:0;font-size:13.5px;color:var(--gray-100)}
+  .gap .badge{font-size:12px;font-weight:700;color:var(--spark-140);background:var(--spark-10);
+    padding:6px 10px;border-radius:999px;border:1px solid #f0d780;white-space:nowrap}
+
+  /* CTA links (slide 7) */
+  .cta-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .cta{display:flex;align-items:center;gap:14px;padding:18px;background:var(--white);
+    border:1px solid var(--gray-20);border-radius:var(--radius);text-decoration:none;color:var(--gray-160)}
+  .cta:hover{border-color:var(--blue-100);background:#f7faff}
+  .cta .ico{font-size:28px}
+  .cta strong{display:block;font-size:16px;margin-bottom:2px}
+  .cta span{font-size:13px;color:var(--gray-100);word-break:break-all}
+  .closer{margin:8px 0 0;padding:18px 22px;background:var(--blue-100);color:var(--white);
+    border-radius:var(--radius);font-size:20px;font-weight:600;text-align:center;line-height:1.4}
+  .closer em{color:var(--spark-100);font-style:normal;font-weight:700}
+
+  /* Tags */
+  .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:13px;padding:6px 12px;border-radius:999px;background:var(--gray-10);color:var(--gray-160);border:1px solid var(--gray-20)}
+  .tag--accent{background:var(--spark-10);border-color:#f0d780;color:var(--spark-140)}
+
+  code,.code{font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+    background:var(--gray-10);padding:2px 6px;border-radius:4px;font-size:.92em;border:1px solid var(--gray-20)}
+
+  /* Controls */
+  .controls{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+    display:flex;gap:10px;align-items:center;background:var(--white);
+    padding:8px 12px;border-radius:999px;box-shadow:var(--shadow);border:1px solid var(--gray-20);z-index:40}
+  .controls button{background:var(--white);color:var(--gray-160);border:1px solid var(--gray-50);
+    padding:8px 14px;border-radius:999px;font-size:14px;min-height:36px}
+  .controls button:hover{background:var(--gray-10)}
+  .controls button.primary{background:var(--blue-100);color:var(--white);border-color:var(--blue-100)}
+  .controls button.primary:hover{background:var(--blue-110);border-color:var(--blue-110)}
+  .controls button.primary:active{background:var(--blue-130)}
+  .controls .pos{font-size:13px;color:var(--gray-100);padding:0 6px;min-width:56px;text-align:center}
+
+  /* Speaker notes */
+  .speaker-notes{display:none;margin-top:18px;padding:14px 16px;border-radius:10px;
+    background:#fffbe8;border:1px solid #f0d780;color:#3d2c0a;font-size:14px;line-height:1.5}
+  .speaker-notes::before{content:"Speaker notes";display:block;font-weight:700;font-size:12px;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--spark-140);margin-bottom:6px}
+  body.notes-on .speaker-notes{display:block}
+
+  /* Responsive */
+  @media (max-width:1024px){
+    .slide{padding:32px 28px}
+    .slide__title{font-size:32px}
+    .title-hero{grid-template-columns:1fr;gap:24px}
+    .title-hero h1{font-size:40px}
+    .agents{grid-template-columns:repeat(2,1fr)}
+    .grid-3,.steps,.asks{grid-template-columns:1fr}
+    .cta-grid{grid-template-columns:1fr}
+    .pullquote--hero{font-size:22px}
+  }
+  @media (max-width:640px){
+    .grid-2{grid-template-columns:1fr}
+    .agents{grid-template-columns:1fr}
+    .slide__title{font-size:26px}
+    .title-hero h1{font-size:30px}
+  }
+
+  /* Print */
+  @media print{
+    body{background:var(--white)}
+    .progress,.controls{display:none !important}
+    .deck{display:block;padding:0}
+    .slide{display:flex !important;page-break-after:always;box-shadow:none;border:1px solid var(--gray-50);
+      width:100%;min-height:auto;margin:0 0 12px;border-radius:0;padding:24px 28px}
+    .speaker-notes{display:block !important}
+    a{color:var(--gray-160);text-decoration:underline}
+  }
+
+  .skip{position:absolute;left:-9999px;top:auto}
+  .skip:focus{left:12px;top:12px;background:var(--white);padding:8px 12px;border-radius:6px;box-shadow:var(--shadow);z-index:100}
+</style>
+</head>
+<body>
+
+<a href="#slide-1" class="skip">Skip to deck</a>
+<div class="progress" aria-hidden="true"><div class="progress__fill" id="progressFill"></div></div>
+
+<main class="deck" id="deck" role="main" aria-label="PM Agentic Leverage — a stack you can fork">
+
+  <!-- ============================================
+       SLIDE 1 — TITLE
+       ============================================ -->
+  <section class="slide is-active" id="slide-1" aria-labelledby="s1title" role="region">
+    <span class="slide__num">01 / 07</span>
+    <div class="title-hero">
+      <div>
+        <span class="slide__kicker">For the PM team</span>
+        <h1 id="s1title">PM <span class="accent">Agentic Leverage</span><br/>— a stack you can <span class="accent">fork</span>.</h1>
+        <p class="lede"><strong>5 composable agents · 1 orchestration pattern · ready to adopt.</strong></p>
+        <div class="meta">
+          <strong>Sauravi</strong>
+          Senior Director, Product Management · Walmart International<br/>
+          Walmart Bengaluru · May 2026
+        </div>
+      </div>
+      <div class="title-art" aria-hidden="true">
+        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="g1" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#ffc220" stop-opacity=".9"/>
+              <stop offset="100%" stop-color="#ffc220" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <g stroke="#ffffff" stroke-opacity=".35" stroke-width="1.5">
+            <line x1="200" y1="200" x2="90"  y2="100"/>
+            <line x1="200" y1="200" x2="320" y2="110"/>
+            <line x1="200" y1="200" x2="80"  y2="290"/>
+            <line x1="200" y1="200" x2="320" y2="300"/>
+            <line x1="200" y1="200" x2="200" y2="60"/>
+            <line x1="90"  y1="100" x2="320" y2="110"/>
+            <line x1="80"  y1="290" x2="320" y2="300"/>
+            <line x1="90"  y1="100" x2="80"  y2="290"/>
+            <line x1="320" y1="110" x2="320" y2="300"/>
+          </g>
+          <circle cx="200" cy="200" r="60" fill="url(#g1)"/>
+          <circle cx="200" cy="200" r="34" fill="#ffffff"/>
+          <text x="200" y="210" text-anchor="middle" font-size="24" font-weight="800" fill="#0053e2">5</text>
+          <g fill="#ffffff">
+            <circle cx="200" cy="60"  r="20"/>
+            <circle cx="90"  cy="100" r="22"/>
+            <circle cx="320" cy="110" r="22"/>
+            <circle cx="80"  cy="290" r="22"/>
+            <circle cx="320" cy="300" r="22"/>
+          </g>
+          <g font-size="20" text-anchor="middle">
+            <text x="200" y="68">📖</text>
+            <text x="90"  y="108">📅</text>
+            <text x="320" y="118">🪢</text>
+            <text x="80"  y="298">🏗️</text>
+            <text x="320" y="308">📊</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <aside class="speaker-notes">
+      Set the frame in one breath: this isn't a personal showcase, it's a gift to the team. Five agents, one pattern, ready to fork. The whole deck takes about five minutes — open the repo at the end and pick which agent or pattern you'll try first.
+    </aside>
+  </section>
+
+  <!-- ============================================
+       SLIDE 2 — WHAT leadership CALLING FOR
+       ============================================ -->
+  <section class="slide" id="slide-2" aria-labelledby="s2title" role="region">
+    <span class="slide__num">02 / 07</span>
+    <span class="slide__kicker">The call to action</span>
+    <h2 class="slide__title" id="s2title">What leadership calling for.</h2>
+    <p class="slide__subtitle">From his note to the PM org — the bar is now explicit.</p>
+    <div class="slide__body">
+      <blockquote class="pullquote pullquote--hero">
+        "If you are not yet at <strong>3–5 agents impacting your day-to-day productivity</strong>, that is the gap you need to close. This will be a defining part of the PM role. The teams that lean in early will move faster, make better decisions, and operate at a <strong>very different level of leverage</strong>."
+        <cite>— leadership, SVP eCommerce Product</cite>
+      </blockquote>
+      <div class="asks" role="list">
+        <div class="ask" role="listitem"><span class="num">1</span><h4>Get to 3–5 agents</h4><p>In daily use. Not demos, not prototypes — agents that change how your week runs.</p></div>
+        <div class="ask" role="listitem"><span class="num">2</span><h4>Publish, share, fork</h4><p>Don't build in parallel. The org's leverage scales with reuse, not with re-invention.</p></div>
+        <div class="ask" role="listitem"><span class="num">3</span><h4>Compose into platform leverage</h4><p>Multiple agents, shared patterns, working across surfaces. That's the unlock.</p></div>
+      </div>
+    </div>
+    <aside class="speaker-notes">
+      Read the quote, then frame the three asks plainly. The bar is no longer "experiment with AI" — it's a measurable count and a publishing expectation. The rest of the deck is one PM's contribution toward that bar so others don't have to start from zero.
+    </aside>
+  </section>
+
+  <!-- ============================================
+       SLIDE 3 — THE 5 AGENTS
+       ============================================ -->
+  <section class="slide" id="slide-3" aria-labelledby="s3title" role="region">
+    <span class="slide__num">03 / 07</span>
+    <span class="slide__kicker">The stack</span>
+    <h2 class="slide__title" id="s3title">5 agents in this stack.</h2>
+    <p class="slide__subtitle">All live, all in daily use, all in the repo. Pick one, copy it in, run it tonight.</p>
+    <div class="slide__body">
+      <div class="agents">
+        <div class="agent"><div class="ico" aria-hidden="true">📅</div><h3>Room Agent</h3><p>Books M365 rooms with your prefs. Manages recurring series and conflicts.</p></div>
+        <div class="agent"><div class="ico" aria-hidden="true">🪢</div><h3>Task Wrangler</h3><p>One daily digest from Outlook, Jira, Confluence, OneNote.</p></div>
+        <div class="agent"><div class="ico" aria-hidden="true">🏗️</div><h3>Org Change Agent</h3><p>Re-org tracking: stakeholder maps, OKR resets, rewards &amp; calibration.</p></div>
+        <div class="agent"><div class="ico" aria-hidden="true">📊</div><h3>AI Usage Tracker</h3><p>Live adoption stats. Exec-ready reports, no spreadsheet wrangling.</p></div>
+        <div class="agent"><div class="ico" aria-hidden="true">📖</div><h3>Storyteller</h3><p>Turns an associate journey into a branded slide deck. (Built this deck, in fact.)</p></div>
+      </div>
+      <p style="margin:0;font-size:16px;color:var(--gray-100)">
+        Each one is a single JSON file plus a small backend. Standalone today — but they get more interesting when you compose them. ↓
+      </p>
+    </div>
+    <aside class="speaker-notes">
+      Walk the row left to right, one sentence each. The point isn't that these five are special — it's that every PM probably has the seeds of three or four already. The repo just makes them shareable. Land on the bridge to slide 4: the real gift is composition, not the agents themselves.
+    </aside>
+  </section>
+
+  <!-- ============================================
+       SLIDE 4 — THE ORCHESTRATION PATTERN
+       ============================================ -->
+  <section class="slide" id="slide-4" aria-labelledby="s4title" role="region">
+    <span class="slide__num">04 / 07</span>
+    <span class="slide__kicker">The actual gift</span>
+    <h2 class="slide__title" id="s4title">The orchestration pattern.</h2>
+    <p class="slide__subtitle">Three composition primitives. This is what compounds into platform leverage.</p>
+    <div class="slide__body">
+      <div class="grid grid-3">
+        <div class="pattern">
+          <h3>① Shared preference profiles</h3>
+          <p class="lead">One JSON describes you. Every agent reads it. Onboard once, behave consistently across surfaces.</p>
+          <p class="ex"><strong>Example:</strong> Room Agent and the Copilot plugin read the same <code>prefs.json</code>. Change "no meetings before 9am" in one place — both honor it.</p>
+        </div>
+        <div class="pattern">
+          <h3>② Cross-agent queries</h3>
+          <p class="lead">Agents call each other instead of duplicating state. Single source of truth, decoupled lifecycles.</p>
+          <p class="ex"><strong>Example:</strong> Task Wrangler queries <strong>Org Change Agent</strong> for stakeholder priorities — no duplicated lookup tables, no drift.</p>
+        </div>
+        <div class="pattern">
+          <h3>③ Read-side projections</h3>
+          <p class="lead">Source authoritative, views cheap. Render disposable HTML off durable upstream APIs.</p>
+          <p class="ex"><strong>Example:</strong> AI Usage Tracker pulls live from the <strong>InternalAgentPlatform API</strong> and renders disposable HTML reports. Throw the view away anytime.</p>
+        </div>
+      </div>
+      <p style="margin:8px 0 0;font-size:17px;color:var(--gray-160);text-align:center">
+        <strong>Pattern matters more than any individual agent.</strong> Adopt the patterns and your stack composes too.
+      </p>
+    </div>
+    <aside class="speaker-notes">
+      Slow down here — this is the headline asset. Each pattern is one paragraph and one concrete example, on purpose. Encourage the room to pick the one most relevant to their work and skim ORCHESTRATION.md for the implementation. The patterns are the thing they should steal first.
+    </aside>
+  </section>
+
+  <!-- ============================================
+       SLIDE 5 — HOW TO LEVERAGE THIS
+       ============================================ -->
+  <section class="slide" id="slide-5" aria-labelledby="s5title" role="region">
+    <span class="slide__num">05 / 07</span>
+    <span class="slide__kicker">How to leverage this</span>
+    <h2 class="slide__title" id="s5title">3 ways for your team to lean in.</h2>
+    <p class="slide__subtitle">Pick the one that matches where you are this week.</p>
+    <div class="slide__body">
+      <div class="steps">
+        <div class="step">
+          <span class="num">1</span>
+          <h4>Use it</h4>
+          <p>Copy any <code>agents/*.json</code> into <code>~/.agentrunner/agents/</code> and run. Zero setup.</p>
+        </div>
+        <div class="step">
+          <span class="num">2</span>
+          <h4>Fork it</h4>
+          <p>Personal data is gitignored. Example template provided. Make it yours in an afternoon.</p>
+        </div>
+        <div class="step">
+          <span class="num">3</span>
+          <h4>Compose it</h4>
+          <p>Pick a pattern from the previous slide. Build your own agent that plugs into the stack. Open a PR.</p>
+        </div>
+      </div>
+      <p style="margin:0;font-size:16px;color:var(--gray-100)">
+        Three doors, one room. Whichever you walk through, you're closer to leadership–5 bar by the end of the week.
+      </p>
+    </div>
+    <aside class="speaker-notes">
+      Make it easy to act. "Use it" is for the PM who wants a quick win. "Fork it" is for the PM with a specific workflow that's almost — but not quite — covered. "Compose it" is for the PM who wants to shape the platform. All three count.
+    </aside>
+  </section>
+
+  <!-- ============================================
+       SLIDE 6 — WHAT'S MISSING
+       ============================================ -->
+  <section class="slide" id="slide-6" aria-labelledby="s6title" role="region">
+    <span class="slide__num">06 / 07</span>
+    <span class="slide__kicker">Where the team can lead</span>
+    <h2 class="slide__title" id="s6title">What's missing — and who's closest.</h2>
+    <p class="slide__subtitle">Three open lanes that align with leadership. Pick one and lead it.</p>
+    <div class="slide__body">
+      <div class="gaps">
+        <div class="gap">
+          <div class="ico" aria-hidden="true">🧠</div>
+          <div>
+            <h4>Persistent memory layer for decisions &amp; context</h4>
+            <p>A durable "what did we decide and why" surface across PRDs, reviews, and threads. <strong>Gana's PM Chief of Staff</strong> is closest.</p>
+          </div>
+          <span class="badge">leadership #1 · Memory</span>
+        </div>
+        <div class="gap">
+          <div class="ico" aria-hidden="true">🎙️</div>
+          <div>
+            <h4>Always-on Voice of Customer</h4>
+            <p>Continuous signal from support, NPS, and field — surfaced in PM workflows, not just dashboards. <strong>Lakshya's Compass</strong> is live.</p>
+          </div>
+          <span class="badge">leadership #2 · Customer intelligence</span>
+        </div>
+        <div class="gap">
+          <div class="ico" aria-hidden="true">🧪</div>
+          <div>
+            <h4>Experiment monitor against PRD success criteria</h4>
+            <p>Auto-watch live experiments and flag drift from the PRD's stated success bar. <strong>Andrew &amp; Nader</strong> are exploring.</p>
+          </div>
+          <span class="badge">leadership #4 · Metrics</span>
+        </div>
+      </div>
+      <p style="margin:0;font-size:15px;color:var(--gray-100)">
+        These aren't gaps in one stack — they're <strong>opportunities for the team</strong>. Pick one, partner with the lead, and publish what you build.
+      </p>
+    </div>
+    <aside class="speaker-notes">
+      Frame these as opportunities, not deficiencies. Each one already has a credible owner closest to it — make the introduction rather than re-build. The takeaway: there's a clear roadmap toward leadership, and there's room for a few more PMs to put their name next to a lane.
+    </aside>
+  </section>
+
+  <!-- ============================================
+       SLIDE 7 — CTA / Q&A
+       ============================================ -->
+  <section class="slide" id="slide-7" aria-labelledby="s7title" role="region">
+    <span class="slide__num">07 / 07</span>
+    <span class="slide__kicker">Get started</span>
+    <h2 class="slide__title" id="s7title">Take it. Use it. Make it better.</h2>
+    <p class="slide__subtitle">Four ways in — pick one before you close this tab.</p>
+    <div class="slide__body">
+      <div class="cta-grid">
+        <a class="cta" href="https://github.example.com aria-label="Repo on GHE">
+          <span class="ico" aria-hidden="true">🔗</span>
+          <span><strong>Repo</strong><span>internal.example.com/user-id/Sauravi-agent-stack</span></span>
+        </a>
+        <a class="cta" href="https://agent-platform.example.com
+          <span class="ico" aria-hidden="true">📊</span>
+          <span><strong>Live tracker</strong><span>internal.example.com/sharing/user-id/sauravi-agent-stack-tracker</span></span>
+        </a>
+        <a class="cta" href="#" aria-label="Slack thread leadership">
+          <span class="ico" aria-hidden="true">💬</span>
+          <span><strong>Slack thread</strong><span>Drop in the thread leadership</span></span>
+        </a>
+        <a class="cta" href="mailto:sauravi.rai@example.com?subject=Agent%20stack%20%E2%80%94%20let%27s%20talk">
+          <span class="ico" aria-hidden="true">✉️</span>
+          <span><strong>Email me</strong><span>sauravi.rai@example.com</span></span>
+        </a>
+      </div>
+      <p class="closer">The PMs who lean in early operate at <em>very different leverage.</em> Let's go.</p>
+    </div>
+    <aside class="speaker-notes">
+      Close warm but with a clear ask: don't leave without committing to one of the four doors. Echo leadership deliberately — this is a continuation of his note, not a separate initiative. Then invite questions.
+    </aside>
+  </section>
+
+</main>
+
+<nav class="controls" aria-label="Slide navigation">
+  <button id="prev" aria-label="Previous slide (left arrow)">← Prev</button>
+  <span class="pos" id="pos" aria-live="polite" aria-atomic="true">1 / 7</span>
+  <button id="next" class="primary" aria-label="Next slide (right arrow or space)">Next →</button>
+  <button id="notesBtn" aria-pressed="false" aria-label="Toggle speaker notes (S)">🗒️ Notes</button>
+  <button id="fsBtn" aria-label="Toggle fullscreen (F)">⛶ Fullscreen</button>
+</nav>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length;
+  var current = 0;
+  var pos = document.getElementById('pos');
+  var fill = document.getElementById('progressFill');
+
+  function show(i){
+    if(i < 0) i = 0;
+    if(i > total-1) i = total-1;
+    slides[current].classList.remove('is-active');
+    slides[i].classList.add('is-active');
+    current = i;
+    pos.textContent = (i+1) + ' / ' + total;
+    fill.style.width = ((i+1)/total*100) + '%';
+    slides[i].setAttribute('tabindex','-1');
+    slides[i].focus({preventScroll:true});
+    history.replaceState(null, '', '#slide-' + (i+1));
+  }
+
+  document.getElementById('prev').addEventListener('click', function(){ show(current-1); });
+  document.getElementById('next').addEventListener('click', function(){ show(current+1); });
+  document.getElementById('notesBtn').addEventListener('click', function(){
+    var on = document.body.classList.toggle('notes-on');
+    this.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  document.getElementById('fsBtn').addEventListener('click', function(){
+    if(!document.fullscreenElement){ document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); }
+    else{ document.exitFullscreen && document.exitFullscreen(); }
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.target && (e.target.tagName==='INPUT' || e.target.tagName==='TEXTAREA')) return;
+    if(e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown'){ e.preventDefault(); show(current+1); }
+    else if(e.key === 'ArrowLeft' || e.key === 'PageUp'){ e.preventDefault(); show(current-1); }
+    else if(e.key === 'Home'){ e.preventDefault(); show(0); }
+    else if(e.key === 'End'){ e.preventDefault(); show(total-1); }
+    else if(e.key && e.key.toLowerCase() === 's'){ document.getElementById('notesBtn').click(); }
+    else if(e.key && e.key.toLowerCase() === 'f'){ document.getElementById('fsBtn').click(); }
+    else if(/^[1-7]$/.test(e.key)){ show(parseInt(e.key,10)-1); }
+  });
+
+  function fromHash(){
+    var m = (location.hash||'').match(/slide-(\d+)/);
+    if(m){ show(Math.max(0, Math.min(total-1, parseInt(m[1],10)-1))); }
+    else { show(0); }
+  }
+  window.addEventListener('hashchange', fromHash);
+  fromHash();
+})();
+</script>
+
+</body>
+</html>

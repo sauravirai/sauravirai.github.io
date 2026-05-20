@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sauravi's Digital Twin — Agent Architecture Blueprint v2</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <style>
+    :root {
+      --blue-100: #0053e2;
+      --spark-100: #ffc220;
+      --green-100: #2a8703;
+      --red-100: #ea1100;
+      --gray-160: #1a1a2e;
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8f9fc; }
+
+    /* Architecture Diagram Connectors */
+    .arch-connector {
+      position: relative;
+    }
+    .arch-connector::after {
+      content: '';
+      position: absolute;
+      left: 50%; top: 100%;
+      width: 2px; height: 24px;
+      background: #0053e2;
+      transform: translateX(-50%);
+    }
+    .tier-bridge {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0;
+      position: relative;
+      margin: 0 auto;
+    }
+    .tier-bridge::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 8%; right: 8%;
+      height: 2px;
+      background: #0053e2;
+    }
+    .bridge-drop {
+      position: relative;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+    }
+    .bridge-drop::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      width: 2px; height: 24px;
+      background: #0053e2;
+    }
+
+    /* Tab system */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .tab-btn.active {
+      background: #0053e2;
+      color: white;
+      border-color: #0053e2;
+    }
+
+    /* Agent card pulse ring on hover */
+    .agent-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(0,83,226,0.18);
+      transition: all 0.2s ease;
+    }
+    .agent-card { transition: all 0.2s ease; }
+
+    /* Scrollable detail pane */
+    .detail-pane {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+    .detail-pane.open { max-height: 600px; }
+
+    .gradient-header {
+      background: linear-gradient(135deg, #0053e2 0%, #003ba5 60%, #1a1a2e 100%);
+    }
+
+    /* Phase timeline */
+    .phase-line {
+      position: relative;
+    }
+    .phase-line::before {
+      content: '';
+      position: absolute;
+      left: 28px; top: 40px; bottom: 0;
+      width: 3px;
+      background: linear-gradient(to bottom, #0053e2, #ffc220);
+    }
+
+    .risk-badge-low    { background: #d1fae5; color: #065f46; }
+    .risk-badge-medium { background: #fef3c7; color: #92400e; }
+    .risk-badge-high   { background: #fee2e2; color: #991b1b; }
+
+    @media print {
+      .no-print { display: none; }
+    }
+  </style>
+</head>
+<body class="text-gray-800 min-h-screen">
+
+  <!-- ═══════════════════ HERO ═══════════════════ -->
+  <header class="gradient-header text-white px-8 py-10">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="w-14 h-14 rounded-2xl overflow-hidden shadow-lg border-2 border-yellow-400"><img src="assets/digital-twin-image-1.png" alt="Sauravi" class="w-full h-full object-cover" style="object-position:center top"/></div>
+        <div>
+          <p class="text-blue-200 text-sm font-semibold uppercase tracking-widest">Architecture Blueprint · v1.0 · April 2026</p>
+          <h1 class="text-3xl font-bold leading-tight">Sauravi's Digital Twin</h1>
+          <p class="text-blue-200 text-base">Multi-Agent Virtual Assistant — Solution Architecture</p>
+        </div>
+      </div>
+      <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+        <div class="bg-white/10 rounded-xl p-3 backdrop-blur">
+          <div class="text-2xl font-bold text-yellow-300">3</div>
+          <div class="text-xs text-blue-200 mt-1">Agent Tiers</div>
+        </div>
+        <div class="bg-white/10 rounded-xl p-3 backdrop-blur">
+          <div class="text-2xl font-bold text-yellow-300">6</div>
+          <div class="text-xs text-blue-200 mt-1">Domain Agents</div>
+        </div>
+        <div class="bg-white/10 rounded-xl p-3 backdrop-blur">
+          <div class="text-2xl font-bold text-yellow-300">11+</div>
+          <div class="text-xs text-blue-200 mt-1">Capabilities</div>
+        </div>
+        <div class="bg-white/10 rounded-xl p-3 backdrop-blur">
+          <div class="text-2xl font-bold text-yellow-300">6</div>
+          <div class="text-xs text-blue-200 mt-1">Impl. Phases</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════ EXEC SUMMARY ═══════════════════ -->
+  <section class="max-w-6xl mx-auto px-6 py-8">
+    <div class="bg-white rounded-2xl border border-blue-100 shadow p-6">
+      <h2 class="text-lg font-bold text-blue-800 mb-3 flex items-center gap-2">
+        <span class="text-2xl">📋</span> Executive Summary
+      </h2>
+      <p class="text-gray-700 leading-relaxed mb-4">
+        This blueprint defines a <strong>hierarchical multi-agent system</strong> that acts as Sauravi's Digital Twin across three roles:
+        <span class="font-semibold text-blue-700">Virtual EA</span> (scheduling, travel, nudges),
+        <span class="font-semibold text-yellow-600">Virtual Me</span> (representation, planning, admin, evangelism), and
+        <span class="font-semibold text-green-700">Virtual Manager</span> (goal tracking, learning, coaching, strategy). 
+      </p>
+      <p class="text-gray-700 leading-relaxed mb-4">
+        The system follows a <strong>Hierarchical Orchestrator → Domain Agent → Tool</strong> pattern. A single 
+        <em>Orchestrator Agent</em> (Sauravi's Master Twin) holds the identity model and memory, routes intents to 
+        six specialized domain agents, and each domain agent calls existing AgentRunner sub-agents and APIs as tools.
+        No new wheels are invented — we wire together what already exists.
+      </p>
+      <div class="grid md:grid-cols-3 gap-3 mt-4">
+        <div class="rounded-xl bg-blue-50 border border-blue-200 p-4">
+          <div class="font-bold text-blue-800 mb-1">🎯 Design Principles</div>
+          <ul class="text-sm text-blue-700 space-y-1 list-disc ml-4">
+            <li>Single Responsibility per agent</li>
+            <li>Shared identity & memory layer</li>
+            <li>Human-in-the-loop escalation</li>
+            <li>Privacy-first (no PII in prompts)</li>
+            <li>Async & event-driven where possible</li>
+          </ul>
+        </div>
+        <div class="rounded-xl bg-yellow-50 border border-yellow-200 p-4">
+          <div class="font-bold text-yellow-800 mb-1">🔌 Key Integrations</div>
+          <ul class="text-sm text-yellow-700 space-y-1 list-disc ml-4">
+            <li>M365 (Calendar, Mail, Teams)</li>
+            <li>Jira + Confluence</li>
+            <li>InternalLLMGateway LLM (persona model)</li>
+            <li>Scheduler Agent (nudges/crons)</li>
+            <li>BigQuery (metrics & insights)</li>
+          </ul>
+        </div>
+        <div class="rounded-xl bg-green-50 border border-green-200 p-4">
+          <div class="font-bold text-green-800 mb-1">📦 Build on Existing</div>
+          <ul class="text-sm text-green-700 space-y-1 list-disc ml-4">
+            <li>msgraph sub-agent</li>
+            <li>meeting-room-agent</li>
+            <li>jira + tpm sub-agents</li>
+            <li>slide-creator sub-agent</li>
+            <li>scheduler-agent</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ TAB NAVIGATION ═══════════════════ -->
+  <section class="max-w-6xl mx-auto px-6 pb-2">
+    <div class="flex flex-wrap gap-2" role="tablist">
+      <button onclick="showTab('arch')"   class="tab-btn active px-4 py-2 rounded-lg border border-blue-200 text-sm font-semibold text-blue-700 bg-white" role="tab">🏗️ Architecture</button>
+      <button onclick="showTab('agents')" class="tab-btn px-4 py-2 rounded-lg border border-blue-200 text-sm font-semibold text-blue-700 bg-white" role="tab">🤖 Agents</button>
+      <button onclick="showTab('flows')"  class="tab-btn px-4 py-2 rounded-lg border border-blue-200 text-sm font-semibold text-blue-700 bg-white" role="tab">🔀 Key Flows</button>
+      <button onclick="showTab('memory')" class="tab-btn px-4 py-2 rounded-lg border border-blue-200 text-sm font-semibold text-blue-700 bg-white" role="tab">🧠 Memory & Identity</button>
+      <button onclick="showTab('phases')" class="tab-btn px-4 py-2 rounded-lg border border-blue-200 text-sm font-semibold text-blue-700 bg-white" role="tab">🗓️ Phases</button>
+      <button onclick="showTab('risks')"  class="tab-btn px-4 py-2 rounded-lg border border-blue-200 text-sm font-semibold text-blue-700 bg-white" role="tab">⚠️ Risks</button>
+      <button onclick="showTab('matrix')" class="tab-btn px-4 py-2 rounded-lg border border-blue-200 text-sm font-semibold text-blue-700 bg-white" role="tab">📊 Capability Matrix</button>
+      <button onclick="showTab('avatar')" class="tab-btn px-4 py-2 rounded-lg border border-yellow-300 text-sm font-semibold text-yellow-700 bg-white" role="tab">🧬 Meeting Avatar</button>
+      <button onclick="showTab('vision')" class="tab-btn px-4 py-2 rounded-lg border border-purple-300 text-sm font-semibold text-purple-700 bg-white" role="tab">🔭 Industry Vision</button>
+    </div>
+  </section>
+
+  <div class="max-w-6xl mx-auto px-6 pb-16 space-y-0">
+
+    <!-- ═══════════ TAB: ARCHITECTURE ═══════════ -->
+    <div id="tab-arch" class="tab-content active py-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-6">🏗️ System Architecture — Three-Tier Hierarchy</h2>
+
+      <!-- Tier 0: User -->
+      <div class="flex justify-center mb-2">
+        <div class="bg-gray-800 text-white rounded-2xl px-8 py-4 text-center shadow-lg w-72">
+          <div class="text-2xl mb-1">👤</div>
+          <div class="font-bold text-lg">Sauravi (Human)</div>
+          <div class="text-gray-400 text-xs mt-1">Chat · Voice · Email Trigger · Scheduled Trigger</div>
+        </div>
+      </div>
+      <!-- connector -->
+      <div class="flex justify-center"><div class="w-0.5 h-8 bg-blue-500"></div></div>
+
+      <!-- Tier 1: Orchestrator -->
+      <div class="flex justify-center mb-2 arch-connector">
+        <div class="bg-blue-700 text-white rounded-2xl px-8 py-5 text-center shadow-xl border-4 border-yellow-400 w-96">
+          <div class="text-3xl mb-1">🧠</div>
+          <div class="font-bold text-xl">TIER 1 · Orchestrator Agent</div>
+          <div class="text-blue-200 text-sm font-semibold mt-1">"Sauravi's Master Twin"</div>
+          <div class="mt-3 grid grid-cols-2 gap-2 text-xs text-left">
+            <div class="bg-blue-800 rounded-lg px-3 py-2">🗂️ Intent Classification</div>
+            <div class="bg-blue-800 rounded-lg px-3 py-2">🎭 Persona / Identity Model</div>
+            <div class="bg-blue-800 rounded-lg px-3 py-2">💾 Memory & Context</div>
+            <div class="bg-blue-800 rounded-lg px-3 py-2">🚦 Human Escalation</div>
+          </div>
+          <div class="mt-2 text-xs text-blue-300">Powered by InternalLLMGateway LLM · Pydantic AI</div>
+        </div>
+      </div>
+
+      <!-- Bridge line + connectors -->
+      <div class="relative flex justify-center mb-0" style="height:32px;">
+        <div class="absolute top-0 left-1/2 w-0.5 h-8 bg-blue-500" style="transform:translateX(-50%)"></div>
+      </div>
+      <!-- Horizontal bridge -->
+      <div class="relative mx-auto" style="max-width:900px; height:2px; background:#0053e2; margin-bottom:0;"></div>
+
+      <!-- Six connectors down to domain agents -->
+      <div class="grid grid-cols-3 md:grid-cols-6 gap-0 max-w-[900px] mx-auto" style="margin-bottom:0;">
+        <div class="flex justify-center"><div class="w-0.5 h-6 bg-blue-500"></div></div>
+        <div class="flex justify-center"><div class="w-0.5 h-6 bg-blue-500"></div></div>
+        <div class="flex justify-center"><div class="w-0.5 h-6 bg-blue-500"></div></div>
+        <div class="flex justify-center"><div class="w-0.5 h-6 bg-blue-500"></div></div>
+        <div class="flex justify-center"><div class="w-0.5 h-6 bg-blue-500"></div></div>
+        <div class="flex justify-center"><div class="w-0.5 h-6 bg-blue-500"></div></div>
+      </div>
+
+      <!-- Tier 2: Domain Agents -->
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-[900px] mx-auto mb-2">
+
+        <div class="agent-card bg-blue-50 border-2 border-blue-300 rounded-2xl p-4 text-center cursor-pointer" onclick="showTab('agents');highlightAgent('cal')">
+          <div class="text-2xl mb-1">📅</div>
+          <div class="font-bold text-blue-800 text-sm">Calendar &amp; Nudge Agent</div>
+          <div class="text-xs text-blue-600 mt-1">Tasks 1, 4</div>
+          <div class="mt-2 flex flex-wrap justify-center gap-1">
+            <span class="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">msgraph</span>
+            <span class="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">room-agent</span>
+            <span class="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">scheduler</span>
+          </div>
+        </div>
+
+        <div class="agent-card bg-purple-50 border-2 border-purple-300 rounded-2xl p-4 text-center cursor-pointer" onclick="showTab('agents');highlightAgent('travel')">
+          <div class="text-2xl mb-1">✈️</div>
+          <div class="font-bold text-purple-800 text-sm">Travel Planner Agent</div>
+          <div class="text-xs text-purple-600 mt-1">Task 2</div>
+          <div class="mt-2 flex flex-wrap justify-center gap-1">
+            <span class="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded-full">msgraph</span>
+            <span class="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded-full">the expense system API</span>
+          </div>
+        </div>
+
+        <div class="agent-card bg-yellow-50 border-2 border-yellow-400 rounded-2xl p-4 text-center cursor-pointer" onclick="showTab('agents');highlightAgent('persona')">
+          <div class="text-2xl mb-1">🎭</div>
+          <div class="font-bold text-yellow-800 text-sm">Persona &amp; Representation Agent</div>
+          <div class="text-xs text-yellow-700 mt-1">Task 3</div>
+          <div class="mt-2 flex flex-wrap justify-center gap-1">
+            <span class="bg-yellow-100 text-yellow-700 text-xs px-2 py-0.5 rounded-full">InternalLLMGateway LLM</span>
+            <span class="bg-yellow-100 text-yellow-700 text-xs px-2 py-0.5 rounded-full">msgraph</span>
+          </div>
+        </div>
+
+        <div class="agent-card bg-green-50 border-2 border-green-400 rounded-2xl p-4 text-center cursor-pointer" onclick="showTab('agents');highlightAgent('goals')">
+          <div class="text-2xl mb-1">🎯</div>
+          <div class="font-bold text-green-800 text-sm">Goals, Work &amp; Admin Agent</div>
+          <div class="text-xs text-green-600 mt-1">Tasks 5, 6, 8</div>
+          <div class="mt-2 flex flex-wrap justify-center gap-1">
+            <span class="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">jira</span>
+            <span class="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">tpm</span>
+            <span class="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">confluence</span>
+          </div>
+        </div>
+
+        <div class="agent-card bg-orange-50 border-2 border-orange-300 rounded-2xl p-4 text-center cursor-pointer" onclick="showTab('agents');highlightAgent('content')">
+          <div class="text-2xl mb-1">📢</div>
+          <div class="font-bold text-orange-800 text-sm">Content &amp; Evangelism Agent</div>
+          <div class="text-xs text-orange-600 mt-1">Task 7</div>
+          <div class="mt-2 flex flex-wrap justify-center gap-1">
+            <span class="bg-orange-100 text-orange-700 text-xs px-2 py-0.5 rounded-full">slide-creator</span>
+            <span class="bg-orange-100 text-orange-700 text-xs px-2 py-0.5 rounded-full">confluence</span>
+            <span class="bg-orange-100 text-orange-700 text-xs px-2 py-0.5 rounded-full">share-puppy</span>
+          </div>
+        </div>
+
+        <div class="agent-card bg-teal-50 border-2 border-teal-400 rounded-2xl p-4 text-center cursor-pointer" onclick="showTab('agents');highlightAgent('coaching')">
+          <div class="text-2xl mb-1">🧭</div>
+          <div class="font-bold text-teal-800 text-sm">Learning, Coaching &amp; Strategy Agent</div>
+          <div class="text-xs text-teal-600 mt-1">Tasks 9, 10, 11</div>
+          <div class="mt-2 flex flex-wrap justify-center gap-1">
+            <span class="bg-teal-100 text-teal-700 text-xs px-2 py-0.5 rounded-full">confluence</span>
+            <span class="bg-teal-100 text-teal-700 text-xs px-2 py-0.5 rounded-full">msgraph</span>
+            <span class="bg-teal-100 text-teal-700 text-xs px-2 py-0.5 rounded-full">BigQuery</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shared Services -->
+      <div class="relative flex justify-center mb-0 mt-2" style="height:8px;">
+        <div class="absolute w-3/4 h-0.5 bg-gray-300 top-1/2"></div>
+      </div>
+      <div class="max-w-[900px] mx-auto mt-4">
+        <div class="bg-gray-800 rounded-2xl p-5 text-white">
+          <div class="text-center font-bold text-sm text-gray-300 mb-3 uppercase tracking-wider">⚙️ TIER 3 — Shared Services Layer</div>
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center text-sm">
+            <div class="bg-gray-700 rounded-xl p-3">
+              <div class="text-xl">💾</div>
+              <div class="font-semibold mt-1">Memory Store</div>
+              <div class="text-gray-400 text-xs mt-1">SQLite / BQ<br/>Session + Long-term</div>
+            </div>
+            <div class="bg-gray-700 rounded-xl p-3">
+              <div class="text-xl">🎭</div>
+              <div class="font-semibold mt-1">Identity Model</div>
+              <div class="text-gray-400 text-xs mt-1">Style · Values<br/>Decisions · Prefs</div>
+            </div>
+            <div class="bg-gray-700 rounded-xl p-3">
+              <div class="text-xl">🔔</div>
+              <div class="font-semibold mt-1">Nudge Engine</div>
+              <div class="text-gray-400 text-xs mt-1">scheduler-agent<br/>Teams + Email</div>
+            </div>
+            <div class="bg-gray-700 rounded-xl p-3">
+              <div class="text-xl">🔒</div>
+              <div class="font-semibold mt-1">Auth &amp; Privacy</div>
+              <div class="text-gray-400 text-xs mt-1">OAuth M365<br/>No PII in prompts</div>
+            </div>
+            <div class="bg-gray-700 rounded-xl p-3">
+              <div class="text-xl">📡</div>
+              <div class="font-semibold mt-1">Integration Hub</div>
+              <div class="text-gray-400 text-xs mt-1">M365 · Jira · BQ<br/>the expense system · Slack</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
+        <strong>🧠 Key Architectural Decision:</strong> The Orchestrator holds the <em>identity model</em> — it knows how Sauravi thinks, her communication style, her relationships and standing decisions. Domain agents are stateless workers that receive enriched context from the Orchestrator. This keeps each agent focused (SRP) and allows the identity model to evolve in one place (DRY).
+      </div>
+    </div>
+
+    <!-- ═══════════ TAB: AGENTS ═══════════ -->
+    <div id="tab-agents" class="tab-content py-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-6">🤖 Domain Agents — Detailed Specs</h2>
+      <div class="space-y-4">
+
+        <!-- Agent 1: Calendar -->
+        <div id="agent-cal" class="bg-white border-2 border-blue-200 rounded-2xl overflow-hidden shadow">
+          <div class="bg-blue-700 text-white px-6 py-4 flex items-center gap-4 cursor-pointer" onclick="toggleDetail('cal-detail')">
+            <span class="text-3xl">📅</span>
+            <div class="flex-1">
+              <div class="font-bold text-lg">Calendar &amp; Nudge Agent</div>
+              <div class="text-blue-200 text-sm">Tasks 1 (Scheduling) + 4 (Nudges &amp; Reminders)</div>
+            </div>
+            <span class="text-2xl">▾</span>
+          </div>
+          <div id="cal-detail" class="detail-pane open">
+            <div class="p-6 grid md:grid-cols-2 gap-6">
+              <div>
+                <h4 class="font-bold text-blue-800 mb-2">Responsibilities</h4>
+                <ul class="text-sm space-y-2 text-gray-700 list-disc ml-4">
+                  <li>Schedule/reschedule meetings on behalf of Sauravi</li>
+                  <li>Find optimal meeting slots across attendee calendars</li>
+                  <li>Book meeting rooms with preferred criteria (floor, capacity, AV)</li>
+                  <li>Send and track meeting invites via Teams/Outlook</li>
+                  <li>Create recurring nudges for Sauravi (pre-meeting prep, follow-ups)</li>
+                  <li>Nudge external stakeholders for action items (polite, in Sauravi's voice)</li>
+                  <li>Detect and flag calendar conflicts / overloaded days</li>
+                </ul>
+              </div>
+              <div>
+                <h4 class="font-bold text-blue-800 mb-2">Tools / Sub-Agents Used</h4>
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-center gap-2 bg-blue-50 rounded-lg p-2"><span class="text-lg">📊</span><div><strong>msgraph</strong> — Calendar read/write, send emails, find free/busy</div></div>
+                  <div class="flex items-center gap-2 bg-blue-50 rounded-lg p-2"><span class="text-lg">📅</span><div><strong>meeting-room-agent</strong> — Room booking, preference profiles</div></div>
+                  <div class="flex items-center gap-2 bg-blue-50 rounded-lg p-2"><span class="text-lg">⏰</span><div><strong>scheduler-agent</strong> — Cron-based nudges, recurring reminders</div></div>
+                </div>
+                <h4 class="font-bold text-blue-800 mb-2 mt-4">Escalation Triggers</h4>
+                <ul class="text-sm text-gray-700 list-disc ml-4 space-y-1">
+                  <li>Cannot find a free slot within 5 days</li>
+                  <li>Scheduling conflict with executive meetings</li>
+                  <li>External attendee has not responded in 48h</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Agent 2: Travel -->
+        <div id="agent-travel" class="bg-white border-2 border-purple-200 rounded-2xl overflow-hidden shadow">
+          <div class="bg-purple-700 text-white px-6 py-4 flex items-center gap-4 cursor-pointer" onclick="toggleDetail('travel-detail')">
+            <span class="text-3xl">✈️</span>
+            <div class="flex-1">
+              <div class="font-bold text-lg">Travel Planner Agent</div>
+              <div class="text-purple-200 text-sm">Task 2 — Plan Travel · Bengaluru Walmart Special Process</div>
+            </div>
+            <span class="text-2xl">▾</span>
+          </div>
+          <div id="travel-detail" class="detail-pane open">
+            <div class="p-6 space-y-6">
+
+              <!-- ⚠️ Bengaluru Context Alert -->
+              <div class="bg-amber-50 border-2 border-amber-400 rounded-xl p-4 flex gap-3">
+                <span class="text-2xl">⚠️</span>
+                <div>
+                  <div class="font-bold text-amber-900 mb-1">Bengaluru Travel Is NOT Self-Serve — Important Constraints</div>
+                  <p class="text-sm text-amber-800">Walmart Bengaluru follows a <strong>mandatory multi-step approval + the travel booking system travel desk process</strong>. The agent <strong>cannot book anything directly</strong>. Its role is to orchestrate the humans in the loop (EA, VP, the travel booking system) with the right information at the right time — not to bypass them.</p>
+                </div>
+              </div>
+
+              <div class="grid md:grid-cols-2 gap-6">
+                <!-- Left: The 11-step process -->
+                <div>
+                  <h4 class="font-bold text-purple-800 mb-3">🗺️ Real Bengaluru Travel Process (11 Steps)</h4>
+                  <div class="space-y-2 text-xs">
+
+                    <div class="flex gap-3 bg-purple-50 rounded-lg p-3 border border-purple-100">
+                      <span class="bg-purple-600 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold flex-shrink-0">1</span>
+                      <div><strong class="text-purple-900">Plan (4 weeks ahead)</strong><br/><span class="text-gray-600">Identify trip need, purpose, attendees. 4-week lead time required for international to get best prices. Agent creates draft trip spec.</span></div>
+                    </div>
+
+                    <div class="flex gap-3 bg-purple-50 rounded-lg p-3 border border-purple-100">
+                      <span class="bg-purple-600 text-white rounded-full w-6 h-6 flex items-center juter font-bold flex-shrink-0">2</span>
+                      <div><strong class="text-purple-900">Draft Travel Request (structured format)</strong><br/><span class="text-gray-600">Fill in: traveller name + role, proposed dates + flights, hotel + address, ground transport, meeting locations, departure/destination countries, business justification, budget approver name.</span></div>
+                    </div>
+
+                    <div class="flex gap-3 bg-red-50 rounded-lg p-3 border border-red-200">
+                      <span class="bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold flex-shrink-0">3</span>
+                      <div><strong class="text-red-900">🔐 VP+ Approval (mandatory gate)</strong><br/><span class="text-gray-600">Per Bengaluru GT guidelines, VP+ sign-off required before any booking. Agent drafts the approval email → Sauravi reviews → sends to leadership (VP). Without this, the travel booking system will not proceed.</span></div>
+                    </div>
+
+                    <div class="flex gap-3 bg-purple-50 rounded-lg p-3 border border-purple-100">
+                      <span class="bg-purple-600 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold flex-shrink-0">4</span>
+                      <div><strong class="text-purple-900">EA Sends to the travel booking system</strong><br/><span class="text-gray-600">a colleague (EA) emails <code class="bg-gray-100 px-1 rounded">traveldesk.the travel desk@the travel booking system.com</code> with the approved request + VP approval thread attached. Agent preps the full the travel booking system email for EA to review and send.</span></div>
+                    </div>
+
+                    <div class="flex gap-3 bg-purple-50 rounded-lg p-3 border border-purple-100">
+                      <span class="bg-purple-600 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold flex-shrink-0">5</span>
+                      <div><strong class="text-purple-900">the travel booking system Provides Options</strong><br/><span class="text-gray-600">Muthu K / Karthick / Murali from the travel booking system send routing options with full fare breakdown (₹ + USD), baggage allowance, cancellation fees. Business class for international BLR↔US.</span></div>
+                    </div>
+
+                    <div class="flex gap-3 bg-purple-50 rounded-lg p-3 border border-purple-100">
+                      <span class="bg-purple-600 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold flex-shrink-0">6</span>
+                      <div><strong class="text-purple-900">Review &amp; Select Options</strong><br/><span class="text-gray-600">Agent reads the travel booking system options, applies Sauravi's preferences (airline, routing, hotel tier), flags tradeoffs, and drafts selection reply for Sauravi's approval.</span></div>
+                    </div>
+
+                    <div class="flex gap-3 bg-amber-50 rounded-lg p-3 border border-amber-200">
+                      <span class="bg-amber-600 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold flex-shrink-0">7</span>
+                      <div><strong class="text-amber-900">⏱️ Cost Approval + Blocking (time-sensitive!)</strong><br/><span class="text-gray-600">EA approves cost → the travel booking system BLOCKS seats with a <strong>same-day hard time limit</strong>. Agent must urgently flag this to Sauravi and EA. Miss the window = fare goes up or seats lost.</span></div>
+                    </div>
+
+                    <div class="flex gap-3 bg-purple-50 rounded-lg p-3 border border-purple-100">
+                      <span class="bg-purple-600 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold flex-shrink-0">8</span>
+                      <div><strong class="text-purple-900">Ticket Issuance</strong><br/><span class="text-gray-600">the travel booking system issues tickets with PNR. Reference format: <code class="bg-gray-100 px-1 rounded">YA:XXXXXXXX</code>. Agent verifies all details (name, dates, routing), flags any discrepancies immediately.</span></div>
+                    </div>
+
+                    <div class="flex gap-3 bg-purple-50 rounded-lg p-3 border border-purple-100">
+                      <span class="bg-purple-600 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold flex-shrink-0">9</span>
+                      <div><strong class="text-purple-900">Hotel Booking</strong><br/><span class="text-gray-600">the travel booking system books preferred hotel. Cancellation window: 3 days prior. Corp credit card at check-in (not EA's card). Agent reminds: <strong>collect hotel invoice before check-out</strong> for the expense system.</span></div>
+                    </div>
+
+                    <div class="flex gap-3 bg-blue-50 rounded-lg p-3 border border-blue-200">
+                      <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold flex-shrink-0">10</span>
+                      <div><strong class="text-blue-900">Roaming + Logistics</strong><br/><span class="text-gray-600">Request international roaming from Bala (a colleague.a colleague@example.com / eCrew). Book airport shuttle. Remind to enable roaming before departure. Pack travel checklist.</span></div>
+                    </div>
+
+                    <div class="flex gap-3 bg-green-50 rounded-lg p-3 border border-green-200">
+                      <span class="bg-green-600 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold flex-shrink-0">11</span>
+                      <div><strong class="text-green-900">Post-Travel: the expense system Expense Claims</strong><br/><span class="text-gray-600">Hotel invoices + other expenses submitted via <strong>the expense system tool</strong>. Agent reminds, pre-fills known amounts from booking confirmations, flags missing receipts.</span></div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- Right: Contacts, constraints, crisis -->
+                <div class="space-y-5">
+
+                  <div>
+                    <h4 class="font-bold text-purple-800 mb-2">👥 Key People in the Loop</h4>
+                    <div class="space-y-2 text-xs">
+                      <div class="bg-white border border-purple-100 rounded-lg p-3 flex gap-3">
+                        <span class="text-lg">👩‍💼</span>
+                        <div><strong>a colleague</strong> — EA &amp; Travel Coordinator<br/><span class="text-gray-500">a colleague.a colleague@example.com · All the travel booking system comms go through her</span></div>
+                      </div>
+                      <div class="bg-white border border-purple-100 rounded-lg p-3 flex gap-3">
+                        <span class="text-lg">👔</span>
+                        <div><strong>leadership</strong> — VP, Business Approver<br/><span class="text-gray-500">Mandatory VP+ sign-off before any booking proceeds</span></div>
+                      </div>
+                      <div class="bg-white border border-purple-100 rounded-lg p-3 flex gap-3">
+                        <span class="text-lg">🧳</span>
+                        <div><strong>the travel booking system Travel Desk</strong> — Muthu K / Karthick V / Murali K<br/><span class="text-gray-500">traveldesk.the travel desk@the travel booking system.com · +[redacted]<br/>After-hours: etssupport@the travel booking system.com / 080-6519-6999<br/>Urgent (&lt;48h): [redacted] / [redacted]</span></div>
+                      </div>
+                      <div class="bg-white border border-purple-100 rounded-lg p-3 flex gap-3">
+                        <span class="text-lg">📡</span>
+                        <div><strong>a colleague R M (Bala)</strong> — eCrew / Travel Safety<br/><span class="text-gray-500">a colleague.a colleague@example.com · International roaming requests + travel safety alerts</span></div>
+                      </div>
+                      <div class="bg-white border border-purple-100 rounded-lg p-3 flex gap-3">
+                        <span class="text-lg">🌍</span>
+                        <div><strong>the travel-risk system</strong> — Travel Risk Alerts<br/><span class="text-gray-500">alerts@the travel-risk system.com · Auto-alerts on geo-political events. Agent monitors and escalates immediately.</span></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 class="font-bold text-purple-800 mb-2">🚫 Hard Constraints (What the Agent CANNOT Do)</h4>
+                    <div class="space-y-1 text-xs">
+                      <div class="bg-red-50 border border-red-200 rounded-lg p-2 text-red-800">❌ Cannot book flights or hotels directly — all bookings go through the travel booking system via EA</div>
+                      <div class="bg-red-50 border border-red-200 rounded-lg p-2 text-red-800">❌ Cannot send the VP approval request without Sauravi reviewing it first</div>
+                      <div class="bg-red-50 border border-red-200 rounded-lg p-2 text-red-800">❌ Cannot share corporate card details — Sauravi provides directly to the travel booking system by phone</div>
+                      <div class="bg-red-50 border border-red-200 rounded-lg p-2 text-red-800">❌ Cannot cancel or modify tickets without explicit Sauravi instruction (geo-political situation escalations require her call)</div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 class="font-bold text-purple-800 mb-2">✅ What the Agent CAN Do Autonomously</h4>
+                    <div class="space-y-1 text-xs">
+                      <div class="bg-green-50 border border-green-200 rounded-lg p-2 text-green-800">✅ Draft the structured travel request email (all fields pre-filled)</div>
+                      <div class="bg-green-50 border border-green-200 rounded-lg p-2 text-green-800">✅ Monitor inbox for VP approval reply and notify Sauravi + a colleague</div>
+                      <div class="bg-green-50 border border-green-200 rounded-lg p-2 text-green-800">✅ Parse the travel booking system option emails, compare options, recommend preferred choice</div>
+                      <div class="bg-green-50 border border-green-200 rounded-lg p-2 text-green-800">✅ Alert urgently when the travel booking system time-limit blocking window is expiring</div>
+                      <div class="bg-green-50 border border-green-200 rounded-lg p-2 text-green-800">✅ Block calendar for travel days + set OOO via msgraph</div>
+                      <div class="bg-green-50 border border-green-200 rounded-lg p-2 text-green-800">✅ Send roaming request to Bala with Sauravi's approval</div>
+                      <div class="bg-green-50 border border-green-200 rounded-lg p-2 text-green-800">✅ Build pre-trip meeting agenda (set meetings via EAs of counterparts)</div>
+                      <div class="bg-green-50 border border-green-200 rounded-lg p-2 text-green-800">✅ Remind to collect hotel invoice before check-out</div>
+                      <div class="bg-green-50 border border-green-200 rounded-lg p-2 text-green-800">✅ Pre-fill the expense system expense claim from booking confirmation data</div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 class="font-bold text-purple-800 mb-2">🆘 Crisis / Disruption Protocol</h4>
+                    <div class="bg-orange-50 border border-orange-300 rounded-xl p-3 text-xs text-orange-900 space-y-1">
+                      <div>📡 Monitor <strong>the travel-risk system</strong> alerts during active trips</div>
+                      <div>⚡ If alert received → immediately surface to Sauravi + a colleague + Bala</div>
+                      <div>🔁 Draft alternate routing options from the travel booking system (with cost + fare rules)</div>
+                      <div>⏱️ Flag any time-sensitive rebooking windows (fares can jump significantly)</div>
+                      <div>❌ Cancellation: draft cancel request to the travel booking system → Sauravi approves → EA sends</div>
+                      <div class="pt-1 font-semibold">Evidence: Feb 2026 Middle East tensions triggered full trip cancellation (BLR→DFW→XNA→SFO route, YA:54281644)</div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 class="font-bold text-purple-800 mb-2">🛠️ Tools / Sub-Agents Used</h4>
+                    <div class="space-y-2 text-xs">
+                      <div class="flex items-center gap-2 bg-purple-50 rounded-lg p-2"><span class="text-lg">📊</span><div><strong>msgraph</strong> — Read approval emails, calendar blocking, OOO, draft the travel booking system/EA emails</div></div>
+                      <div class="flex items-center gap-2 bg-purple-50 rounded-lg p-2"><span class="text-lg">🧠</span><div><strong>InternalLLMGateway LLM</strong> — Parse the travel booking system option emails, compare fares, draft travel request in Sauravi's voice</div></div>
+                      <div class="flex items-center gap-2 bg-purple-50 rounded-lg p-2"><span class="text-lg">💰</span><div><strong>the expense system API</strong> — Post-travel expense pre-fill (Phase 2)</div></div>
+                      <div class="flex items-center gap-2 bg-purple-50 rounded-lg p-2"><span class="text-lg">📓</span><div><strong>OneNote / msgraph</strong> — Read/write travel checklists (Intl travel.one notebook)</div></div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Agent 3: Persona -->
+        <div id="agent-persona" class="bg-white border-2 border-yellow-300 rounded-2xl overflow-hidden shadow">
+          <div class="bg-yellow-500 text-white px-6 py-4 flex items-center gap-4 cursor-pointer" onclick="toggleDetail('persona-detail')">
+            <span class="text-3xl">🎭</span>
+            <div class="flex-1">
+              <div class="font-bold text-lg">Persona &amp; Representation Agent</div>
+              <div class="text-yellow-100 text-sm">Task 3 — Represent Sauravi when she cannot be there</div>
+            </div>
+            <span class="text-2xl">▾</span>
+          </div>
+          <div id="persona-detail" class="detail-pane open">
+            <div class="p-6 grid md:grid-cols-2 gap-6">
+              <div>
+                <h4 class="font-bold text-yellow-800 mb-2">Responsibilities</h4>
+                <ul class="text-sm space-y-2 text-gray-700 list-disc ml-4">
+                  <li>Reply to emails in Sauravi's voice (with approval step)</li>
+                  <li>Represent her stance in async discussions (Teams threads)</li>
+                  <li>Summarize meetings she missed and draft her response</li>
+                  <li>Draft decisions on recurring / well-understood patterns</li>
+                  <li>Maintain "known decisions" knowledge base</li>
+                </ul>
+                <div class="mt-3 bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-xs text-yellow-800">
+                  ⚠️ <strong>Always human-in-the-loop</strong> for any outbound comms. Draft → Review → Send. Never autonomous send in Phase 1.
+                </div>
+              </div>
+              <div>
+                <h4 class="font-bold text-yellow-800 mb-2">Identity Model Inputs</h4>
+                <div class="space-y-2 text-sm">
+                  <div class="bg-yellow-50 rounded-lg p-2 text-xs">📝 Writing samples (emails, docs) → style calibration</div>
+                  <div class="bg-yellow-50 rounded-lg p-2 text-xs">📋 Standing positions on recurring topics</div>
+                  <div class="bg-yellow-50 rounded-lg p-2 text-xs">👥 Relationship map (reports, peers, stakeholders)</div>
+                  <div class="bg-yellow-50 rounded-lg p-2 text-xs">🎯 Current goals & priorities (refreshed weekly)</div>
+                  <div class="bg-yellow-50 rounded-lg p-2 text-xs">🚫 Hard NOs — things Sauravi will never agree to</div>
+                </div>
+                <h4 class="font-bold text-yellow-800 mb-2 mt-4">Tools Used</h4>
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-center gap-2 bg-yellow-50 rounded-lg p-2"><strong>InternalLLMGateway LLM</strong> — Persona-constrained generation</div>
+                  <div class="flex items-center gap-2 bg-yellow-50 rounded-lg p-2"><strong>msgraph</strong> — Email drafts, Teams messages</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Agent 4: Goals/Work/Admin -->
+        <div id="agent-goals" class="bg-white border-2 border-green-300 rounded-2xl overflow-hidden shadow">
+          <div class="bg-green-700 text-white px-6 py-4 flex items-center gap-4 cursor-pointer" onclick="toggleDetail('goals-detail')">
+            <span class="text-3xl">🎯</span>
+            <div class="flex-1">
+              <div class="font-bold text-lg">Goals, Work &amp; Admin Agent</div>
+              <div class="text-green-200 text-sm">Tasks 5 (Plan Work/Goals) + 6 (Admin) + 8 (Track Goals)</div>
+            </div>
+            <span class="text-2xl">▾</span>
+          </div>
+          <div id="goals-detail" class="detail-pane open">
+            <div class="p-6 grid md:grid-cols-2 gap-6">
+              <div>
+                <h4 class="font-bold text-green-800 mb-2">Responsibilities</h4>
+                <ul class="text-sm space-y-2 text-gray-700 list-disc ml-4">
+                  <li>Break down annual goals into quarterly / sprint chunks (OKR style)</li>
+                  <li>Create and maintain Jira epics, stories, tasks from goals</li>
+                  <li>Weekly work summary — what's done, what's blocked, what's next</li>
+                  <li>Draft PRDs and status updates for leadership</li>
+                  <li>Handle admin tasks: expense tracking, form fills, approvals routing</li>
+                  <li>Goal health dashboard — red/amber/green status</li>
+                  <li>Prepare content for 1:1s and staff meetings automatically</li>
+                </ul>
+              </div>
+              <div>
+                <h4 class="font-bold text-green-800 mb-2">Tools Used</h4>
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-center gap-2 bg-green-50 rounded-lg p-2"><strong>jira</strong> — Epic/story/task CRUD</div>
+                  <div class="flex items-center gap-2 bg-green-50 rounded-lg p-2"><strong>tpm</strong> — PRDs, tracking docs</div>
+                  <div class="flex items-center gap-2 bg-green-50 rounded-lg p-2"><strong>planning-agent</strong> — Sprint planning, dependency mapping</div>
+                  <div class="flex items-center gap-2 bg-green-50 rounded-lg p-2"><strong>confluence-search</strong> — Policy lookup for admin tasks</div>
+                  <div class="flex items-center gap-2 bg-green-50 rounded-lg p-2"><strong>bigquery-explorer</strong> — Goal metrics &amp; burndown data</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Agent 5: Content -->
+        <div id="agent-content" class="bg-white border-2 border-orange-300 rounded-2xl overflow-hidden shadow">
+          <div class="bg-orange-600 text-white px-6 py-4 flex items-center gap-4 cursor-pointer" onclick="toggleDetail('content-detail')">
+            <span class="text-3xl">📢</span>
+            <div class="flex-1">
+              <div class="font-bold text-lg">Content &amp; Evangelism Agent</div>
+              <div class="text-orange-100 text-sm">Task 7 — Create collateral to evangelize work</div>
+            </div>
+            <span class="text-2xl">▾</span>
+          </div>
+          <div id="content-detail" class="detail-pane open">
+            <div class="p-6 grid md:grid-cols-2 gap-6">
+              <div>
+                <h4 class="font-bold text-orange-800 mb-2">Responsibilities</h4>
+                <ul class="text-sm space-y-2 text-gray-700 list-disc ml-4">
+                  <li>Create slide decks (exec summaries, team updates, all-hands)</li>
+                  <li>Draft Confluence documentation &amp; wiki pages</li>
+                  <li>Generate HTML reports &amp; dashboards for sharing</li>
+                  <li>Write LinkedIn-style posts for internal evangelism</li>
+                  <li>Build "team wins" newsletters for Sauravi's distribution</li>
+                  <li>Publish to share-puppy for broad access</li>
+                </ul>
+              </div>
+              <div>
+                <h4 class="font-bold text-orange-800 mb-2">Tools Used</h4>
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-center gap-2 bg-orange-50 rounded-lg p-2"><strong>slide-creator</strong> — Beautiful HTML slide decks</div>
+                  <div class="flex items-center gap-2 bg-orange-50 rounded-lg p-2"><strong>confluence-search</strong> — Source content &amp; context</div>
+                  <div class="flex items-center gap-2 bg-orange-50 rounded-lg p-2"><strong>share-puppy</strong> — Publish reports to internal.example.com</div>
+                  <div class="flex items-center gap-2 bg-orange-50 rounded-lg p-2"><strong>msgraph</strong> — Email newsletters, Teams posts</div>
+                  <div class="flex items-center gap-2 bg-orange-50 rounded-lg p-2"><strong>bigquery-explorer</strong> — Metrics to back up the story</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Agent 6: Coaching/Strategy -->
+        <div id="agent-coaching" class="bg-white border-2 border-teal-300 rounded-2xl overflow-hidden shadow">
+          <div class="bg-teal-700 text-white px-6 py-4 flex items-center gap-4 cursor-pointer" onclick="toggleDetail('coaching-detail')">
+            <span class="text-3xl">🧭</span>
+            <div class="flex-1">
+              <div class="font-bold text-lg">Learning, Coaching &amp; Strategy Agent</div>
+              <div class="text-teal-200 text-sm">Tasks 9 (Learning) + 10 (Coaching) + 11 (Strategy Intel)</div>
+            </div>
+            <span class="text-2xl">▾</span>
+          </div>
+          <div id="coaching-detail" class="detail-pane open">
+            <div class="p-6 grid md:grid-cols-2 gap-6">
+              <div>
+                <h4 class="font-bold text-teal-800 mb-2">Responsibilities</h4>
+                <ul class="text-sm space-y-2 text-gray-700 list-disc ml-4">
+                  <li>Build and track a personal learning plan (courses, books, certifications)</li>
+                  <li>Weekly "learning nudge" — 1 article, 1 skill, 1 insight</li>
+                  <li>Coaching: identify skill gaps vs. career goals, recommend actions</li>
+                  <li>Monitor top-down strategy comms (all-hands, leadership memos)</li>
+                  <li>Summarize key strategic themes and how they relate to Sauravi's work</li>
+                  <li>Draft "how does this affect my team" memos post strategy announcements</li>
+                  <li>Prepare Sauravi for skip-levels and senior leadership interactions</li>
+                </ul>
+              </div>
+              <div>
+                <h4 class="font-bold text-teal-800 mb-2">Tools Used</h4>
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-center gap-2 bg-teal-50 rounded-lg p-2"><strong>confluence-search</strong> — Strategy docs, all-hands notes</div>
+                  <div class="flex items-center gap-2 bg-teal-50 rounded-lg p-2"><strong>msgraph</strong> — Monitor leadership email threads, Teams channels</div>
+                  <div class="flex items-center gap-2 bg-teal-50 rounded-lg p-2"><strong>InternalLLMGateway LLM</strong> — Coaching synthesis, gap analysis</div>
+                  <div class="flex items-center gap-2 bg-teal-50 rounded-lg p-2"><strong>bigquery-explorer</strong> — Performance benchmarks &amp; team metrics</div>
+                  <div class="flex items-center gap-2 bg-teal-50 rounded-lg p-2"><strong>scheduler-agent</strong> — Weekly learning nudge crons</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════ TAB: FLOWS ═══════════ -->
+    <div id="tab-flows" class="tab-content py-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-6">🔀 Key Interaction Flows</h2>
+      <div class="space-y-6">
+
+        <!-- Flow 1 -->
+        <div class="bg-white rounded-2xl border border-blue-200 shadow p-6">
+          <h3 class="font-bold text-blue-800 text-lg mb-4">Flow 1 · "Schedule a meeting with the team"</h3>
+          <div class="flex flex-wrap items-center gap-2 text-sm">
+            <div class="bg-gray-800 text-white rounded-xl px-4 py-2">👤 Sauravi says:<br/>"Schedule team sync"</div>
+            <span class="text-blue-500 text-xl">→</span>
+            <div class="bg-blue-700 text-white rounded-xl px-4 py-2">🧠 Orchestrator<br/>Intent: SCHEDULE<br/>Inject preferences</div>
+            <span class="text-blue-500 text-xl">→</span>
+            <div class="bg-blue-100 border border-blue-400 rounded-xl px-4 py-2 text-blue-900">📅 Calendar Agent<br/>msgraph: find free/busy<br/>room-agent: book room</div>
+            <span class="text-blue-500 text-xl">→</span>
+            <div class="bg-green-100 border border-green-400 rounded-xl px-4 py-2 text-green-900">✅ Invite sent<br/>Nudge scheduled<br/>Summary to Sauravi</div>
+          </div>
+        </div>
+
+        <!-- Flow 2 -->
+        <div class="bg-white rounded-2xl border border-yellow-300 shadow p-6">
+          <h3 class="font-bold text-yellow-800 text-lg mb-4">Flow 2 · Autonomous Nudge (Scheduled)</h3>
+          <div class="flex flex-wrap items-center gap-2 text-sm">
+            <div class="bg-gray-800 text-white rounded-xl px-4 py-2">⏰ scheduler-agent<br/>Cron fires: Mon 9AM</div>
+            <span class="text-yellow-500 text-xl">→</span>
+            <div class="bg-blue-700 text-white rounded-xl px-4 py-2">🧠 Orchestrator<br/>Intent: WEEKLY_NUDGE<br/>Pull context</div>
+            <span class="text-yellow-500 text-xl">→</span>
+            <div class="bg-yellow-100 border border-yellow-400 rounded-xl px-4 py-2 text-yellow-900">📅 Calendar Agent<br/>Pull this week's mtgs<br/>+ Goals Agent: blockers</div>
+            <span class="text-yellow-500 text-xl">→</span>
+            <div class="bg-yellow-100 border border-yellow-400 rounded-xl px-4 py-2 text-yellow-900">🧭 Strategy Agent<br/>Any new top-down comms?</div>
+            <span class="text-yellow-500 text-xl">→</span>
+            <div class="bg-green-100 border border-green-400 rounded-xl px-4 py-2 text-green-900">📨 Teams message:<br/>"Your Week Ahead" digest<br/>sent to Sauravi</div>
+          </div>
+        </div>
+
+        <!-- Flow 3 -->
+        <div class="bg-white rounded-2xl border border-green-300 shadow p-6">
+          <h3 class="font-bold text-green-800 text-lg mb-4">Flow 3 · "I missed a meeting — what happened and how should I respond?"</h3>
+          <div class="flex flex-wrap items-center gap-2 text-sm">
+            <div class="bg-gray-800 text-white rounded-xl px-4 py-2">👤 Sauravi:<br/>"I missed the Q2<br/>strategy sync"</div>
+            <span class="text-green-500 text-xl">→</span>
+            <div class="bg-blue-700 text-white rounded-xl px-4 py-2">🧠 Orchestrator<br/>Intent: REPRESENT<br/>+ STRATEGY_INTEL</div>
+            <span class="text-green-500 text-xl">→</span>
+            <div class="bg-yellow-100 border border-yellow-400 rounded-xl px-4 py-2 text-yellow-900">🎭 Persona Agent<br/>msgraph: get meeting notes<br/>Summarize in her context</div>
+            <span class="text-green-500 text-xl">→</span>
+            <div class="bg-teal-100 border border-teal-400 rounded-xl px-4 py-2 text-teal-900">🧭 Strategy Agent<br/>Map to her current goals<br/>Draft "my take" memo</div>
+            <span class="text-green-500 text-xl">→</span>
+            <div class="bg-green-100 border border-green-400 rounded-xl px-4 py-2 text-green-900">📋 Draft reply ready<br/>Sauravi reviews + sends<br/>(human-in-loop)</div>
+          </div>
+        </div>
+
+        <!-- Flow 4 -->
+        <div class="bg-white rounded-2xl border border-orange-300 shadow p-6">
+          <h3 class="font-bold text-orange-800 text-lg mb-4">Flow 4 · "Create a deck on our AI adoption work"</h3>
+          <div class="flex flex-wrap items-center gap-2 text-sm">
+            <div class="bg-gray-800 text-white rounded-xl px-4 py-2">👤 Sauravi:<br/>"Create exec deck<br/>on AI adoption"</div>
+            <span class="text-orange-500 text-xl">→</span>
+            <div class="bg-blue-700 text-white rounded-xl px-4 py-2">🧠 Orchestrator<br/>Intent: CONTENT<br/>Inject brand prefs</div>
+            <span class="text-orange-500 text-xl">→</span>
+            <div class="bg-orange-100 border border-orange-400 rounded-xl px-4 py-2 text-orange-900">📢 Content Agent<br/>ai-usage-tracker: pull metrics<br/>bigquery: usage data</div>
+            <span class="text-orange-500 text-xl">→</span>
+            <div class="bg-orange-100 border border-orange-400 rounded-xl px-4 py-2 text-orange-900">🎨 slide-creator<br/>Walmart branded deck<br/>w/ charts + insights</div>
+            <span class="text-orange-500 text-xl">→</span>
+            <div class="bg-green-100 border border-green-400 rounded-xl px-4 py-2 text-green-900">🌐 share-puppy<br/>Published link<br/>returned to Sauravi</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════ TAB: MEMORY & IDENTITY ═══════════ -->
+    <div id="tab-memory" class="tab-content py-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-6">🧠 Memory &amp; Identity Model — The Soul of the Digital Twin</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+
+        <div class="bg-white rounded-2xl border border-blue-200 shadow p-6">
+          <h3 class="font-bold text-blue-800 mb-4 text-lg">💾 Memory Architecture</h3>
+          <div class="space-y-3">
+            <div class="bg-blue-50 rounded-xl p-4 border border-blue-200">
+              <div class="font-semibold text-blue-800 mb-1">Session Memory (ephemeral)</div>
+              <p class="text-sm text-gray-600">Active conversation context. What was said in this session. Cleared when session ends. Stored in-process.</p>
+            </div>
+            <div class="bg-blue-100 rounded-xl p-4 border border-blue-300">
+              <div class="font-semibold text-blue-800 mb-1">Working Memory (days → weeks)</div>
+              <p class="text-sm text-gray-600">Recent decisions, active meeting agenda, pending nudges, unresolved action items. SQLite-backed.</p>
+            </div>
+            <div class="bg-blue-700 rounded-xl p-4 text-white">
+              <div class="font-semibold mb-1">Long-Term Memory (persistent)</div>
+              <p class="text-sm text-blue-200">Identity model, communication style, relationship map, standing decisions, career goals. Stored in structured JSON + BQ for analytics.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-yellow-300 shadow p-6">
+          <h3 class="font-bold text-yellow-800 mb-4 text-lg">🎭 Identity Model — What Makes Sauravi, Sauravi</h3>
+          <div class="space-y-2 text-sm">
+            <div class="flex gap-3 items-start bg-yellow-50 rounded-lg p-3">
+              <span class="text-xl">✍️</span>
+              <div><strong>Writing Style</strong><br/><span class="text-gray-600">Calibrated from emails, Confluence docs, Teams messages. Tone, vocabulary, sentence length, emoji usage, formality level by audience.</span></div>
+            </div>
+            <div class="flex gap-3 items-start bg-yellow-50 rounded-lg p-3">
+              <span class="text-xl">🤝</span>
+              <div><strong>Relationship Map</strong><br/><span class="text-gray-600">Direct reports, peers, skip-levels, stakeholders. Communication preferences per person (formal/casual, brief/detailed).</span></div>
+            </div>
+            <div class="flex gap-3 items-start bg-yellow-50 rounded-lg p-3">
+              <span class="text-xl">📌</span>
+              <div><strong>Standing Decisions &amp; Opinions</strong><br/><span class="text-gray-600">Known positions on architecture, team norms, vendor preferences, meeting culture. Prevents the twin from contradicting Sauravi.</span></div>
+            </div>
+            <div class="flex gap-3 items-start bg-yellow-50 rounded-lg p-3">
+              <span class="text-xl">🎯</span>
+              <div><strong>Current Goals &amp; Priorities</strong><br/><span class="text-gray-600">OKRs, career targets, team targets. Refreshed weekly by Goals Agent from Jira/Confluence.</span></div>
+            </div>
+            <div class="flex gap-3 items-start bg-yellow-50 rounded-lg p-3">
+              <span class="text-xl">🚫</span>
+              <div><strong>Hard Constraints (Never-Do)</strong><br/><span class="text-gray-600">Explicit rules: never schedule before 9AM, never commit to deadlines without my input, never share PII externally.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-green-300 shadow p-6 md:col-span-2">
+          <h3 class="font-bold text-green-800 mb-4 text-lg">🔄 Identity Model — Lifecycle &amp; Refresh</h3>
+          <div class="grid md:grid-cols-4 gap-4 text-sm text-center">
+            <div class="bg-green-50 rounded-xl p-4 border border-green-200">
+              <div class="text-2xl mb-2">🌱</div>
+              <div class="font-bold text-green-800">Bootstrap (Day 1)</div>
+              <div class="text-gray-600 mt-2">Sauravi fills structured onboarding form. Writing samples provided. Relationship map drafted.</div>
+            </div>
+            <div class="bg-green-50 rounded-xl p-4 border border-green-200">
+              <div class="text-2xl mb-2">📅</div>
+              <div class="font-bold text-green-800">Weekly Auto-Refresh</div>
+              <div class="text-gray-600 mt-2">Goals Agent pulls Jira status. Calendar Agent analyzes patterns. Strategy Agent updates priority context.</div>
+            </div>
+            <div class="bg-green-50 rounded-xl p-4 border border-green-200">
+              <div class="text-2xl mb-2">🔔</div>
+              <div class="font-bold text-green-800">Event-Driven Update</div>
+              <div class="text-gray-600 mt-2">New strategy announcement → Strategy Agent updates context. New team member → Relationship map updated.</div>
+            </div>
+            <div class="bg-green-50 rounded-xl p-4 border border-green-200">
+              <div class="text-2xl mb-2">✋</div>
+              <div class="font-bold text-green-800">Manual Override</div>
+              <div class="text-gray-600 mt-2">Sauravi can always correct or override. Corrections are persisted and weighted higher. Ground truth = Sauravi.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════ TAB: PHASES ═══════════ -->
+    <div id="tab-phases" class="tab-content py-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-6">🗓️ Implementation Phases — Rolling Carefully</h2>
+      <div class="phase-line space-y-8 pl-14 relative">
+
+        <!-- Phase 1 -->
+        <div class="relative">
+          <div class="absolute -left-14 top-0 w-12 h-12 bg-blue-700 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg z-10">1</div>
+          <div class="bg-white rounded-2xl border-2 border-blue-300 shadow p-6">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-blue-800 text-lg">🏗️ Foundation &amp; Orchestrator</h3>
+              <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">Weeks 1–3</span>
+            </div>
+            <p class="text-gray-600 text-sm mb-4">Build the spine. Everything else attaches to this.</p>
+            <div class="grid md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <div class="font-semibold text-gray-700 mb-2">Deliverables</div>
+                <ul class="space-y-1 text-gray-600 list-disc ml-4">
+                  <li>Orchestrator Agent with intent classification</li>
+                  <li>Identity Model schema + onboarding form</li>
+                  <li>SQLite-backed memory store</li>
+                  <li>Calendar &amp; Nudge Agent (Tasks 1, 4)</li>
+                  <li>FastAPI backend + basic chat UI</li>
+                  <li>M365 auth integration (msgraph)</li>
+                </ul>
+              </div>
+              <div>
+                <div class="font-semibold text-gray-700 mb-2">Success Criteria</div>
+                <ul class="space-y-1 text-gray-600 list-disc ml-4">
+                  <li>Sauravi can say "Schedule a meeting with X" and it works</li>
+                  <li>Weekly nudge lands in Teams at 9AM Monday</li>
+                  <li>Identity model populated with real data</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 2 -->
+        <div class="relative">
+          <div class="absolute -left-14 top-0 w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg z-10">2</div>
+          <div class="bg-white rounded-2xl border-2 border-yellow-300 shadow p-6">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-yellow-800 text-lg">🎯 Goals, Work, &amp; Content Agents</h3>
+              <span class="bg-yellow-100 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full">Weeks 4–6</span>
+            </div>
+            <p class="text-gray-600 text-sm mb-4">Connect to Jira, Confluence, and the slide-creator. Sauravi's work becomes visible.</p>
+            <div class="grid md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <div class="font-semibold text-gray-700 mb-2">Deliverables</div>
+                <ul class="space-y-1 text-gray-600 list-disc ml-4">
+                  <li>Goals, Work &amp; Admin Agent (Tasks 5, 6, 8)</li>
+                  <li>Content &amp; Evangelism Agent (Task 7)</li>
+                  <li>Jira ↔ Goals sync pipeline</li>
+                  <li>Automated weekly status report (HTML + Teams)</li>
+                  <li>Slide deck generation from goals data</li>
+                </ul>
+              </div>
+              <div>
+                <div class="font-semibold text-gray-700 mb-2">Success Criteria</div>
+                <ul class="space-y-1 text-gray-600 list-disc ml-4">
+                  <li>Weekly status report auto-generated on Fridays</li>
+                  <li>Executive deck created from one prompt</li>
+                  <li>Goal health dashboard = green/amber/red</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 3 -->
+        <div class="relative">
+          <div class="absolute -left-14 top-0 w-12 h-12 bg-green-700 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg z-10">3</div>
+          <div class="bg-white rounded-2xl border-2 border-green-300 shadow p-6">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-green-800 text-lg">🎭 Persona, Coaching &amp; Strategy Agents</h3>
+              <span class="bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">Weeks 7–10</span>
+            </div>
+            <p class="text-gray-600 text-sm mb-4">The identity model gets used. Sauravi's voice starts appearing. High human-oversight phase.</p>
+            <div class="grid md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <div class="font-semibold text-gray-700 mb-2">Deliverables</div>
+                <ul class="space-y-1 text-gray-600 list-disc ml-4">
+                  <li>Persona &amp; Representation Agent (Task 3)</li>
+                  <li>Learning &amp; Coaching Agent (Tasks 9, 10)</li>
+                  <li>Strategy Intel Agent (Task 11)</li>
+                  <li>Email draft review UI (approve/edit/reject)</li>
+                  <li>Weekly learning digest</li>
+                  <li>Strategy monitoring from Confluence + email</li>
+                </ul>
+              </div>
+              <div>
+                <div class="font-semibold text-gray-700 mb-2">Success Criteria</div>
+                <ul class="space-y-1 text-gray-600 list-disc ml-4">
+                  <li>3 approved draft responses per week without edits</li>
+                  <li>Learning nudge accepted and clicked through</li>
+                  <li>Strategy summary lands &lt; 1h after all-hands</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 4 -->
+        <div class="relative">
+          <div class="absolute -left-14 top-0 w-12 h-12 bg-purple-700 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg z-10">4</div>
+          <div class="bg-white rounded-2xl border-2 border-purple-300 shadow p-6">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-purple-800 text-lg">✈️ Travel + Autonomy Expansion</h3>
+              <span class="bg-purple-100 text-purple-800 text-xs font-semibold px-3 py-1 rounded-full">Weeks 11–14</span>
+            </div>
+            <p class="text-gray-600 text-sm mb-4">Travel agent goes live. Trust has been established in earlier phases — start expanding autonomy carefully.</p>
+            <div class="grid md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <div class="font-semibold text-gray-700 mb-2">Deliverables</div>
+                <ul class="space-y-1 text-gray-600 list-disc ml-4">
+                  <li>Travel Planner Agent (Task 2)</li>
+                  <li>the expense system API integration</li>
+                  <li>Expanded nudge patterns (external stakeholders)</li>
+                  <li>Trust calibration dashboard (what can twin do autonomously?)</li>
+                  <li>Full E2E Playwright test suite</li>
+                </ul>
+              </div>
+              <div>
+                <div class="font-semibold text-gray-700 mb-2">Success Criteria</div>
+                <ul class="space-y-1 text-gray-600 list-disc ml-4">
+                  <li>Travel itinerary planned end-to-end from one prompt</li>
+                  <li>Autonomy score &gt; 70% (twin handles without edits)</li>
+                  <li>Zero unauthorized sends / actions in 2-week window</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════ TAB: RISKS ═══════════ -->
+    <div id="tab-risks" class="tab-content py-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-6">⚠️ Risks &amp; Mitigations</h2>
+      <div class="space-y-4">
+
+        <div class="bg-white rounded-2xl border border-red-300 shadow p-5">
+          <div class="flex items-start gap-4">
+            <span class="risk-badge-high text-xs font-bold px-2 py-1 rounded-full mt-0.5">HIGH</span>
+            <div>
+              <div class="font-bold text-gray-800 mb-1">🚨 Identity Drift — Twin says something Sauravi would never say</div>
+              <p class="text-sm text-gray-600 mb-2">The persona model drifts or hallucinates a position Sauravi doesn't hold, causing reputational risk.</p>
+              <div class="bg-red-50 rounded-lg p-3 text-sm"><strong>Mitigation:</strong> Always human-in-loop for outbound comms in Phase 1–2. Explicit "Hard NOs" list in identity model. Confidence score threshold — below 80% → escalate. Monthly identity model review session with Sauravi.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-red-300 shadow p-5">
+          <div class="flex items-start gap-4">
+            <span class="risk-badge-high text-xs font-bold px-2 py-1 rounded-full mt-0.5">HIGH</span>
+            <div>
+              <div class="font-bold text-gray-800 mb-1">🔒 Data Privacy — PII in prompts sent to LLM</div>
+              <p class="text-sm text-gray-600 mb-2">Calendar events, emails, and meeting notes may contain sensitive PII or confidential info sent to InternalLLMGateway LLM.</p>
+              <div class="bg-red-50 rounded-lg p-3 text-sm"><strong>Mitigation:</strong> PII scrubbing layer before any LLM call. Use InternalLLMGateway (Walmart-internal LLM) — no data leaves the company. No external APIs for sensitive content. Audit log all LLM calls.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-yellow-300 shadow p-5">
+          <div class="flex items-start gap-4">
+            <span class="risk-badge-medium text-xs font-bold px-2 py-1 rounded-full mt-0.5">MEDIUM</span>
+            <div>
+              <div class="font-bold text-gray-800 mb-1">🔄 Agent Loop / Runaway Execution</div>
+              <p class="text-sm text-gray-600 mb-2">Orchestrator and domain agents enter a loop, making repeated API calls (calendar spam, email floods).</p>
+              <div class="bg-yellow-50 rounded-lg p-3 text-sm"><strong>Mitigation:</strong> Max tool calls per session (circuit breaker). Idempotency keys on all write operations. Dry-run mode for all agents before Phase 1 launch. Rate limiting on msgraph calls.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-yellow-300 shadow p-5">
+          <div class="flex items-start gap-4">
+            <span class="risk-badge-medium text-xs font-bold px-2 py-1 rounded-full mt-0.5">MEDIUM</span>
+            <div>
+              <div class="font-bold text-gray-800 mb-1">📅 Calendar Authority — Who has the final say?</div>
+              <p class="text-sm text-gray-600 mb-2">Twin schedules a meeting that conflicts with a manually-managed calendar event or a "do not schedule" period.</p>
+              <div class="bg-yellow-50 rounded-lg p-3 text-sm"><strong>Mitigation:</strong> Read calendar before any write. "Focus blocks" explicitly marked as off-limits. Confirmation step before sending any invite. Cancel/undo action always available.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-green-300 shadow p-5">
+          <div class="flex items-start gap-4">
+            <span class="risk-badge-low text-xs font-bold px-2 py-1 rounded-full mt-0.5">LOW</span>
+            <div>
+              <div class="font-bold text-gray-800 mb-1">🤝 Stakeholder Trust — "Is this really Sauravi?"</div>
+              <p class="text-sm text-gray-600 mb-2">Colleagues don't know they're interacting with an AI agent and later feel deceived.</p>
+              <div class="bg-green-50 rounded-lg p-3 text-sm"><strong>Mitigation:</strong> All externally-sent comms include a disclosure footer: "Drafted with AI assistance, reviewed by Sauravi." Opt-in transparency. Internal comms can be labeled "via Digital Twin."</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-green-300 shadow p-5">
+          <div class="flex items-start gap-4">
+            <span class="risk-badge-low text-xs font-bold px-2 py-1 rounded-full mt-0.5">LOW</span>
+            <div>
+              <div class="font-bold text-gray-800 mb-1">🏗️ Integration Brittleness — M365/Jira API changes</div>
+              <p class="text-sm text-gray-600 mb-2">Upstream API changes break the agent silently.</p>
+              <div class="bg-green-50 rounded-lg p-3 text-sm"><strong>Mitigation:</strong> Use existing AgentRunner sub-agents as abstraction layer — they own API compatibility. Playwright E2E tests for critical flows. Alerting when agents return errors above threshold.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════ TAB: MATRIX ═══════════ -->
+    <div id="tab-matrix" class="tab-content py-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-6">📊 Capability → Agent → Tool Matrix</h2>
+      <div class="bg-white rounded-2xl border border-gray-200 shadow overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-blue-700 text-white">
+              <tr>
+                <th class="px-4 py-3 text-left font-semibold">#</th>
+                <th class="px-4 py-3 text-left font-semibold">Capability</th>
+                <th class="px-4 py-3 text-left font-semibold">Role</th>
+                <th class="px-4 py-3 text-left font-semibold">Domain Agent</th>
+                <th class="px-4 py-3 text-left font-semibold">Sub-Agents / Tools</th>
+                <th class="px-4 py-3 text-left font-semibold">Phase</th>
+                <th class="px-4 py-3 text-left font-semibold">Autonomy</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <tr class="hover:bg-blue-50">
+                <td class="px-4 py-3 font-bold text-blue-700">1</td>
+                <td class="px-4 py-3">Schedule &amp; manage calendar</td>
+                <td class="px-4 py-3"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs">Virtual EA</span></td>
+                <td class="px-4 py-3">📅 Calendar &amp; Nudge</td>
+                <td class="px-4 py-3 text-gray-500">msgraph · meeting-room-agent · scheduler</td>
+                <td class="px-4 py-3"><span class="bg-blue-700 text-white text-xs px-2 py-0.5 rounded">Phase 1</span></td>
+                <td class="px-4 py-3 text-green-700 font-semibold">High ✅</td>
+              </tr>
+              <tr class="hover:bg-blue-50 bg-gray-50">
+                <td class="px-4 py-3 font-bold text-purple-700">2</td>
+                <td class="px-4 py-3">Plan travel</td>
+                <td class="px-4 py-3"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs">Virtual EA</span></td>
+                <td class="px-4 py-3">✈️ Travel Planner</td>
+                <td class="px-4 py-3 text-gray-500">msgraph · the expense system API · InternalLLMGateway LLM</td>
+                <td class="px-4 py-3"><span class="bg-purple-700 text-white text-xs px-2 py-0.5 rounded">Phase 4</span></td>
+                <td class="px-4 py-3 text-yellow-700 font-semibold">Medium 👁️</td>
+              </tr>
+              <tr class="hover:bg-blue-50">
+                <td class="px-4 py-3 font-bold text-yellow-700">3</td>
+                <td class="px-4 py-3">Represent Sauravi when absent</td>
+                <td class="px-4 py-3"><span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full text-xs">Virtual Me</span></td>
+                <td class="px-4 py-3">🎭 Persona &amp; Rep.</td>
+                <td class="px-4 py-3 text-gray-500">InternalLLMGateway LLM · msgraph · identity model</td>
+                <td class="px-4 py-3"><span class="bg-green-700 text-white text-xs px-2 py-0.5 rounded">Phase 3</span></td>
+                <td class="px-4 py-3 text-red-600 font-semibold">Low ✋</td>
+              </tr>
+              <tr class="hover:bg-blue-50 bg-gray-50">
+                <td class="px-4 py-3 font-bold text-blue-700">4</td>
+                <td class="px-4 py-3">Nudge &amp; remind</td>
+                <td class="px-4 py-3"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs">Virtual EA</span></td>
+                <td class="px-4 py-3">📅 Calendar &amp; Nudge</td>
+                <td class="px-4 py-3 text-gray-500">scheduler-agent · msgraph · Teams webhooks</td>
+                <td class="px-4 py-3"><span class="bg-blue-700 text-white text-xs px-2 py-0.5 rounded">Phase 1</span></td>
+                <td class="px-4 py-3 text-green-700 font-semibold">High ✅</td>
+              </tr>
+              <tr class="hover:bg-blue-50">
+                <td class="px-4 py-3 font-bold text-green-700">5</td>
+                <td class="px-4 py-3">Plan work &amp; goals</td>
+                <td class="px-4 py-3"><span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full text-xs">Virtual Me</span></td>
+                <td class="px-4 py-3">🎯 Goals &amp; Work</td>
+                <td class="px-4 py-3 text-gray-500">jira · tpm · planning-agent · confluence</td>
+                <td class="px-4 py-3"><span class="bg-yellow-600 text-white text-xs px-2 py-0.5 rounded">Phase 2</span></td>
+                <td class="px-4 py-3 text-yellow-700 font-semibold">Medium 👁️</td>
+              </tr>
+              <tr class="hover:bg-blue-50 bg-gray-50">
+                <td class="px-4 py-3 font-bold text-green-700">6</td>
+                <td class="px-4 py-3">Handle administrative tasks</td>
+                <td class="px-4 py-3"><span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full text-xs">Virtual Me</span></td>
+                <td class="px-4 py-3">🎯 Goals &amp; Work</td>
+                <td class="px-4 py-3 text-gray-500">confluence · msgraph · jira</td>
+                <td class="px-4 py-3"><span class="bg-yellow-600 text-white text-xs px-2 py-0.5 rounded">Phase 2</span></td>
+                <td class="px-4 py-3 text-yellow-700 font-semibold">Medium 👁️</td>
+              </tr>
+              <tr class="hover:bg-blue-50">
+                <td class="px-4 py-3 font-bold text-orange-700">7</td>
+                <td class="px-4 py-3">Create evangelism collateral</td>
+                <td class="px-4 py-3"><span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full text-xs">Virtual Me</span></td>
+                <td class="px-4 py-3">📢 Content &amp; Evang.</td>
+                <td class="px-4 py-3 text-gray-500">slide-creator · share-puppy · confluence · bigquery</td>
+                <td class="px-4 py-3"><span class="bg-yellow-600 text-white text-xs px-2 py-0.5 rounded">Phase 2</span></td>
+                <td class="px-4 py-3 text-green-700 font-semibold">High ✅</td>
+              </tr>
+              <tr class="hover:bg-blue-50 bg-gray-50">
+                <td class="px-4 py-3 font-bold text-green-700">8</td>
+                <td class="px-4 py-3">Track work &amp; goals</td>
+                <td class="px-4 py-3"><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded-full text-xs">Virtual Mgr</span></td>
+                <td class="px-4 py-3">🎯 Goals &amp; Work</td>
+                <td class="px-4 py-3 text-gray-500">jira · bigquery-explorer · tpm</td>
+                <td class="px-4 py-3"><span class="bg-yellow-600 text-white text-xs px-2 py-0.5 rounded">Phase 2</span></td>
+                <td class="px-4 py-3 text-green-700 font-semibold">High ✅</td>
+              </tr>
+              <tr class="hover:bg-blue-50">
+                <td class="px-4 py-3 font-bold text-teal-700">9</td>
+                <td class="px-4 py-3">Plan learning</td>
+                <td class="px-4 py-3"><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded-full text-xs">Virtual Mgr</span></td>
+                <td class="px-4 py-3">🧭 Learning &amp; Strategy</td>
+                <td class="px-4 py-3 text-gray-500">InternalLLMGateway LLM · confluence · scheduler</td>
+                <td class="px-4 py-3"><span class="bg-green-700 text-white text-xs px-2 py-0.5 rounded">Phase 3</span></td>
+                <td class="px-4 py-3 text-green-700 font-semibold">High ✅</td>
+              </tr>
+              <tr class="hover:bg-blue-50 bg-gray-50">
+                <td class="px-4 py-3 font-bold text-teal-700">10</td>
+                <td class="px-4 py-3">Recommend &amp; coach</td>
+                <td class="px-4 py-3"><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded-full text-xs">Virtual Mgr</span></td>
+                <td class="px-4 py-3">🧭 Learning &amp; Strategy</td>
+                <td class="px-4 py-3 text-gray-500">InternalLLMGateway LLM · bigquery · jira (gap analysis)</td>
+                <td class="px-4 py-3"><span class="bg-green-700 text-white text-xs px-2 py-0.5 rounded">Phase 3</span></td>
+                <td class="px-4 py-3 text-yellow-700 font-semibold">Medium 👁️</td>
+              </tr>
+              <tr class="hover:bg-blue-50">
+                <td class="px-4 py-3 font-bold text-teal-700">11</td>
+                <td class="px-4 py-3">Strategy &amp; top-down intel</td>
+                <td class="px-4 py-3"><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded-full text-xs">Virtual Mgr</span></td>
+                <td class="px-4 py-3">🧭 Learning &amp; Strategy</td>
+                <td class="px-4 py-3 text-gray-500">confluence · msgraph · InternalLLMGateway LLM</td>
+                <td class="px-4 py-3"><span class="bg-green-700 text-white text-xs px-2 py-0.5 rounded">Phase 3</span></td>
+                <td class="px-4 py-3 text-green-700 font-semibold">High ✅</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="bg-gray-50 px-6 py-3 flex gap-6 text-xs text-gray-500 border-t">
+          <span>✅ High = runs autonomously with logging</span>
+          <span>👁️ Medium = drafts, Sauravi reviews</span>
+          <span>✋ Low = always requires explicit approval</span>
+        </div>
+      </div>
+
+      <!-- Chart: Capability coverage by Phase -->
+      <div class="mt-8 bg-white rounded-2xl border border-gray-200 shadow p-6">
+        <h3 class="font-bold text-gray-800 mb-4">📈 Capability Coverage by Phase</h3>
+        <div style="height:280px; position:relative;">
+          <canvas id="phaseChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ TAB: MEETING AVATAR ═══════════ -->
+    <div id="tab-avatar" class="tab-content py-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">🧬 Meeting Avatar — Can my Digital Twin sit in a meeting instead of me?</h2>
+      <p class="text-gray-500 text-sm mb-6">Short answer: <strong class="text-green-700">Not far-fetched at all.</strong> The industry is actively building exactly this, at multiple layers of fidelity. Here's the full picture.</p>
+
+      <!-- Reality check banner -->
+      <div class="bg-gradient-to-r from-green-700 to-teal-700 text-white rounded-2xl p-6 mb-8">
+        <div class="flex items-start gap-4">
+          <span class="text-4xl">✅</span>
+          <div>
+            <h3 class="font-bold text-xl mb-2">This is happening RIGHT NOW in the industry</h3>
+            <ul class="text-green-100 space-y-1 text-sm">
+              <li>🪟 <strong>Microsoft Copilot Agents in Teams</strong> — already attend meetings, summarize, and respond to chat queries autonomously</li>
+              <li>🎥 <strong>Tavus &amp; HeyGen Realtime</strong> — real-time video avatar APIs that respond in your voice and likeness during live calls</li>
+              <li>🤖 <strong>Gemini in Google Meet</strong> — takes notes, answers questions, joins on your behalf in async mode</li>
+              <li>🔊 <strong>OpenAI Realtime API</strong> — sub-300ms voice conversation agents; already deployed in enterprise call centers</li>
+              <li>🏢 <strong>Microsoft Mesh</strong> — avatar-based meeting presence for when you can't attend physically or virtually</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fidelity ladder -->
+      <h3 class="font-bold text-gray-800 text-lg mb-4">📶 The Fidelity Ladder — 5 Levels of Meeting Presence</h3>
+      <div class="space-y-4 mb-8">
+
+        <div class="bg-white rounded-2xl border-l-4 border-gray-400 shadow p-5 flex gap-5 items-start">
+          <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-700 shrink-0">L1</div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between mb-1">
+              <div class="font-bold text-gray-800">Silent Observer &amp; Scribe</div>
+              <span class="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full font-semibold">✅ Available NOW</span>
+            </div>
+            <p class="text-sm text-gray-600 mb-2">Twin joins the meeting as a bot. Listens to full transcript via Teams Graph API. Takes structured notes, extracts action items, maps everything to Sauravi's goals. Sends a "here's what happened and what matters to you" digest after.</p>
+            <div class="flex flex-wrap gap-2 text-xs">
+              <span class="bg-gray-100 px-2 py-1 rounded">Teams Graph API / transcription</span>
+              <span class="bg-gray-100 px-2 py-1 rounded">msgraph sub-agent</span>
+              <span class="bg-gray-100 px-2 py-1 rounded">InternalLLMGateway LLM summarization</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border-l-4 border-blue-400 shadow p-5 flex gap-5 items-start">
+          <div class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center font-bold text-blue-800 shrink-0">L2</div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between mb-1">
+              <div class="font-bold text-gray-800">Chat Presence — "Sauravi's Agent" in the Thread</div>
+              <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full font-semibold">🔧 Build in Phase 3</span>
+            </div>
+            <p class="text-sm text-gray-600 mb-2">Twin posts in the Teams meeting chat on Sauravi's behalf. Answers factual questions it's confident about (from identity model). Flags questions it can't answer for Sauravi to address async. Clearly labeled "via Sauravi's Agent 🤖".</p>
+            <div class="flex flex-wrap gap-2 text-xs">
+              <span class="bg-blue-50 px-2 py-1 rounded">Teams Chat API</span>
+              <span class="bg-blue-50 px-2 py-1 rounded">Confidence threshold &gt;85%</span>
+              <span class="bg-blue-50 px-2 py-1 rounded">Real-time LLM inference</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border-l-4 border-yellow-400 shadow p-5 flex gap-5 items-start">
+          <div class="w-10 h-10 rounded-full bg-yellow-200 flex items-center justify-center font-bold text-yellow-800 shrink-0">L3</div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between mb-1">
+              <div class="font-bold text-gray-800">Voice Agent — Sauravi's Voice in the Call</div>
+              <span class="bg-yellow-100 text-yellow-800 text-xs px-3 py-1 rounded-full font-semibold">🔭 Phase 5 / 2027</span>
+            </div>
+            <p class="text-sm text-gray-600 mb-2">A voice-cloned agent can speak in Sauravi's voice during the call. Handles routine check-ins, status updates, questions in her domain. Uses real-time STT → LLM → TTS pipeline. Hot escalation: pings real Sauravi via phone if something unexpected arises.</p>
+            <div class="flex flex-wrap gap-2 text-xs">
+              <span class="bg-yellow-50 px-2 py-1 rounded">Voice clone (ElevenLabs / internal)</span>
+              <span class="bg-yellow-50 px-2 py-1 rounded">Real-time STT/TTS</span>
+              <span class="bg-yellow-50 px-2 py-1 rounded">&lt;500ms latency target</span>
+              <span class="bg-yellow-50 px-2 py-1 rounded">Disclosure required by Walmart policy</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border-l-4 border-orange-400 shadow p-5 flex gap-5 items-start">
+          <div class="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center font-bold text-orange-800 shrink-0">L4</div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between mb-1">
+              <div class="font-bold text-gray-800">Video Avatar — Sauravi on Screen</div>
+              <span class="bg-orange-100 text-orange-800 text-xs px-3 py-1 rounded-full font-semibold">🔭 Phase 6 / 2027-28</span>
+            </div>
+            <p class="text-sm text-gray-600 mb-2">A photorealistic video avatar of Sauravi appears in the meeting window. Speaks, nods, gestures. Built on Tavus Conversational Video Interface (CVI) or equivalent enterprise-grade API. Full disclosure banner shown to all participants — no deception, ever.</p>
+            <div class="flex flex-wrap gap-2 text-xs">
+              <span class="bg-orange-50 px-2 py-1 rounded">Tavus CVI / HeyGen Realtime API</span>
+              <span class="bg-orange-50 px-2 py-1 rounded">Microsoft Teams SDK injection</span>
+              <span class="bg-orange-50 px-2 py-1 rounded">Ethics review required</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border-l-4 border-purple-400 shadow p-5 flex gap-5 items-start">
+          <div class="w-10 h-10 rounded-full bg-purple-200 flex items-center justify-center font-bold text-purple-800 shrink-0">L5</div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between mb-1">
+              <div class="font-bold text-gray-800">Full Autonomous Meeting Agent</div>
+              <span class="bg-purple-100 text-purple-800 text-xs px-3 py-1 rounded-full font-semibold">🌌 The Horizon / 2029+</span>
+            </div>
+            <p class="text-sm text-gray-600 mb-2">Twin attends, participates fully, makes decisions within its authority, commits to action items, and files a comprehensive debrief for Sauravi. Human Sauravi reviews and ratifies async. This is the end-game — a true peer-level digital representative.</p>
+            <div class="flex flex-wrap gap-2 text-xs">
+              <span class="bg-purple-50 px-2 py-1 rounded">Requires established trust history</span>
+              <span class="bg-purple-50 px-2 py-1 rounded">Governance framework</span>
+              <span class="bg-purple-50 px-2 py-1 rounded">Organization-wide policy</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- What we build first -->
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="bg-blue-700 text-white rounded-2xl p-6">
+          <h3 class="font-bold text-lg mb-3">🏗️ What We Build in THIS Blueprint</h3>
+          <p class="text-blue-200 text-sm mb-4">We target L1 (Observer/Scribe) in Phase 1 and L2 (Chat Presence) in Phase 3. This is the right speed — trust is earned before autonomy is granted.</p>
+          <ul class="space-y-2 text-sm">
+            <li class="flex gap-2"><span class="text-yellow-300">→</span> Teams bot that joins, transcribes, summarizes</li>
+            <li class="flex gap-2"><span class="text-yellow-300">→</span> Post-meeting digest in Sauravi's inbox within 5min</li>
+            <li class="flex gap-2"><span class="text-yellow-300">→</span> Action item extraction → auto-creates Jira tickets</li>
+            <li class="flex gap-2"><span class="text-yellow-300">→</span> Chat presence in Phase 3 with explicit agent label</li>
+            <li class="flex gap-2"><span class="text-yellow-300">→</span> L3–L5 logged as future phases after trust established</li>
+          </ul>
+        </div>
+        <div class="bg-white rounded-2xl border border-red-200 p-6">
+          <h3 class="font-bold text-red-800 text-lg mb-3">⚠️ Non-Negotiable Guardrails</h3>
+          <ul class="space-y-3 text-sm">
+            <li class="flex gap-2 items-start"><span class="text-red-500 mt-0.5">🚫</span><div><strong>Always disclosed:</strong> All participants must know an AI agent is present. No stealth presence, ever.</div></li>
+            <li class="flex gap-2 items-start"><span class="text-red-500 mt-0.5">🚫</span><div><strong>No surprise commitments:</strong> Twin cannot commit Sauravi to new work, deadlines, or resources without explicit pre-authorization.</div></li>
+            <li class="flex gap-2 items-start"><span class="text-red-500 mt-0.5">🚫</span><div><strong>Hot escalation always live:</strong> A real-time ping to Sauravi's phone is always available. She can take over in &lt;60 seconds.</div></li>
+            <li class="flex gap-2 items-start"><span class="text-red-500 mt-0.5">🚫</span><div><strong>Sensitive topics escalate:</strong> Compensation, performance, layoffs, legal — hard-coded to redirect to human Sauravi immediately.</div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ TAB: INDUSTRY VISION ═══════════ -->
+    <div id="tab-vision" class="tab-content py-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">🔭 Industry Vision — What else should be in this blueprint?</h2>
+      <p class="text-gray-500 text-sm mb-6">The agent landscape is moving fast. Here are the trends that are directly relevant to Sauravi's Digital Twin — not just hype, but concrete architectural implications for us.</p>
+
+      <div class="grid md:grid-cols-2 gap-5 mb-8">
+
+        <div class="bg-white rounded-2xl border border-blue-200 shadow p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-3xl">🔌</span>
+            <div>
+              <div class="font-bold text-blue-800">Model Context Protocol (MCP)</div>
+              <div class="text-xs text-blue-600">Anthropic open standard · Already in Claude, Copilot, Cursor</div>
+            </div>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">MCP is becoming the USB-C of agent tool connections — a single open protocol for agents to connect to any tool, API, or data source. Instead of custom integrations per agent, every tool publishes an MCP server and any agent can use it.</p>
+          <div class="bg-blue-50 rounded-lg p-3 text-xs text-blue-800"><strong>Blueprint Implication:</strong> Design our Integration Hub to be MCP-compatible from day one. This means our Calendar, Jira, and Confluence connections work with ANY future agent framework — we don't get locked in.</div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-purple-200 shadow p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-3xl">🤝</span>
+            <div>
+              <div class="font-bold text-purple-800">Agent-to-Agent (A2A) Protocols</div>
+              <div class="text-xs text-purple-600">Google A2A · Emerging W3C standards</div>
+            </div>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">The next frontier: Sauravi's agent talks directly to a colleague's agent to negotiate meeting times, exchange context, and coordinate work — without either human being in the loop. Google just released the A2A spec; Microsoft is building toward it.</p>
+          <div class="bg-purple-50 rounded-lg p-3 text-xs text-purple-800"><strong>Blueprint Implication:</strong> Our Orchestrator should expose an A2A-compatible endpoint so future Walmart agent ecosystems can communicate with Sauravi's twin peer-to-peer.</div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-green-200 shadow p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-3xl">💻</span>
+            <div>
+              <div class="font-bold text-green-800">Computer-Using Agents</div>
+              <div class="text-xs text-green-600">Anthropic Computer Use · OpenAI Operator · Microsoft UFO</div>
+            </div>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">Agents that can literally click, type, and navigate any application — including ones with no API. Submit expense reports in the expense system by navigating the UI. Fill out HR forms. Pull data from legacy systems that have no modern API.</p>
+          <div class="bg-green-50 rounded-lg p-3 text-xs text-green-800"><strong>Blueprint Implication:</strong> Admin Agent (Task 6) should be designed to optionally use computer-use for systems without APIs. Plan for a "headless browser agent" module in Phase 4.</div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-yellow-200 shadow p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-3xl">🔊</span>
+            <div>
+              <div class="font-bold text-yellow-800">Voice-First &amp; Ambient Interfaces</div>
+              <div class="text-xs text-yellow-600">OpenAI Realtime · Hume AI · Gemini Live</div>
+            </div>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">Real-time voice agents with &lt;300ms latency are here. You can have a natural spoken conversation with an agent while driving, walking, or between meetings. The interface shifts from chat to ambient voice companion.</p>
+          <div class="bg-yellow-50 rounded-lg p-3 text-xs text-yellow-800"><strong>Blueprint Implication:</strong> Add a "Voice Mode" to the Orchestrator in Phase 4. Sauravi can dictate tasks, ask questions, get briefings — hands-free. Low effort, massive productivity multiplier.</div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-teal-200 shadow p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-3xl">🌊</span>
+            <div>
+              <div class="font-bold text-teal-800">Proactive Ambient Intelligence</div>
+              <div class="text-xs text-teal-600">Moving from reactive to proactive AI</div>
+            </div>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">The next-gen agent doesn't wait to be asked. It monitors signals — calendar load, overdue action items, strategy shifts, team morale indicators — and surfaces insights before Sauravi even knows she needs them. Like a chief of staff who's always watching the radar.</p>
+          <div class="bg-teal-50 rounded-lg p-3 text-xs text-teal-800"><strong>Blueprint Implication:</strong> Add a "Radar Mode" agent loop that runs every 4 hours, scans for anomalies and opportunities, and decides whether to nudge Sauravi. Most nudges are silent — only actionable ones surface.</div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-red-200 shadow p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-3xl">🔒</span>
+            <div>
+              <div class="font-bold text-red-800">Personal Data Sovereignty &amp; On-Device AI</div>
+              <div class="text-xs text-red-600">Apple Intelligence · Windows Recall · Local LLMs</div>
+            </div>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">The most sensitive parts of Sauravi's identity model (private thoughts, draft communications, sensitive decisions) could be processed on-device or in a private enclave — never touching a cloud LLM. Apple Intelligence is pioneering Private Cloud Compute for exactly this.</p>
+          <div class="bg-red-50 rounded-lg p-3 text-xs text-red-800"><strong>Blueprint Implication:</strong> Tiered data classification for the identity model. Sensitive layer runs on-device or in Walmart's private enclave. Less-sensitive data goes to InternalLLMGateway LLM. Architect this boundary clearly.</div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-orange-200 shadow p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-3xl">🧬</span>
+            <div>
+              <div class="font-bold text-orange-800">Persona Fine-Tuning &amp; Continuous Learning</div>
+              <div class="text-xs text-orange-600">RLHF on personal data · Personalized LLMs</div>
+            </div>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">Rather than just prompting a general LLM with Sauravi's style guide, fine-tune a smaller model (Llama 3 / Mistral) on her actual writing corpus — emails, docs, meeting notes. The result is a model that genuinely writes like her, not just approximately like her.</p>
+          <div class="bg-orange-50 rounded-lg p-3 text-xs text-orange-800"><strong>Blueprint Implication:</strong> After 3 months of usage, collect approved outputs and fine-tune a Sauravi-specific adapter. Integrate with InternalLLMGateway via LoRA / adapter layer. This is Phase 5 territory.</div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-gray-200 shadow p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-3xl">🏢</span>
+            <div>
+              <div class="font-bold text-gray-800">Org-Wide Agent Ecosystem</div>
+              <div class="text-xs text-gray-600">Microsoft 365 Copilot Agents · Salesforce Agentforce</div>
+            </div>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">The endgame isn't one digital twin — it's an organization of them. Sauravi's twin coordinates with her team's twins, her manager's twin, and Walmart's enterprise agent infrastructure. Meetings between agents happen at millisecond speed. Humans ratify at human speed.</p>
+          <div class="bg-gray-50 rounded-lg p-3 text-xs text-gray-800"><strong>Blueprint Implication:</strong> Design with org-wide interop in mind. Use standard formats (A2A, MCP). Contribute Sauravi's Digital Twin architecture as the reference model for the broader Walmart AI agent program.</div>
+        </div>
+
+      </div>
+
+      <!-- Ideas table -->
+      <div class="bg-white rounded-2xl border border-gray-200 shadow overflow-hidden">
+        <div class="bg-gray-800 text-white px-6 py-3 font-bold">💡 New Capabilities to Consider Adding to the Blueprint</div>
+        <table class="w-full text-sm">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 text-left">Idea</th>
+              <th class="px-4 py-2 text-left">What it does</th>
+              <th class="px-4 py-2 text-left">Priority</th>
+              <th class="px-4 py-2 text-left">Phase</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr class="hover:bg-gray-50"><td class="px-4 py-3 font-semibold">🎙️ Voice Interface</td><td class="px-4 py-3 text-gray-600">Talk to your twin hands-free, on the go</td><td class="px-4 py-3"><span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">High</span></td><td class="px-4 py-3 text-gray-500">4</td></tr>
+            <tr class="hover:bg-gray-50 bg-gray-50"><td class="px-4 py-3 font-semibold">📡 Radar Mode</td><td class="px-4 py-3 text-gray-600">Proactive signal monitoring — surface anomalies before asked</td><td class="px-4 py-3"><span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">High</span></td><td class="px-4 py-3 text-gray-500">3</td></tr>
+            <tr class="hover:bg-gray-50"><td class="px-4 py-3 font-semibold">🤝 A2A Endpoint</td><td class="px-4 py-3 text-gray-600">Other agents can talk to Sauravi's twin directly</td><td class="px-4 py-3"><span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Med</span></td><td class="px-4 py-3 text-gray-500">3</td></tr>
+            <tr class="hover:bg-gray-50 bg-gray-50"><td class="px-4 py-3 font-semibold">🔌 MCP Hub</td><td class="px-4 py-3 text-gray-600">Standardized tool connections — any future tool just works</td><td class="px-4 py-3"><span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Med</span></td><td class="px-4 py-3 text-gray-500">2</td></tr>
+            <tr class="hover:bg-gray-50"><td class="px-4 py-3 font-semibold">🖥️ Computer-Use Admin</td><td class="px-4 py-3 text-gray-600">Click through the expense system / HR forms with no API</td><td class="px-4 py-3"><span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Med</span></td><td class="px-4 py-3 text-gray-500">4</td></tr>
+            <tr class="hover:bg-gray-50 bg-gray-50"><td class="px-4 py-3 font-semibold">📶 L1 Meeting Bot</td><td class="px-4 py-3 text-gray-600">Silent observer → transcript → action items → Jira tickets</td><td class="px-4 py-3"><span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">High</span></td><td class="px-4 py-3 text-gray-500">1</td></tr>
+            <tr class="hover:bg-gray-50"><td class="px-4 py-3 font-semibold">🧬 Persona Fine-tune</td><td class="px-4 py-3 text-gray-600">Model trained on Sauravi's actual writing — genuinely her voice</td><td class="px-4 py-3"><span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Future</span></td><td class="px-4 py-3 text-gray-500">5</td></tr>
+            <tr class="hover:bg-gray-50 bg-gray-50"><td class="px-4 py-3 font-semibold">📊 Team Twin Coord.</td><td class="px-4 py-3 text-gray-600">Sauravi's twin + team's twins = org-level intelligence</td><td class="px-4 py-3"><span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Future</span></td><td class="px-4 py-3 text-gray-500">6</td></tr>
+            <tr class="hover:bg-gray-50"><td class="px-4 py-3 font-semibold">🎥 Video Avatar</td><td class="px-4 py-3 text-gray-600">Sauravi's face + voice in a live meeting via Tavus/HeyGen</td><td class="px-4 py-3"><span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Future</span></td><td class="px-4 py-3 text-gray-500">6</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- end tabs -->
+
+  <!-- ═══════════════════ BIO SECTION ═══════════════════ -->
+  <section class="max-w-6xl mx-auto px-6 py-10">
+    <div class="bg-gradient-to-br from-gray-900 to-blue-950 text-white rounded-3xl overflow-hidden shadow-2xl">
+
+      <div class="bg-gradient-to-r from-yellow-400 to-yellow-500 px-8 py-4 flex items-center gap-3">
+        <span class="text-2xl">👤</span>
+        <div>
+          <div class="font-bold text-gray-900 text-lg">The Human Behind the Twin</div>
+          <div class="text-yellow-900 text-xs">The identity model this Digital Twin is built to represent and amplify</div>
+        </div>
+      </div>
+
+      <div class="p-8 space-y-8">
+
+        <!-- Identity + Summary -->
+        <div class="grid md:grid-cols-3 gap-8 items-start">
+
+          <!-- Avatar + Name -->
+          <div class="md:col-span-1 flex flex-col items-start">
+            <div class="w-28 h-28 rounded-2xl overflow-hidden shadow-xl mb-4 border-2 border-yellow-400">
+              <img src="assets/digital-twin-image-2.jpg" alt="Sauravi" class="w-full h-full object-cover" style="object-position:center top"/>
+            </div>
+            <h2 class="text-2xl font-bold text-white mb-1">Sauravi</h2>
+            <p class="text-yellow-300 text-sm font-bold mb-1">Global Product Leader</p>
+            <p class="text-blue-300 text-sm mb-4">Walmart · eCommerce Platform</p>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-2 text-gray-300"><span class="text-yellow-400">💼</span> 22 years · Product, TPM &amp; Engineering</div>
+              <div class="flex items-center gap-2 text-gray-300"><span class="text-yellow-400">🌍</span> US · India</div>
+              <div class="flex items-center gap-2 text-gray-300"><span class="text-yellow-400">🔗</span> <a href="https://linkedin.com/in/sauravirai" class="text-blue-400 underline">linkedin.com/in/sauravirai</a></div>
+            </div>
+          </div>
+
+          <!-- Summary — NOW focused -->
+          <div class="md:col-span-2">
+            <h3 class="text-yellow-400 font-bold text-sm uppercase tracking-wider mb-3">What She Does Now</h3>
+            <p class="text-gray-300 text-sm leading-relaxed mb-4">
+              Sauravi leads the <strong class="text-white">Identity, Profile and Omnichannel Accounts platform for Walmart. globally</strong> — the enterprise gateway spanning identity, user understanding, access, and trust across click-and-brick. She is building the foundation for <strong class="text-white">AI agentic shopping</strong>, enabling controlled, trusted access to Walmart through customer accounts, and deepening "Know Your Customer" capabilities across all markets.
+            </p>
+            <p class="text-gray-300 text-sm leading-relaxed">
+              A <strong class="text-white">servant leader</strong> known for combining deep technical roots with strategic product thinking — she operates at global scale across US, India, MX, and CA, bringing a principle-led, ROI-anchored, evidence-first approach to every problem she takes on.
+            </p>
+
+            <!-- Quote -->
+            <div class="mt-5 border-l-4 border-yellow-400 pl-4">
+              <p class="text-gray-300 text-sm italic leading-relaxed">
+                &ldquo;You can count on me to be curious &mdash; and I lean on you to teach me. I hope to take us into a future in which we find new ways to delight customers, grow the business and tackle challenges that come in the way.&rdquo;
+              </p>
+              <p class="text-gray-500 text-xs mt-1">— Sauravi, intro email · still true, 5 years later</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Linear Career Arc -->
+        <div>
+          <h3 class="text-yellow-400 font-bold text-sm uppercase tracking-wider mb-5">📅 Career Arc</h3>
+          <div class="relative">
+            <!-- Vertical spine -->
+            <div class="absolute left-3.5 top-2 bottom-2 w-0.5 bg-white/10 rounded-full"></div>
+            <div class="space-y-0">
+
+              <!-- Current -->
+              <div class="relative flex gap-5 pb-5">
+                <div class="flex-shrink-0 w-7 h-7 rounded-full bg-yellow-400 border-2 border-yellow-300 flex items-center justify-center z-10 mt-0.5">
+                  <div class="w-2 h-2 rounded-full bg-yellow-900"></div>
+                </div>
+                <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-4 flex-1 text-xs">
+                  <div class="text-yellow-300 font-bold mb-0.5">Jan 2026 – Present · Walmart (Global)</div>
+                  <div class="text-white font-semibold text-sm mb-1">Global Product Leader — Identity, Profile &amp; Omnichannel Accounts</div>
+                  <div class="text-gray-400 leading-relaxed">Enterprise identity &amp; trust platform · AI agentic shopping enablement · Unified 80%+ MX users under SSO · Address standardisation saving $XXXK/month · "Know Your Customer" depth expansion across all markets</div>
+                </div>
+              </div>
+
+              <!-- Sr Director -->
+              <div class="relative flex gap-5 pb-5">
+                <div class="flex-shrink-0 w-7 h-7 rounded-full bg-blue-500 border-2 border-blue-400 flex items-center justify-center z-10 mt-0.5">
+                  <div class="w-2 h-2 rounded-full bg-white"></div>
+                </div>
+                <div class="bg-blue-400/10 border border-blue-400/20 rounded-xl p-4 flex-1 text-xs">
+                  <div class="text-blue-300 font-bold mb-0.5">Aug 2021 – Jan 2026 · Walmart Bengaluru, Bengaluru</div>
+                  <div class="text-white font-semibold text-sm mb-1">Senior Director — Walmart International eCommerce</div>
+                  <div class="text-gray-400 leading-relaxed">Led a large global product organisation · multi-year platform investment · Portfolio: Accounts, Care, AdTech, i18n · 80+ language translation platform · the platform tech modernisation (build once, use everywhere) · multi-million-dollar Ads revenue &amp; GMV lift</div>
+                </div>
+              </div>
+
+              <!-- Amazon -->
+              <div class="relative flex gap-5 pb-5">
+                <div class="flex-shrink-0 w-7 h-7 rounded-full bg-white/20 border-2 border-white/30 flex items-center justify-center z-10 mt-0.5">
+                  <div class="w-2 h-2 rounded-full bg-white/60"></div>
+                </div>
+                <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex-1 text-xs">
+                  <div class="text-gray-400 font-bold mb-0.5">Aug 2016 – Aug 2021 · Amazon (India &amp; USA)</div>
+                  <div class="text-white font-semibold text-sm mb-1">PM Tech Lead — Alexa Smart Home · Amazon Business · Alexa Data Services</div>
+                  <div class="text-gray-500 leading-relaxed">Launched Alexa Smart Home in India (Echo &amp; Echo Plus V1, Oct 2017) · Global B2B homepage owner at Amazon Business · ADS network optimisation for ML training data quality · VP-level reporting throughout</div>
+                </div>
+              </div>
+
+              <!-- Foundation -->
+              <div class="relative flex gap-5">
+                <div class="flex-shrink-0 w-7 h-7 rounded-full bg-white/10 border-2 border-white/20 flex items-center justify-center z-10 mt-0.5">
+                  <div class="w-2 h-2 rounded-full bg-white/30"></div>
+                </div>
+                <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex-1 text-xs">
+                  <div class="text-gray-500 font-bold mb-0.5">2003 – 2016 · Foundation — Oracle → King County Gov → Microsoft → Nordstrom</div>
+                  <div class="text-white/70 font-semibold text-sm mb-1">Developer → Tech Lead → TPM → PM</div>
+                  <div class="text-gray-600 leading-relaxed">Oracle: developer → tech lead (patentable BPEL/SOA innovation) · King County: multi-year Oracle EBS Finance transformation with a large team · Microsoft Dynamics: Public Sector PM · Nordstrom: TPM III, AWS cloud RESTful customer services</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Personality + Twin Constraints -->
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <h3 class="text-yellow-400 font-bold text-sm uppercase tracking-wider mb-3">🧠 Personality Profile (Hogan</h3>
+            <div class="space-y-2">
+              <div class="flex gap-3 items-start bg-white/5 rounded-lg p-3 text-sm">
+                <span class="text-yellow-300">🔬</span>
+                <div><strong class="text-white">Evidence-driven</strong> <span class="text-gray-500 text-xs">(Hogan scale)</span><br/><span class="text-gray-400">Instinctively reaches for data before deciding. Scientific rigour in product thinking.</span></div>
+              </div>
+              <div class="flex gap-3 items-start bg-white/5 rounded-lg p-3 text-sm">
+                <span class="text-yellow-300">💼</span>
+                <div><strong class="text-white">ROI-anchored</strong> <span class="text-gray-500 text-xs">(Hogan scale)</span><br/><span class="text-gray-400">Every initiative connects back to business value. Vision without ROI is just a story.</span></div>
+              </div>
+              <div class="flex gap-3 items-start bg-white/5 rounded-lg p-3 text-sm">
+                <span class="text-yellow-300">📌</span>
+                <div><strong class="text-white">Principle-led before plan-led</strong> <span class="text-gray-500 text-xs">(Hogan scale)</span><br/><span class="text-gray-400">"Prioritise customer trust over engagement." Consistent across every strategic doc.</span></div>
+              </div>
+              <div class="flex gap-3 items-start bg-white/5 rounded-lg p-3 text-sm">
+                <span class="text-yellow-300">⚡</span>
+                <div><strong class="text-white">Speed over perfection</strong> <span class="text-gray-500 text-xs">(Her own written guiding principle)</span><br/><span class="text-gray-400">"Fail fast and often." In her team's operating model — not just a mantra.</span></div>
+              </div>
+              <div class="flex gap-3 items-start bg-white/5 rounded-lg p-3 text-sm">
+                <span class="text-yellow-300">🤝</span>
+                <div><strong class="text-white">Humble confidence</strong> <span class="text-gray-500 text-xs">(Observed)</span><br/><span class="text-gray-400">"I lean on you to teach me." Admits gaps openly AND sets direction clearly.</span></div>
+              </div>
+              <div class="flex gap-3 items-start bg-white/5 rounded-lg p-3 text-sm">
+                <span class="text-yellow-300">📏</span>
+                <div><strong class="text-white">Metric-native</strong> <span class="text-gray-500 text-xs">(Hogan scale)</span><br/><span class="text-gray-400">Numbers anchor every claim. High follow-through. Disciplined commitments.</span></div>
+              </div>
+              <div class="flex gap-3 items-start bg-white/5 rounded-lg p-3 text-sm">
+                <span class="text-yellow-300">🌏</span>
+                <div><strong class="text-white">Globally wired operator</strong> <span class="text-gray-500 text-xs">(Career evidence)</span><br/><span class="text-gray-400">Owns accountability across US / India / MX / CA simultaneously — not sequentially.</span></div>
+              </div>
+              <div class="flex gap-3 items-start bg-white/5 rounded-lg p-3 text-sm">
+                <span class="text-yellow-300">🛡️</span>
+                <div><strong class="text-white">Privacy-principled</strong> <span class="text-gray-500 text-xs">(Observed: this session)</span><br/><span class="text-gray-400">"Ask me first." Non-negotiable instinct — flags risk before sharing.</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-yellow-400 font-bold text-sm uppercase tracking-wider mb-3">🤖 What Her Twin Must Embody</h3>
+            <div class="space-y-2 text-sm">
+              <div class="bg-blue-900/50 border border-blue-700/50 rounded-xl p-3">
+                <div class="font-bold text-white mb-1">🎯 Direct &amp; Decisive</div>
+                <div class="text-gray-400">Clear positions, no waffling. Knows when to decide vs. escalate. Doesn't over-qualify.</div>
+              </div>
+              <div class="bg-blue-900/50 border border-blue-700/50 rounded-xl p-3">
+                <div class="font-bold text-white mb-1">🌐 Globally Wired</div>
+                <div class="text-gray-400">Never assumes one market's solution = all markets. Holds US, India, MX, CA context simultaneously.</div>
+              </div>
+              <div class="bg-blue-900/50 border border-blue-700/50 rounded-xl p-3">
+                <div class="font-bold text-white mb-1">👥 Servant Leader Energy</div>
+                <div class="text-gray-400">Leads by enabling others. Warmth without softness. Outcome-obsessed, not ego-driven.</div>
+              </div>
+              <div class="bg-blue-900/50 border border-blue-700/50 rounded-xl p-3">
+                <div class="font-bold text-white mb-1">🛡️ Customer Trust Above All</div>
+                <div class="text-gray-400">Will not trade customer trust for short-term engagement. Hard constraint — non-negotiable.</div>
+              </div>
+              <div class="bg-blue-900/50 border border-blue-700/50 rounded-xl p-3">
+                <div class="font-bold text-white mb-1">🔬 Evidence Before Opinion</div>
+                <div class="text-gray-400">The twin cites data, never just asserts. Sauravi's voice always grounds claims in evidence.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-gray-600 text-xs border-t border-white/10 pt-4">📝 <em>Sources: sauravi-resume.docx (resume), Hogan 2023 (HPI + MVPI only — derailers excluded by request), Intro.docx, observed writing patterns. This is a living document — the north star for everything the Digital Twin says and does.</em></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ FOOTER ═══════════════════ -->
+  <footer class="bg-gray-900 text-gray-400 px-8 py-8 mt-8">
+    <div class="max-w-6xl mx-auto">
+      <div class="grid md:grid-cols-3 gap-6 mb-6 text-sm">
+        <div>
+          <div class="text-white font-bold mb-2">📋 Next Steps</div>
+          <ol class="space-y-1 list-decimal ml-4">
+            <li>Review this blueprint with Sauravi</li>
+            <li>Decide on Phase 1 scope (Calendar + Nudges)</li>
+            <li>Set up identity model onboarding session</li>
+            <li>Spin up FastAPI project skeleton</li>
+            <li>Wire msgraph + meeting-room-agent</li>
+          </ol>
+        </div>
+        <div>
+          <div class="text-white font-bold mb-2">🛠️ Tech Stack Decision</div>
+          <ul class="space-y-1 list-disc ml-4">
+            <li>Backend: FastAPI + Pydantic AI</li>
+            <li>LLM: InternalLLMGateway (Walmart internal)</li>
+            <li>Memory: SQLite → BQ for analytics</li>
+            <li>UI: HTMX + Tailwind (fast, accessible)</li>
+            <li>Agents: AgentRunner sub-agents as tools</li>
+            <li>Auth: M365 OAuth via msgraph agent</li>
+          </ul>
+        </div>
+        <div>
+          <div class="text-white font-bold mb-2">🔑 Key Principle</div>
+          <p class="text-gray-400 leading-relaxed">
+            Build trust incrementally. The twin earns autonomy — it doesn't start with it. Every phase ends with a trust calibration: what can the twin do solo? Only when trust is high does autonomy expand. Human Sauravi is always the ground truth.
+          </p>
+        </div>
+      </div>
+      <div class="border-t border-gray-700 pt-4 flex items-center justify-between text-xs">
+        <span>Sauravi's Digital Twin Blueprint · v2.0 · Generated by PersonalAgent 🐶 · April 2026</span>
+        <span class="text-yellow-400">🐾 Crafted with care. YAGNI. DRY. Zen of Python.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function showTab(id) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + id).classList.add('active');
+      // activate matching button
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        const labels = { arch:'Architecture', agents:'Agents', flows:'Flows', memory:'Memory', phases:'Phases', risks:'Risks', matrix:'Matrix', avatar:'Avatar', vision:'Vision' };
+        if (b.textContent.includes(labels[id] || id)) b.classList.add('active');
+      });
+      // re-init chart if matrix tab
+      if (id === 'matrix') initChart();
+    }
+
+    function toggleDetail(id) {
+      const el = document.getElementById(id);
+      el.classList.toggle('open');
+    }
+
+    function highlightAgent(id) {
+      setTimeout(() => {
+        const el = document.getElementById('agent-' + id);
+        if (el) { el.scrollIntoView({behavior:'smooth', block:'center'}); el.style.outline = '3px solid #ffc220'; setTimeout(() => el.style.outline = '', 2000); }
+      }, 100);
+    }
+
+    let chartInited = false;
+    function initChart() {
+      if (chartInited) return;
+      chartInited = true;
+      const ctx = document.getElementById('phaseChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Phase 1\n(Wks 1-3)', 'Phase 2\n(Wks 4-6)', 'Phase 3\n(Wks 7-10)', 'Phase 4\n(Wks 11-14)'],
+          datasets: [
+            { label: 'Capabilities Added', data: [2, 4, 3, 2], backgroundColor: '#0053e2', borderRadius: 6 },
+            { label: 'Cumulative Total', data: [2, 6, 9, 11], backgroundColor: '#ffc22044', borderColor: '#ffc220', borderWidth: 2, type: 'line', tension: 0.4, pointBackgroundColor: '#ffc220', pointRadius: 6 }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom' }, tooltip: { mode: 'index' } },
+          scales: { y: { beginAtZero: true, max: 12, title: { display: true, text: 'Capabilities' } } }
+        }
+      });
+    }
+
+    // Init chart if matrix is shown on load (it's not, but just in case)
+    document.addEventListener('DOMContentLoaded', () => {
+      if (document.getElementById('tab-matrix').classList.contains('active')) initChart();
+    });
+  </script>
+</body>
+</html>

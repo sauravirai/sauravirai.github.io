@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Tools Adoption Dashboard · Methodology Demo</title>
+  <meta name="description" content="A team-level AI tools adoption tracker — methodology demo with synthetic data." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    html { scroll-behavior: smooth; }
+    *:focus-visible { outline: 3px solid #ffc220; outline-offset: 2px; border-radius: 4px; }
+    .chart-wrap { height: 280px; }
+    .badge { @apply inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-full; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+
+  <!-- ════════ Sanitization banner ════════ -->
+  <div role="status" class="bg-amber-100 border-b-2 border-amber-300 text-amber-900">
+    <div class="max-w-6xl mx-auto px-4 py-3 text-sm flex items-start gap-2">
+      <span class="text-lg leading-none" aria-hidden="true">📋</span>
+      <p>
+        <strong>Methodology demo with synthetic data.</strong>
+        Real names, titles, reporting lines, and per-person usage numbers from the original
+        live dashboard (which tracked many colleagues across 6 AI tools) have been replaced
+        with fictional placeholders. The layout, charts, sections, and methodology shown
+        here mirror the production dashboard exactly.
+      </p>
+    </div>
+  </div>
+
+  <!-- ════════ Header ════════ -->
+  <header class="bg-gradient-to-br from-blue-700 to-indigo-700 text-white">
+    <div class="max-w-6xl mx-auto px-4 py-10 sm:py-14">
+      <p class="text-blue-200 text-sm font-semibold uppercase tracking-wider">AI Tools Adoption Tracker</p>
+      <h1 class="mt-2 text-3xl sm:text-4xl font-extrabold">🐶 Team AI Tools Report</h1>
+      <p class="mt-3 text-lg text-blue-100">
+        Team snapshot · 90-day window · ~80 contributors · 6 AI tools tracked
+      </p>
+      <div class="mt-6 flex flex-wrap gap-2">
+        <span class="bg-white/15 backdrop-blur border border-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-full">📅 Refreshed daily</span>
+        <span class="bg-white/15 backdrop-blur border border-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-full">🤖 Auto-published via scheduled agent</span>
+        <span class="bg-white/15 backdrop-blur border border-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-full">🔁 v73 (heavily iterated)</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-10 space-y-12">
+
+    <!-- ════════ KPI strip ════════ -->
+    <section aria-label="Top-line metrics">
+      <h2 class="text-xl font-bold text-slate-900 mb-4">Top-line metrics</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <article class="bg-white rounded-xl border border-slate-200 p-5">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">People tracked</p>
+          <p class="mt-2 text-3xl font-extrabold text-blue-700">~80</p>
+          <p class="mt-1 text-xs text-slate-500">across 4 org depths</p>
+        </article>
+        <article class="bg-white rounded-xl border border-slate-200 p-5">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Active users (90d)</p>
+          <p class="mt-2 text-3xl font-extrabold text-blue-700">62</p>
+          <p class="mt-1 text-xs text-green-600 font-semibold">78% adoption</p>
+        </article>
+        <article class="bg-white rounded-xl border border-slate-200 p-5">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tokens consumed</p>
+          <p class="mt-2 text-3xl font-extrabold text-blue-700">4.2B</p>
+          <p class="mt-1 text-xs text-slate-500">across all models</p>
+        </article>
+        <article class="bg-white rounded-xl border border-slate-200 p-5">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tools tracked</p>
+          <p class="mt-2 text-3xl font-extrabold text-blue-700">6</p>
+          <p class="mt-1 text-xs text-slate-500">CLI + IDE + chat</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ════════ Chart row ════════ -->
+    <section aria-label="Usage visualizations" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <article class="bg-white rounded-xl border border-slate-200 p-5">
+        <h3 class="font-bold text-slate-900">Model mix (by tokens)</h3>
+        <p class="text-xs text-slate-500 mb-3">Distribution across the LLMs the team uses</p>
+        <div class="chart-wrap"><canvas id="modelMix" aria-label="Donut chart of model mix"></canvas></div>
+      </article>
+      <article class="bg-white rounded-xl border border-slate-200 p-5">
+        <h3 class="font-bold text-slate-900">Active users by week</h3>
+        <p class="text-xs text-slate-500 mb-3">Weekly unique users over 12 weeks</p>
+        <div class="chart-wrap"><canvas id="weeklyActive" aria-label="Line chart of weekly active users"></canvas></div>
+      </article>
+    </section>
+
+    <!-- ════════ The 7 sections ════════ -->
+    <section aria-label="Per-group breakdowns">
+      <h2 class="text-xl font-bold text-slate-900 mb-1">Group breakdowns</h2>
+      <p class="text-sm text-slate-500 mb-4">The live dashboard renders one leaderboard per group. The original tracked 7 groups; one sample shown below.</p>
+
+      <!-- Tabs (visual only — original used real tab switching) -->
+      <div class="flex flex-wrap gap-1 border-b border-slate-200">
+        <button class="px-3 py-2 text-sm font-semibold text-blue-700 border-b-2 border-blue-700">Me</button>
+        <button class="px-3 py-2 text-sm font-medium text-slate-500">Senior Leader+ Network</button>
+        <button class="px-3 py-2 text-sm font-medium text-slate-500">Office PM Benchmark</button>
+        <button class="px-3 py-2 text-sm font-medium text-slate-500">Senior Leader Group</button>
+        <button class="px-3 py-2 text-sm font-medium text-slate-500">Team</button>
+        <button class="px-3 py-2 text-sm font-medium text-slate-500">Full Team</button>
+        <button class="px-3 py-2 text-sm font-medium text-slate-500">Licensed AI Tools Coverage</button>
+      </div>
+
+      <!-- Sample leaderboard table -->
+      <div class="mt-4 bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-50 border-b border-slate-200">
+            <tr class="text-left text-xs uppercase tracking-wider text-slate-500">
+              <th class="px-4 py-3">Depth</th>
+              <th class="px-4 py-3">Person</th>
+              <th class="px-4 py-3">Role (placeholder)</th>
+              <th class="px-4 py-3">Reports to</th>
+              <th class="px-4 py-3 text-right">Requests ↓</th>
+              <th class="px-4 py-3 text-right">Tokens</th>
+              <th class="px-4 py-3">Status</th>
+              <th class="px-4 py-3">Streak · Rank</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <tr>
+              <td class="px-4 py-3 text-slate-400">d2</td>
+              <td class="px-4 py-3 font-semibold">[Person A]</td>
+              <td class="px-4 py-3 text-slate-600">[Senior Director]</td>
+              <td class="px-4 py-3 text-xs text-slate-500">via [Manager X]</td>
+              <td class="px-4 py-3 text-right font-mono">10,977</td>
+              <td class="px-4 py-3 text-right font-mono">813.96M</td>
+              <td class="px-4 py-3"><span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-0.5 rounded-full">Power user</span></td>
+              <td class="px-4 py-3 text-xs">🔥 12w · #1</td>
+            </tr>
+            <tr class="bg-blue-50/40">
+              <td class="px-4 py-3 text-slate-400">d2</td>
+              <td class="px-4 py-3 font-semibold">[You]</td>
+              <td class="px-4 py-3 text-slate-600">[Your Role]</td>
+              <td class="px-4 py-3 text-xs text-slate-500">via [Your Manager]</td>
+              <td class="px-4 py-3 text-right font-mono">11,441</td>
+              <td class="px-4 py-3 text-right font-mono">680.74M</td>
+              <td class="px-4 py-3"><span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-0.5 rounded-full">Power user</span></td>
+              <td class="px-4 py-3 text-xs">🔥 12w · #2</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 text-slate-400">d2</td>
+              <td class="px-4 py-3 font-semibold">[Person B]</td>
+              <td class="px-4 py-3 text-slate-600">[Senior Director, Product]</td>
+              <td class="px-4 py-3 text-xs text-slate-500">via [Manager X]</td>
+              <td class="px-4 py-3 text-right font-mono">10,099</td>
+              <td class="px-4 py-3 text-right font-mono">516.56M</td>
+              <td class="px-4 py-3"><span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-0.5 rounded-full">Power user</span></td>
+              <td class="px-4 py-3 text-xs">🔥 11w · #3</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 text-slate-400">d3</td>
+              <td class="px-4 py-3 font-semibold">[Person C]</td>
+              <td class="px-4 py-3 text-slate-600">[Director, Product]</td>
+              <td class="px-4 py-3 text-xs text-slate-500">via [Person B]</td>
+              <td class="px-4 py-3 text-right font-mono">6,228</td>
+              <td class="px-4 py-3 text-right font-mono">348.50M</td>
+              <td class="px-4 py-3"><span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-0.5 rounded-full">Steady</span></td>
+              <td class="px-4 py-3 text-xs">🔥 8w · #7</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 text-slate-400">d3</td>
+              <td class="px-4 py-3 font-semibold">[Person D]</td>
+              <td class="px-4 py-3 text-slate-600">[Eng Manager]</td>
+              <td class="px-4 py-3 text-xs text-slate-500">via [Manager Y]</td>
+              <td class="px-4 py-3 text-right font-mono">1,876</td>
+              <td class="px-4 py-3 text-right font-mono">112.30M</td>
+              <td class="px-4 py-3"><span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-0.5 rounded-full">Steady</span></td>
+              <td class="px-4 py-3 text-xs">🔥 4w · #18</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 text-slate-400">d4</td>
+              <td class="px-4 py-3 font-semibold">[Person E]</td>
+              <td class="px-4 py-3 text-slate-600">[Senior PM]</td>
+              <td class="px-4 py-3 text-xs text-slate-500">via [Person C]</td>
+              <td class="px-4 py-3 text-right font-mono">412</td>
+              <td class="px-4 py-3 text-right font-mono">24.80M</td>
+              <td class="px-4 py-3"><span class="bg-slate-200 text-slate-700 text-xs font-bold px-2 py-0.5 rounded-full">Light</span></td>
+              <td class="px-4 py-3 text-xs">— · #44</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 text-slate-400">d4</td>
+              <td class="px-4 py-3 font-semibold">[Person F]</td>
+              <td class="px-4 py-3 text-slate-600">a PM</td>
+              <td class="px-4 py-3 text-xs text-slate-500">via [Person C]</td>
+              <td class="px-4 py-3 text-right font-mono text-slate-400">0</td>
+              <td class="px-4 py-3 text-right font-mono text-slate-400">0</td>
+              <td class="px-4 py-3"><span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-0.5 rounded-full">Inactive</span></td>
+              <td class="px-4 py-3 text-xs text-slate-400">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-3 text-xs text-slate-500 italic">
+        💡 The original live table had ~80 rows across 4 reporting depths (d1–d4), grouped into the 7 tabs above.
+      </p>
+    </section>
+
+    <!-- ════════ Licensed tools coverage ════════ -->
+    <section aria-label="Licensed AI tools coverage">
+      <h2 class="text-xl font-bold text-slate-900 mb-1">Licensed AI Tools Coverage</h2>
+      <p class="text-sm text-slate-500 mb-4">Tracks which licensed AI tools each person has activated and is actively using.</p>
+      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-50 border-b border-slate-200">
+            <tr class="text-left text-xs uppercase tracking-wider text-slate-500">
+              <th class="px-4 py-3">Tool</th>
+              <th class="px-4 py-3">Type</th>
+              <th class="px-4 py-3 text-right">Licensed</th>
+              <th class="px-4 py-3 text-right">Active 90d</th>
+              <th class="px-4 py-3 text-right">Adoption</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <tr>
+              <td class="px-4 py-3 font-semibold">[AI CLI Tool A]</td>
+              <td class="px-4 py-3 text-slate-600">Terminal coding agent</td>
+              <td class="px-4 py-3 text-right font-mono">80</td>
+              <td class="px-4 py-3 text-right font-mono">62</td>
+              <td class="px-4 py-3 text-right"><span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-0.5 rounded-full">78%</span></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 font-semibold">[IDE Copilot]</td>
+              <td class="px-4 py-3 text-slate-600">IDE code completion</td>
+              <td class="px-4 py-3 text-right font-mono">80</td>
+              <td class="px-4 py-3 text-right font-mono">71</td>
+              <td class="px-4 py-3 text-right"><span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-0.5 rounded-full">89%</span></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 font-semibold">[Chat Assistant B]</td>
+              <td class="px-4 py-3 text-slate-600">Browser chat</td>
+              <td class="px-4 py-3 text-right font-mono">80</td>
+              <td class="px-4 py-3 text-right font-mono">58</td>
+              <td class="px-4 py-3 text-right"><span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-0.5 rounded-full">73%</span></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 font-semibold">[Enterprise LLM Gateway]</td>
+              <td class="px-4 py-3 text-slate-600">API + chat</td>
+              <td class="px-4 py-3 text-right font-mono">80</td>
+              <td class="px-4 py-3 text-right font-mono">34</td>
+              <td class="px-4 py-3 text-right"><span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-0.5 rounded-full">43%</span></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 font-semibold">[Agent Builder Studio]</td>
+              <td class="px-4 py-3 text-slate-600">Low-code agents</td>
+              <td class="px-4 py-3 text-right font-mono">80</td>
+              <td class="px-4 py-3 text-right font-mono">11</td>
+              <td class="px-4 py-3 text-right"><span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-0.5 rounded-full">14%</span></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 font-semibold">[Voice Avatar Tool]</td>
+              <td class="px-4 py-3 text-slate-600">Avatar video</td>
+              <td class="px-4 py-3 text-right font-mono">80</td>
+              <td class="px-4 py-3 text-right font-mono">5</td>
+              <td class="px-4 py-3 text-right"><span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-0.5 rounded-full">6%</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ════════ Methodology ════════ -->
+    <section aria-label="Methodology" class="bg-white rounded-xl border border-slate-200 p-6">
+      <h2 class="text-xl font-bold text-slate-900 mb-3">🛠️ Methodology</h2>
+      <ol class="list-decimal pl-5 space-y-2 text-sm text-slate-700">
+        <li><strong>Data sources.</strong> Per-tool usage APIs (request counts, token counts, model names) + org reporting graph from the company directory.</li>
+        <li><strong>Roll-up.</strong> Each person's raw usage joined with their reporting depth (d1–d4 below me) and their direct manager.</li>
+        <li><strong>Grouping.</strong> Renders 7 tabs (Me / Senior Leader+ Network / Office PM Benchmark / Senior Leader Group / Team / Full Team / Licensed Tools Coverage), each a filtered leaderboard.</li>
+        <li><strong>Status buckets.</strong> Power user / Steady / Light / Inactive — based on weekly request count thresholds.</li>
+        <li><strong>Streaks.</strong> Consecutive weeks of activity, surfaced as a 🔥 badge to drive friendly competition.</li>
+        <li><strong>Publishing.</strong> A scheduled agent regenerates this HTML daily, drops it into a shared location, and pings the team channel on material rank changes.</li>
+      </ol>
+
+      <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+          <strong class="block text-blue-900 mb-1">Why it works</strong>
+          <p class="text-blue-800">Visibility + light gamification surface the natural champions, who then mentor lighter users. Adoption rose from ~40% to ~78% over the iteration cycle.</p>
+        </div>
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-3">
+          <strong class="block text-amber-900 mb-1">What I'd change</strong>
+          <p class="text-amber-800">Add per-tool quality signals (not just volume) — high-token, low-value usage shouldn't beat high-leverage agent runs.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ Footer link back to portfolio ════════ -->
+    <footer class="text-center text-xs text-slate-500 pt-4">
+      <a href="./index.html" class="text-blue-600 hover:underline font-semibold">← Back to portfolio</a>
+    </footer>
+
+  </main>
+
+  <script>
+    // ─── Model mix donut ───
+    new Chart(document.getElementById('modelMix'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Claude Sonnet 4', 'Claude Opus 4', 'GPT-5', 'Other models'],
+        datasets: [{
+          data: [64, 28, 6, 2],
+          backgroundColor: ['#0053e2', '#3b82f6', '#ffc220', '#cbd5e1'],
+          borderWidth: 0,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom', labels: { font: { size: 12 } } } },
+      },
+    });
+
+    // ─── Weekly active users line ───
+    new Chart(document.getElementById('weeklyActive'), {
+      type: 'line',
+      data: {
+        labels: ['W1','W2','W3','W4','W5','W6','W7','W8','W9','W10','W11','W12'],
+        datasets: [{
+          label: 'Active users',
+          data: [32, 38, 41, 44, 47, 51, 55, 58, 60, 62, 61, 62],
+          borderColor: '#0053e2',
+          backgroundColor: 'rgba(0, 83, 226, 0.1)',
+          fill: true,
+          tension: 0.35,
+          pointRadius: 4,
+          pointBackgroundColor: '#0053e2',
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true, suggestedMax: 80, ticks: { stepSize: 20 } },
+        },
+        plugins: { legend: { display: false } },
+      },
+    });
+  </script>
+</body>
+</html>
