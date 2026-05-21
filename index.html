@@ -3,409 +3,409 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sauravi Rai · Product Executive · Bengaluru</title>
-  <meta name="description" content="Sauravi Rai — Senior Director, Product Management. 23 years across Walmart, Amazon, Microsoft, Oracle. Customer engagement, identity, monetization, internationalization at global scale." />
-  <meta property="og:title" content="Sauravi Rai · Product Executive" />
-  <meta property="og:description" content="23 years building product platforms at global scale. Walmart, Amazon, Microsoft, Oracle." />
-  <meta property="og:type" content="website" />
+  <title>Sauravi Rai · Product Leader</title>
+  <meta name="description" content="Sauravi Rai — product leader, 23 years across Walmart, Amazon, Microsoft. 12+ domains: identity, care, adtech, membership, marketplace, i18n, GenAI, and more." />
+  <meta property="og:title" content="Sauravi Rai · Product Leader" />
+  <meta property="og:description" content="23 years building product platforms. 12+ domains. 5 companies." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            wmblue: { 100: "#0053e2", 110: "#003fb1", 130: "#002a82" },
-            spark:  { 100: "#ffc220", 10:  "#fffaeb", 140: "#995213" },
-            ink:    { 5: "#fafbfc", 50: "#f5f7fa", 100: "#e5e9f0", 160: "#1c2530" }
-          },
-          fontFamily: {
-            display: ['"Inter Tight"', 'ui-sans-serif', 'system-ui', 'sans-serif']
+            blue:  { 600: "#0053e2", 700: "#003fb1", 800: "#002a82" },
+            gold:  { 400: "#ffc220", 50: "#fffaeb", 800: "#995213" },
+            gray:  { 25: "#fafbfc", 50: "#f5f7fa", 100: "#e5e9f0", 200: "#d0d5dd", 500: "#667085", 900: "#1c2530" }
           }
         }
       }
     };
   </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; color: #1c2530; }
-    h1, h2, h3, h4 { font-family: 'Inter Tight', ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.01em; }
-    .section-pad { @apply max-w-6xl mx-auto px-6 py-16; }
-    .pill { @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold; }
-    .underline-link { @apply text-wmblue-100 hover:text-wmblue-110 underline underline-offset-2; }
-    .card { @apply bg-white rounded-2xl border border-ink-100; }
-    @media (prefers-reduced-motion: no-preference) {
-      .fade-in { animation: fadeIn .6s ease-out both; }
-      @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-    }
+    body { font-family: 'Inter', system-ui, sans-serif; color: #1c2530; -webkit-font-smoothing: antialiased; }
+    .container { max-width: 960px; margin: 0 auto; padding-left: 1.5rem; padding-right: 1.5rem; }
+    .fade { opacity: 0; transform: translateY(12px); transition: opacity .5s, transform .5s; }
+    .fade.show { opacity: 1; transform: none; }
   </style>
 </head>
-<body class="bg-ink-5">
+<body class="bg-white">
 
   <!-- NAV -->
-  <nav class="sticky top-0 z-20 bg-white/85 backdrop-blur border-b border-ink-100">
-    <div class="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between text-sm">
-      <a href="#top" class="font-bold text-ink-160">Sauravi Rai</a>
-      <div class="flex gap-5 text-ink-160/80">
-        <a href="#about" class="hover:text-wmblue-100">About</a>
-        <a href="#impact" class="hover:text-wmblue-100">Impact</a>
-        <a href="#experience" class="hover:text-wmblue-100">Experience</a>
-        <a href="#approach" class="hover:text-wmblue-100">Approach</a>
-        <a href="#contact" class="hover:text-wmblue-100">Contact</a>
+  <nav class="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+    <div class="container flex items-center justify-between h-14">
+      <a href="#" class="text-sm font-semibold text-gray-900">Sauravi Rai</a>
+      <div class="flex items-center gap-8 text-sm text-gray-500">
+        <a href="#about" class="hover:text-gray-900 transition hidden sm:block">About</a>
+        <a href="#writing" class="hover:text-gray-900 transition hidden sm:block">Writing</a>
+        <a href="#impact" class="hover:text-gray-900 transition hidden sm:block">Impact</a>
+        <a href="#experience" class="hover:text-gray-900 transition hidden sm:block">Experience</a>
+        <a href="mailto:sauravi.rai@gmail.com" class="bg-blue-600 text-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-blue-700 transition">Get in touch</a>
       </div>
     </div>
   </nav>
 
   <!-- HERO -->
-  <header id="top" class="relative overflow-hidden bg-gradient-to-br from-wmblue-130 via-wmblue-110 to-wmblue-100 text-white">
-    <div class="absolute inset-0 opacity-20" aria-hidden="true">
-      <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="g" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="white"/></pattern></defs><rect width="100%" height="100%" fill="url(%23g)"/></svg>
-    </div>
-    <div class="relative section-pad fade-in">
-      <p class="text-spark-100 font-semibold tracking-widest uppercase text-sm">Product Executive · Bengaluru · Open to opportunities</p>
-      <h1 class="text-5xl md:text-6xl font-extrabold mt-3 leading-tight">Sauravi Rai</h1>
-      <p class="text-2xl md:text-3xl font-semibold mt-4 text-white/90">Building product platforms that scale across markets.</p>
-      <p class="text-lg mt-6 max-w-3xl text-white/85">
-        23 years across <strong>Walmart, Amazon, Microsoft, Nordstrom, Oracle</strong> — turning customer identity,
-        monetization, and internationalization into reusable enterprise capabilities. Known for servant leadership,
-        building high-performance teams, and shipping with measurable business impact.
+  <header class="border-b border-gray-100">
+    <div class="container py-14 md:py-16">
+      <p class="text-sm font-medium text-blue-600 tracking-wide">Product Leader · Bengaluru</p>
+      <h1 class="text-4xl md:text-5xl font-bold mt-3 tracking-tight leading-tight text-gray-900">Sauravi Rai</h1>
+      <p class="text-lg text-gray-500 mt-3 max-w-2xl leading-relaxed">
+        23 years building product platforms at Walmart, Amazon, and Microsoft.
+        At Walmart alone: identity, customer care, adtech, post-purchase, membership,
+        marketplace, trust &amp; fraud, i18n, and GenAI &mdash; each a distinct domain
+        with its own P&amp;L, stakeholders, and technical stack.
       </p>
-      <div class="mt-8 flex flex-wrap gap-3">
-        <a href="mailto:sauravi.rai@gmail.com" class="bg-white text-wmblue-100 hover:bg-spark-10 px-5 py-2.5 rounded-lg font-semibold transition">Get in touch</a>
-        <a href="https://www.linkedin.com/in/sauravirai/" target="_blank" rel="noopener" class="bg-wmblue-130 hover:bg-black/30 border border-white/30 text-white px-5 py-2.5 rounded-lg font-semibold transition">LinkedIn</a>
-        <a href="https://github.com/sauravirai" target="_blank" rel="noopener" class="bg-wmblue-130 hover:bg-black/30 border border-white/30 text-white px-5 py-2.5 rounded-lg font-semibold transition">GitHub</a>
-        <a href="#contact" class="text-white/90 underline underline-offset-4 px-2 py-2.5">Download résumé ↓</a>
+      <div class="flex flex-wrap gap-1.5 mt-5">
+        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-600/8 text-blue-600 border border-blue-600/12">Identity &amp; Auth</span>
+        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-600/8 text-blue-600 border border-blue-600/12">Customer Care</span>
+        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-600/8 text-blue-600 border border-blue-600/12">AdTech</span>
+        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-600/8 text-blue-600 border border-blue-600/12">Post-Purchase</span>
+        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-600/8 text-blue-600 border border-blue-600/12">Membership</span>
+        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-600/8 text-blue-600 border border-blue-600/12">Marketplace</span>
+        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-600/8 text-blue-600 border border-blue-600/12">Trust &amp; Fraud</span>
+        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-600/8 text-blue-600 border border-blue-600/12">i18n / NLP</span>
+        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-600/8 text-blue-600 border border-blue-600/12">Voice / Alexa</span>
+        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-600/8 text-blue-600 border border-blue-600/12">B2B Commerce</span>
+        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-600/8 text-blue-600 border border-blue-600/12">ERP / HCM</span>
+        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-gold-50 text-gold-800 border border-gold-400/30">GenAI</span>
       </div>
-      <div class="mt-8 flex flex-wrap gap-2">
-        <span class="pill bg-white/15 text-white border border-white/30">US Citizen · OCI</span>
-        <span class="pill bg-white/15 text-white border border-white/30">Bengaluru (open to relocate)</span>
-        <span class="pill bg-spark-100 text-spark-140">Sr Director / VP Product</span>
+
+      <div class="flex items-center gap-5 mt-4 text-sm text-gray-500">
+        <a href="https://www.linkedin.com/in/sauravirai/" target="_blank" class="hover:text-gray-900 transition underline underline-offset-2">LinkedIn</a>
+        <a href="https://github.com/sauravirai" target="_blank" class="hover:text-gray-900 transition underline underline-offset-2">GitHub</a>
+        <span class="text-gray-300">|</span>
+        <span>US Citizen · OCI</span>
       </div>
     </div>
   </header>
 
-  <!-- METRICS STRIP -->
-  <section class="bg-white border-b border-ink-100">
-    <div class="max-w-6xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-      <div><div class="text-3xl font-extrabold text-wmblue-100">23</div><div class="text-xs uppercase tracking-wider text-ink-160/60">Years in tech</div></div>
-      <div><div class="text-3xl font-extrabold text-wmblue-100">90</div><div class="text-xs uppercase tracking-wider text-ink-160/60">Peak team size</div></div>
-      <div><div class="text-3xl font-extrabold text-wmblue-100">$30M+</div><div class="text-xs uppercase tracking-wider text-ink-160/60">Annual budget owned</div></div>
-      <div><div class="text-3xl font-extrabold text-wmblue-100">18</div><div class="text-xs uppercase tracking-wider text-ink-160/60">Walmart Intl markets served</div></div>
+  <!-- NUMBERS -->
+  <section class="border-b border-gray-100 bg-gray-25">
+    <div class="container py-7 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+      <div>
+        <div class="text-2xl font-bold text-gray-900">12+</div>
+        <div class="text-xs text-gray-500 mt-1">Product domains</div>
+      </div>
+      <div>
+        <div class="text-2xl font-bold text-gray-900">5</div>
+        <div class="text-xs text-gray-500 mt-1">Companies</div>
+      </div>
+      <div>
+        <div class="text-2xl font-bold text-gray-900">4</div>
+        <div class="text-xs text-gray-500 mt-1">Countries shipped to</div>
+      </div>
+      <div>
+        <div class="text-2xl font-bold text-gray-900">23</div>
+        <div class="text-xs text-gray-500 mt-1">Years in tech</div>
+      </div>
     </div>
   </section>
 
   <!-- ABOUT -->
-  <section id="about" class="section-pad">
-    <div class="grid md:grid-cols-3 gap-10">
-      <div class="md:col-span-1">
-        <h2 class="text-3xl font-bold">About</h2>
-        <p class="mt-3 text-ink-160/70">The 30-second version of two decades.</p>
+  <section id="about" class="border-b border-gray-100 fade">
+    <div class="container py-10 md:py-12">
+      <h2 class="text-xs font-semibold uppercase tracking-widest text-blue-600">About</h2>
+      <div class="mt-4 max-w-2xl space-y-3 text-gray-600 leading-relaxed">
+        <p>
+          Started as an engineer at Oracle (5 years), moved through TPM and product roles
+          at Microsoft, Nordstrom, and Amazon, and most recently led product for Walmart's
+          global identity and customer engagement platforms across the US, Mexico, Canada,
+          and Chile.
+        </p>
+        <p>
+          Shipped across <strong class="text-gray-900 font-medium">identity &amp; auth, customer care,
+          adtech, post-purchase, membership, marketplace, trust &amp; fraud, i18n &amp; NLP,
+          voice (Alexa), B2B commerce, and ERP/HCM</strong> — 12+ distinct product domains.
+          The thread: finding messy cross-cutting problems and turning them into reusable
+          platform capabilities.
+        </p>
       </div>
-      <div class="md:col-span-2 space-y-5 text-lg leading-relaxed">
-        <p>
-          I'm a product executive who has spent 23 years building and leading at the intersection of
-          <strong>identity, customer engagement, monetization, and internationalization</strong> — at companies
-          where every product decision ripples across hundreds of millions of customers.
-        </p>
-        <p>
-          Most recently at Walmart, I led an org that scaled to 90 people across product, analytics, and program management, owning
-          one of five global eCommerce domains for Walmart International (18 countries) and now driving the Global
-          Identity, Profile, and Omnichannel Accounts platform for Walmart Inc.
-        </p>
-        <p>
-          Earlier I shipped Alexa Smart Home into India, owned Amazon Business's home page, modernized Nordstrom's
-          customer identity onto AWS, and led ERP transformation across King County government. Engineering DNA at
-          Oracle and Microsoft underpins how I think about platforms.
-        </p>
-        <p class="text-ink-160/80">
-          My leadership style is <em>servant, candid, and outcome-obsessed</em>. I'm at my best building from ambiguity,
-          stitching cross-functional bets into platforms, and growing leaders who outgrow me.
-        </p>
+    </div>
+  </section>
+
+  <!-- WRITING -->
+  <section id="writing" class="border-b border-gray-100 bg-gray-25 fade">
+    <div class="container py-10 md:py-12">
+      <h2 class="text-xs font-semibold uppercase tracking-widest text-blue-600">Recent Writing</h2>
+      <div class="mt-5 grid md:grid-cols-2 gap-4">
+        <a href="https://github.com/sauravirai/agent-app-design" target="_blank" rel="noopener"
+           class="block bg-white rounded-xl border border-gray-100 p-5 hover:border-blue-600/30 hover:shadow-sm transition group">
+          <span class="text-xs font-medium text-gold-800 bg-gold-50 border border-gold-400/20 px-2 py-0.5 rounded">Design Note</span>
+          <h3 class="text-base font-semibold mt-3 text-gray-900 group-hover:text-blue-600 transition">Shipping AI Agents as App Store Apps</h3>
+          <p class="text-sm text-gray-500 mt-2 leading-relaxed">Architecture trade-offs, App Store rejection patterns, a catalogue of real consumer agent apps, and unit economics.</p>
+          <p class="text-xs font-medium text-blue-600 mt-4">Read on GitHub →</p>
+        </a>
+        <a href="https://www.linkedin.com/in/sauravirai/recent-activity/articles/" target="_blank" rel="noopener"
+           class="block bg-white rounded-xl border border-gray-100 p-5 hover:border-blue-600/30 hover:shadow-sm transition group">
+          <span class="text-xs font-medium text-gray-600 bg-gray-50 border border-gray-200 px-2 py-0.5 rounded">LinkedIn</span>
+          <h3 class="text-base font-semibold mt-3 text-gray-900 group-hover:text-blue-600 transition">Articles & Posts</h3>
+          <p class="text-sm text-gray-500 mt-2 leading-relaxed">Notes on product leadership, internationalization, and what two decades in tech has taught me.</p>
+          <p class="text-xs font-medium text-blue-600 mt-4">Read on LinkedIn →</p>
+        </a>
       </div>
     </div>
   </section>
 
   <!-- IMPACT -->
-  <section id="impact" class="bg-white border-y border-ink-100">
-    <div class="section-pad">
-      <h2 class="text-3xl font-bold">Selected Impact</h2>
-      <p class="mt-2 text-ink-160/70 max-w-2xl">A few platform bets that compounded.</p>
+  <section id="impact" class="border-b border-gray-100 fade">
+    <div class="container py-10 md:py-12">
+      <h2 class="text-xs font-semibold uppercase tracking-widest text-blue-600">Selected Impact</h2>
+      <div class="mt-5 grid md:grid-cols-2 gap-4">
 
-      <div class="mt-10 grid md:grid-cols-2 gap-6">
-
-        <article class="card p-6">
-          <div class="pill bg-wmblue-100 text-white">Identity · Walmart Inc</div>
-          <h3 class="text-xl font-bold mt-3">Identity &amp; Profile as Reusable Enterprise Platform</h3>
-          <p class="mt-2 text-ink-160/80">
-            Re-architected identity, profile, access, and trust as platform capabilities consumable by any Walmart
-            surface (click &amp; brick) and any market.
-          </p>
-          <ul class="mt-4 space-y-1 text-sm text-ink-160/80">
-            <li>⚡ Reduced time-to-adoption for new markets from <b>months → 3 weeks</b></li>
-            <li>🤖 Enabled AI agentic shopping via controlled customer-account access</li>
-            <li>📍 Address standardization → <b>monthly $XXXK savings</b> &amp; on-time delivery uplift</li>
+        <div class="rounded-xl border border-gray-100 p-5 relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-1 h-full bg-blue-600 rounded-l-xl"></div>
+          <p class="text-xs font-medium text-blue-600">Identity · Walmart Inc</p>
+          <h3 class="text-base font-semibold mt-2">Identity & Profile as Reusable Enterprise Platform</h3>
+          <p class="text-sm text-gray-500 mt-2">Re-architected identity, profile, access, and trust as platform capabilities consumable by any Walmart surface and market. Extended to Sam's Club US, Marketplace (Seller Center, Brand Portal), and B2B.</p>
+          <ul class="mt-3 space-y-1 text-sm text-gray-600">
+            <li>⚡ Time-to-adoption: <strong>months → 3 weeks</strong></li>
+            <li>🤖 Enabled AI agentic shopping via customer-account APIs</li>
+            <li>📺 Vizio × Walmart account integration — <strong>172K+ users</strong> linked in first month</li>
+            <li>📍 Address standardization → <strong>$4–6M MXN/mo</strong> savings</li>
           </ul>
-        </article>
+        </div>
 
-        <article class="card p-6">
-          <div class="pill bg-wmblue-100 text-white">Customer Engagement · Walmart Intl</div>
-          <h3 class="text-xl font-bold mt-3">Customer Engagement Portfolio across 18 Markets</h3>
-          <p class="mt-2 text-ink-160/80">
-            Vision and delivery for Accounts, Care (chatbot/agent tools), and Monetize (AdTech) — spanning 18
-            Walmart International markets.
-          </p>
-          <ul class="mt-4 space-y-1 text-sm text-ink-160/80">
-            <li>💰 <b>$30M+</b> annual budget; <b>$XXXM</b> ads revenue, <b>$XXM</b> GMV lift, <b>$XM</b> cost savings</li>
-            <li>📉 <b>10%+</b> reduction in contacts-per-order</li>
-            <li>👥 Scaled the org from <b>24 → 90</b> product, analytics, and program managers (peak)</li>
+        <div class="rounded-xl border border-gray-100 p-5 relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500 rounded-l-xl"></div>
+          <p class="text-xs font-medium text-emerald-600">Customer Engagement · Walmart Intl</p>
+          <h3 class="text-base font-semibold mt-2">Care, AdTech, Post-Purchase, Membership — 4 Countries</h3>
+          <p class="text-sm text-gray-500 mt-2">Built the full Customer Engagement portfolio: Care (chatbot, voicebot, agent tools), Monetize (AdTech &mdash; sponsored search, display), Post-Purchase (tracking, returns, cancellations), and Membership (Delivery Pass). $30M+ annual P&amp;L.</p>
+          <ul class="mt-3 space-y-1 text-sm text-gray-600">
+            <li>💰 <strong>$100M</strong> ads revenue uplift, <strong>$30M+</strong> GMV lift, <strong>$7M+</strong> cost savings</li>
+            <li>📉 <strong>10%+</strong> reduction in contacts-per-order</li>
+            <li>👥 Scaled org from <strong>15 → 90</strong> (PM/PA/PgM)</li>
           </ul>
-        </article>
+        </div>
 
-        <article class="card p-6">
-          <div class="pill bg-wmblue-100 text-white">i18n Platform · Walmart</div>
-          <h3 class="text-xl font-bold mt-3">Translation Platform — 80+ Languages</h3>
-          <p class="mt-2 text-ink-160/80">
-            Incubated and owned Walmart's internationalization &amp; translation services platform.
-          </p>
-          <ul class="mt-4 space-y-1 text-sm text-ink-160/80">
-            <li>🌍 <b>XXXM+</b> entities translated across <b>80+</b> languages</li>
-            <li>🏆 <b>2025 Walmart award</b> recipient</li>
-            <li>♻️ Build-once-use-everywhere pattern unlocked market-team velocity</li>
+        <div class="rounded-xl border border-gray-100 p-5 relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-1 h-full bg-gold-400 rounded-l-xl"></div>
+          <div class="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider bg-gold-50 text-gold-800 border border-gold-400/30 px-2 py-0.5 rounded">Award ★</div>
+          <p class="text-xs font-medium text-gold-800">i18n Platform · Walmart Intl</p>
+          <h3 class="text-base font-semibold mt-2">LLM-Driven Translation — 80+ Languages</h3>
+          <p class="text-sm text-gray-500 mt-2">Incubated Walmart's i18n & translation platform; LLM-powered UI translation shipped to production.</p>
+          <ul class="mt-3 space-y-1 text-sm text-gray-600">
+            <li>🌍 <strong>600M+</strong> entities translated (FY26)</li>
+            <li>💸 <strong>$900K</strong> cost savings; <strong>&lt;2hr</strong> SLA vs 3-day baseline</li>
+            <li>🏆 <strong>2025 President's Innovation Award</strong> · Patent pending</li>
           </ul>
-        </article>
+        </div>
 
-        <article class="card p-6">
-          <div class="pill bg-wmblue-100 text-white">SSO · Walmart Mexico</div>
-          <h3 class="text-xl font-bold mt-3">Unified Login Across eCommerce &amp; Verticals (MX)</h3>
-          <p class="mt-2 text-ink-160/80">
-            Unified <b>80%+</b> of Mexico active users under a single sign-on across eCommerce and verticals (e.g.
-            Pharmacy).
-          </p>
-          <ul class="mt-4 space-y-1 text-sm text-ink-160/80">
-            <li>📈 Improved login rates and mobile-verified account coverage</li>
-            <li>🛡️ Deflected account takeovers and associated chargebacks</li>
+        <div class="rounded-xl border border-gray-100 p-5 relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-1 h-full bg-purple-500 rounded-l-xl"></div>
+          <p class="text-xs font-medium text-purple-600">SSO · Walmart Mexico + Canada</p>
+          <h3 class="text-base font-semibold mt-2">Unified Login Across eCommerce & Verticals</h3>
+          <p class="text-sm text-gray-500 mt-2">Unified 80%+ of Mexico active users under a single sign-on across eCommerce and verticals.</p>
+          <ul class="mt-3 space-y-1 text-sm text-gray-600">
+            <li>📈 Sign-in lift <strong>+85 bps MX / +100 bps CA</strong> → <strong>$20M+</strong></li>
+            <li>🛡️ Account Takeover attempts <strong>~30% down</strong> in Canada</li>
           </ul>
-        </article>
+        </div>
 
-        <article class="card p-6">
-          <div class="pill bg-spark-100 text-spark-140">Alexa · Amazon</div>
-          <h3 class="text-xl font-bold mt-3">Alexa Smart Home — India Launch</h3>
-          <p class="mt-2 text-ink-160/80">
-            Owned product definition for the India launch of Alexa Smart Home; worked backwards from the customer,
-            partnered with BD to onboard key OEMs and ensure skill readiness.
-          </p>
-          <ul class="mt-4 space-y-1 text-sm text-ink-160/80">
+        <div class="rounded-xl border border-gray-100 p-5 relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-1 h-full bg-orange-400 rounded-l-xl"></div>
+          <p class="text-xs font-medium text-orange-600">GenAI · Walmart Intl</p>
+          <h3 class="text-base font-semibold mt-2">FY26 GenAI Portfolio — Shipped to Production</h3>
+          <p class="text-sm text-gray-500 mt-2">Delivered GenAI capabilities across International eCommerce alongside the Translation platform.</p>
+          <ul class="mt-3 space-y-1 text-sm text-gray-600">
+            <li>💬 GenAI Voicebot (CA) + Chatbots (MX, CA) — <strong>$7M</strong> GMV retention</li>
+            <li>📊 CPO Insights Dashboard — <strong>$1.44M</strong> savings + <strong>$15M</strong> GMV benefit</li>
+            <li>📦 GenAI-Powered Post-Purchase flows in Mexico</li>
+          </ul>
+        </div>
+
+        <div class="rounded-xl border border-gray-100 p-5 relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-1 h-full bg-orange-400 rounded-l-xl"></div>
+          <p class="text-xs font-medium text-orange-600">Alexa · Amazon</p>
+          <h3 class="text-base font-semibold mt-2">Alexa Smart Home — India Launch</h3>
+          <p class="text-sm text-gray-500 mt-2">Product definition for India launch; worked backwards from customer, partnered with BD for OEM readiness.</p>
+          <ul class="mt-3 space-y-1 text-sm text-gray-600">
             <li>🚀 Launched Smart Home skills for 3P developers in India (Oct 2017)</li>
-            <li>💡 Onboarded key smart-light/plug partners pre-launch</li>
+            <li>💡 Onboarded <strong>~20 smart devices</strong> with key partners pre-launch</li>
           </ul>
-        </article>
+        </div>
 
-        <article class="card p-6">
-          <div class="pill bg-spark-100 text-spark-140">B2B · Amazon Business</div>
-          <h3 class="text-xl font-bold mt-3">Amazon Business — Homepage &amp; Cross-site Navigation</h3>
-          <p class="mt-2 text-ink-160/80">
-            Product owner for Amazon Business homepage and global navigation assets — the front door for B2B
-            customers.
-          </p>
-          <ul class="mt-4 space-y-1 text-sm text-ink-160/80">
-            <li>📊 Multi-million annual revenue uplift via experimentation &amp; engagement</li>
-            <li>🧪 Designed A/B experiments and engagement playbooks with UX, Marketing, and Feature PMs</li>
+        <div class="rounded-xl border border-gray-100 p-5 relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-1 h-full bg-gray-900 rounded-l-xl"></div>
+          <p class="text-xs font-medium text-gray-600">B2B · Amazon Business</p>
+          <h3 class="text-base font-semibold mt-2">Amazon Business — Homepage & Navigation</h3>
+          <p class="text-sm text-gray-500 mt-2">Product owner for homepage and global navigation — the front door for B2B customers.</p>
+          <ul class="mt-3 space-y-1 text-sm text-gray-600">
+            <li>📊 Multi-million annual revenue uplift via experimentation</li>
+            <li>🧪 A/B experiments and engagement playbooks</li>
           </ul>
-        </article>
+        </div>
 
       </div>
     </div>
   </section>
 
   <!-- EXPERIENCE -->
-  <section id="experience" class="section-pad">
-    <h2 class="text-3xl font-bold">Experience</h2>
-    <p class="mt-2 text-ink-160/70">Two decades, four continents of customers.</p>
+  <section id="experience" class="border-b border-gray-100 bg-gray-25 fade">
+    <div class="container py-10 md:py-12">
+      <h2 class="text-xs font-semibold uppercase tracking-widest text-blue-600">Experience</h2>
 
-    <ol class="mt-10 border-l-2 border-wmblue-100/30 space-y-8 pl-6">
-      <li>
-        <div class="flex items-baseline justify-between gap-4 flex-wrap">
-          <h3 class="text-xl font-bold">Walmart Corporation (IDC)</h3>
-          <span class="text-sm text-ink-160/60">Aug 2021 – May 2026 · Bengaluru</span>
-        </div>
-        <p class="text-sm font-semibold text-wmblue-100 mt-1">Global Product Leader, Walmart Inc (eCommerce) · Senior Director, Walmart International</p>
-        <p class="mt-2 text-ink-160/80">
-          Led product for identity, profile, omnichannel accounts (Walmart Inc), and earlier the full Customer
-          Engagement portfolio across Walmart International — Accounts, Care, and Monetize. Built and grew a
-          90-person (peak) product, analytics, and program org.
-        </p>
-      </li>
-      <li>
-        <div class="flex items-baseline justify-between gap-4 flex-wrap">
-          <h3 class="text-xl font-bold">Amazon Corporation</h3>
-          <span class="text-sm text-ink-160/60">Aug 2016 – Aug 2021 · USA &amp; India</span>
-        </div>
-        <p class="text-sm font-semibold text-wmblue-100 mt-1">PM (Technical) Lead — Alexa Data Services · PM — Amazon Business · PM — Amazon Home Services · PM — Alexa Smart Home</p>
-        <p class="mt-2 text-ink-160/80">
-          Owned product for Alexa data network optimization, Amazon Business homepage &amp; engagement, Alexa-Home
-          Services integration, and Alexa Smart Home India launch.
-        </p>
-      </li>
-      <li>
-        <div class="flex items-baseline justify-between gap-4 flex-wrap">
-          <h3 class="text-xl font-bold">Nordstrom Technology</h3>
-          <span class="text-sm text-ink-160/60">Apr 2015 – Jul 2016 · Seattle</span>
-        </div>
-        <p class="text-sm font-semibold text-wmblue-100 mt-1">Technical Program Manager III — Enterprise Information</p>
-        <p class="mt-2 text-ink-160/80">
-          Delivered the Customer Identification &amp; Verification platform enabling One-Nordstrom omnichannel
-          identity; modernized SOA from on-prem SOAP → AWS-hosted RESTful services with a 25+ delivery team.
-        </p>
-      </li>
-      <li>
-        <div class="flex items-baseline justify-between gap-4 flex-wrap">
-          <h3 class="text-xl font-bold">Microsoft Corporation</h3>
-          <span class="text-sm text-ink-160/60">Jul 2013 – Sep 2014 · Bellevue</span>
-        </div>
-        <p class="text-sm font-semibold text-wmblue-100 mt-1">Program Manager II — Microsoft Dynamics AX (Public Sector)</p>
-        <p class="mt-2 text-ink-160/80">
-          Coordinated AX 2012 CU7, R3, and CU8 Public-Sector releases across Finance, SCM, and HR/Payroll; partnered
-          with the SCM core team in Denmark on eProcurement features.
-        </p>
-      </li>
-      <li>
-        <div class="flex items-baseline justify-between gap-4 flex-wrap">
-          <h3 class="text-xl font-bold">King County Government</h3>
-          <span class="text-sm text-ink-160/60">Mar 2009 – Jun 2013 · Seattle</span>
-        </div>
-        <p class="text-sm font-semibold text-wmblue-100 mt-1">Group Manager · Development Manager — Oracle EBS Finance (ABT Program)</p>
-        <p class="mt-2 text-ink-160/80">
-          Headed Oracle EBS Finance section post-go-live; previously development manager on the $88M Accountable
-          Business Transformation program. Hired and led a 20+ functional &amp; technical org.
-        </p>
-      </li>
-      <li>
-        <div class="flex items-baseline justify-between gap-4 flex-wrap">
-          <h3 class="text-xl font-bold">Oracle Corporation</h3>
-          <span class="text-sm text-ink-160/60">Jul 2003 – Nov 2008 · Hyderabad</span>
-        </div>
-        <p class="text-sm font-semibold text-wmblue-100 mt-1">Project Leader (Fusion HCM) · Technical Lead (EBS HCM)</p>
-        <p class="mt-2 text-ink-160/80">
-          Led cross-localization Statement of Earnings for Fusion HCM (19 localizations); Tech Lead on EBS Payroll
-          localizations for Nordics, UK, and Ireland. 2 ideas surfaced as patentable.
-        </p>
-      </li>
-    </ol>
+      <div class="mt-8 space-y-0">
 
-    <div class="mt-10 card p-6">
-      <h3 class="font-bold">Education</h3>
-      <p class="mt-2 text-ink-160/80"><b>Bachelor of Engineering — Electronics &amp; Communications</b>, Birla Institute of Technology (BIT Mesra), 2003</p>
-    </div>
-  </section>
+        <div class="flex gap-6 pb-7 border-l-2 border-gray-200 ml-3 pl-8 relative">
+          <div class="absolute -left-[5px] top-0 w-3 h-3 rounded-full bg-blue-600"></div>
+          <div class="flex-1">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <h3 class="font-semibold text-gray-900">Walmart Corporation (IDC)</h3>
+              <span class="text-xs text-gray-400">2021 – 2026 · Bengaluru</span>
+            </div>
+            <p class="text-sm text-blue-600 mt-0.5">Global Product Leader · Senior Director</p>
+            <p class="text-sm text-gray-500 mt-2">Identity, profile, omnichannel accounts (Walmart Inc) + full Customer Engagement portfolio (Walmart Intl). 90-person org at peak. Led half of the enterprise "build once, use everywhere" tech modernization. Delivered FY26 GenAI portfolio across Intl eCommerce.</p>
+          </div>
+        </div>
 
-  <!-- APPROACH -->
-  <section id="approach" class="bg-white border-y border-ink-100">
-    <div class="section-pad">
-      <h2 class="text-3xl font-bold">How I lead</h2>
-      <p class="mt-2 text-ink-160/70 max-w-2xl">Patterns I keep coming back to.</p>
-      <div class="mt-10 grid md:grid-cols-3 gap-6">
-        <div class="card p-6">
-          <div class="text-2xl">🧭</div>
-          <h3 class="font-bold mt-3">Platform over project</h3>
-          <p class="mt-2 text-sm text-ink-160/80">If we're solving it twice, we're building it wrong. I bias hard toward reusable capabilities — identity, i18n, monetization — because compounding leverage is the executive's edge.</p>
+        <div class="flex gap-6 pb-7 border-l-2 border-gray-200 ml-3 pl-8 relative">
+          <div class="absolute -left-[5px] top-0 w-3 h-3 rounded-full bg-orange-400"></div>
+          <div class="flex-1">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <h3 class="font-semibold text-gray-900">Amazon</h3>
+              <span class="text-xs text-gray-400">2016 – 2021 · India & USA</span>
+            </div>
+            <p class="text-sm text-blue-600 mt-0.5">PM (Tech) Lead, Alexa Data Services · Sr PM (Tech), Amazon Business · PM, Home Services · PM, Alexa Smart Home</p>
+            <p class="text-sm text-gray-500 mt-2">Alexa data network optimization (reporting to VP daily during escalations), Amazon Business homepage & revenue experimentation, Alexa × Home Services VUI design, Smart Home India launch with 20+ partner devices.</p>
+          </div>
         </div>
-        <div class="card p-6">
-          <div class="text-2xl">🤝</div>
-          <h3 class="font-bold mt-3">Servant leadership</h3>
-          <p class="mt-2 text-sm text-ink-160/80">The team I build outlives the org I sit in. I invest in mentorship, clear feedback, and structured talent reviews — and I measure my own success by the careers I've unblocked.</p>
+
+        <div class="flex gap-6 pb-7 border-l-2 border-gray-200 ml-3 pl-8 relative">
+          <div class="absolute -left-[5px] top-0 w-3 h-3 rounded-full bg-gray-900"></div>
+          <div class="flex-1">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <h3 class="font-semibold text-gray-900">Nordstrom Technology</h3>
+              <span class="text-xs text-gray-400">2015 – 2016 · Seattle</span>
+            </div>
+            <p class="text-sm text-blue-600 mt-0.5">TPM III — Enterprise Information</p>
+            <p class="text-sm text-gray-500 mt-2">Customer identity platform; SOA modernization from on-prem SOAP → AWS REST.</p>
+          </div>
         </div>
-        <div class="card p-6">
-          <div class="text-2xl">📐</div>
-          <h3 class="font-bold mt-3">Engineering empathy</h3>
-          <p class="mt-2 text-sm text-ink-160/80">Years as a developer and TPM mean I can read a system diagram, debate an API contract, and call a tech-debt bluff. Product strategy that ignores engineering reality doesn't ship.</p>
+
+        <div class="flex gap-6 pb-7 border-l-2 border-gray-200 ml-3 pl-8 relative">
+          <div class="absolute -left-[5px] top-0 w-3 h-3 rounded-full bg-emerald-500"></div>
+          <div class="flex-1">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <h3 class="font-semibold text-gray-900">Microsoft</h3>
+              <span class="text-xs text-gray-400">2013 – 2014 · Bellevue</span>
+            </div>
+            <p class="text-sm text-blue-600 mt-0.5">Program Manager II — Dynamics AX (Public Sector)</p>
+            <p class="text-sm text-gray-500 mt-2">AX 2012 releases across Finance, SCM, HR/Payroll; eProcurement with Denmark team.</p>
+          </div>
         </div>
-        <div class="card p-6">
-          <div class="text-2xl">🌍</div>
-          <h3 class="font-bold mt-3">Markets are not monoliths</h3>
-          <p class="mt-2 text-sm text-ink-160/80">18-market scale taught me that localization isn't translation — it's UX, regulation, payment rails, and culture. Build the platform; let markets compose.</p>
+
+        <div class="flex gap-6 pb-7 border-l-2 border-gray-200 ml-3 pl-8 relative">
+          <div class="absolute -left-[5px] top-0 w-3 h-3 rounded-full bg-purple-500"></div>
+          <div class="flex-1">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <h3 class="font-semibold text-gray-900">King County Government</h3>
+              <span class="text-xs text-gray-400">2009 – 2013 · Seattle</span>
+            </div>
+            <p class="text-sm text-blue-600 mt-0.5">Group Manager · Dev Manager — Oracle EBS Finance ($88M ABT Program)</p>
+            <p class="text-sm text-gray-500 mt-2">Full-lifecycle Oracle EBS R12 implementation for county-wide $88M modernization. 20+ person org. Integrated with 80+ side systems via Oracle BPEL/SOA.</p>
+          </div>
         </div>
-        <div class="card p-6">
-          <div class="text-2xl">📊</div>
-          <h3 class="font-bold mt-3">Metric, not vibes</h3>
-          <p class="mt-2 text-sm text-ink-160/80">Every initiative gets a measurable hypothesis, a counter-metric, and a kill criterion. We celebrate dollars saved and conversions lifted — not features shipped.</p>
+
+        <div class="flex gap-6 pb-0 ml-3 pl-8 relative">
+          <div class="absolute -left-[5px] top-0 w-3 h-3 rounded-full bg-red-500"></div>
+          <div class="flex-1">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <h3 class="font-semibold text-gray-900">Oracle</h3>
+              <span class="text-xs text-gray-400">2003 – 2008 · Hyderabad</span>
+            </div>
+            <p class="text-sm text-blue-600 mt-0.5">Project Leader (Fusion HCM) · Tech Lead (EBS HCM)</p>
+            <p class="text-sm text-gray-500 mt-2">Cross-localization Statement of Earnings for Fusion HCM (19 localizations). EBS Payroll for Nordics, UK, Ireland — shipped 100% on schedule, <strong>40% quality improvement</strong>. 2 ideas identified as patentable.</p>
+          </div>
         </div>
-        <div class="card p-6">
-          <div class="text-2xl">🪞</div>
-          <h3 class="font-bold mt-3">Self-aware by design</h3>
-          <p class="mt-2 text-sm text-ink-160/80">Hogan + Korn Ferry assessments inform how I show up — leaning into curiosity and decisiveness, watchful of perfectionism. I bring this self-awareness into how I coach others.</p>
-        </div>
+
+      </div>
+
+      <div class="mt-8 rounded-xl bg-white border border-gray-100 p-5">
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400">Education</p>
+        <p class="text-sm text-gray-600 mt-2"><strong>B.E. Electronics & Communications</strong> · Birla Institute of Technology (BIT Mesra), 2003</p>
       </div>
     </div>
   </section>
 
-  <!-- FEATURED WORK / GITHUB -->
-  <section class="section-pad">
-    <h2 class="text-3xl font-bold">Featured Work &amp; Writing</h2>
-    <p class="mt-2 text-ink-160/70 max-w-2xl">Side projects, frameworks, and tactical playbooks — most live on GitHub.</p>
-    <div class="mt-10 grid md:grid-cols-2 gap-6">
-      <a href="https://sauravirai.github.io/agent-app-design" target="_blank" rel="noopener" class="card p-6 hover:border-wmblue-100 transition group">
-        <div class="text-xs text-wmblue-100 font-semibold">sauravirai.github.io/agent-app-design</div>
-        <h3 class="font-bold mt-2 group-hover:text-wmblue-100">Shipping AI Agents as App Store Apps</h3>
-        <p class="mt-2 text-sm text-ink-160/80">A reference design note: hybrid on-device + cloud architecture, App Store gotchas, a catalogue of consumer agent apps, and the unit economics that make them sustainable.</p>
-      </a>
-      <a href="https://github.com/sauravirai/mobile-agent-starter" target="_blank" rel="noopener" class="card p-6 hover:border-wmblue-100 transition group">
-        <div class="text-xs text-wmblue-100 font-semibold">github.com/sauravirai/mobile-agent-starter</div>
-        <h3 class="font-bold mt-2 group-hover:text-wmblue-100">Mobile Agent Starter (FastAPI + SwiftUI)</h3>
-        <p class="mt-2 text-sm text-ink-160/80">A runnable scaffold for a streaming agent app: Pydantic AI backend, SSE token stream, SwiftUI client with cancellation. Under 300 lines end-to-end.</p>
-      </a>
-      <a href="https://github.com/sauravirai" target="_blank" rel="noopener" class="card p-6 hover:border-wmblue-100 transition group">
-        <div class="text-xs text-wmblue-100 font-semibold">github.com/sauravirai</div>
-        <h3 class="font-bold mt-2 group-hover:text-wmblue-100">AI &amp; Product Experiments</h3>
-        <p class="mt-2 text-sm text-ink-160/80">A working sandbox for hands-on exploration of agentic AI patterns, evals, and product-facing prototypes. Because product leaders should still build.</p>
-      </a>
-      <a href="https://www.linkedin.com/in/sauravirai/recent-activity/articles/" target="_blank" rel="noopener" class="card p-6 hover:border-wmblue-100 transition group">
-        <div class="text-xs text-wmblue-100 font-semibold">linkedin.com/in/sauravirai</div>
-        <h3 class="font-bold mt-2 group-hover:text-wmblue-100">LinkedIn Articles &amp; Posts</h3>
-        <p class="mt-2 text-sm text-ink-160/80">Periodic notes on product leadership, internationalization, talent, and what 23 years has taught me about staying useful.</p>
-      </a>
+  <!-- HOW I WORK -->
+  <section class="border-b border-gray-100 fade">
+    <div class="container py-10 md:py-12">
+      <h2 class="text-xs font-semibold uppercase tracking-widest text-blue-600">How I Work</h2>
+      <div class="mt-5 grid sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-5">
+        <div>
+          <h3 class="text-sm font-semibold text-gray-900">Build first, then lead</h3>
+          <p class="text-sm text-gray-500 mt-1.5 leading-relaxed">Prototype before spec. Hands-on building earns credibility with the engineers who build it for real.</p>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-900">Platform over project</h3>
+          <p class="text-sm text-gray-500 mt-1.5 leading-relaxed">If we're solving it twice, we're building it wrong. Reusable capabilities compound; one-off projects don't.</p>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-900">Engineering empathy</h3>
+          <p class="text-sm text-gray-500 mt-1.5 leading-relaxed">Years as a developer and TPM mean I read system diagrams, debate API contracts, and call tech-debt bluffs.</p>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-900">Markets ≠ monoliths</h3>
+          <p class="text-sm text-gray-500 mt-1.5 leading-relaxed">Localization isn't translation — it's UX, regulation, payment rails, and culture. Build the platform; let markets compose.</p>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-900">Metrics, not vibes</h3>
+          <p class="text-sm text-gray-500 mt-1.5 leading-relaxed">Every initiative gets a hypothesis, a counter-metric, and a kill criterion. Celebrate outcomes, not features.</p>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-900">Grow people who outgrow you</h3>
+          <p class="text-sm text-gray-500 mt-1.5 leading-relaxed">The team outlives the org. I measure my success by the careers I've unblocked.</p>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- CONTACT -->
-  <section id="contact" class="bg-gradient-to-br from-wmblue-130 via-wmblue-110 to-wmblue-100 text-white">
-    <div class="section-pad">
-      <h2 class="text-3xl font-bold">Let's talk</h2>
-      <p class="mt-3 text-white/85 max-w-2xl">
-        I'm exploring Sr Director / VP Product roles in consumer, marketplaces, fintech, and global SaaS — based out of
-        Bengaluru, open to international relocation. Especially keen on platform &amp; international roles where my
-        engineering DNA, scale experience, and people-leadership compound.
+  <section id="contact" class="bg-gray-900 text-white">
+    <div class="container py-10 md:py-12">
+      <h2 class="text-xs font-semibold uppercase tracking-widest text-blue-400">Contact</h2>
+      <p class="text-xl font-semibold mt-3">Let's talk.</p>
+      <p class="text-gray-400 mt-2 max-w-xl leading-relaxed text-sm">
+        Exploring roles where I can work on AI-native products — product/engineering IC
+        at a frontier AI company, leading a product team, or co-founding something new.
+        Bengaluru, open to relocation. US Citizen + OCI.
       </p>
-      <div class="mt-8 grid md:grid-cols-2 gap-6">
-        <div class="card bg-white/10 backdrop-blur border border-white/20 text-white p-6">
-          <h3 class="font-bold">Direct</h3>
-          <ul class="mt-3 space-y-2 text-sm">
-            <li>📧 <a class="underline" href="mailto:sauravi.rai@gmail.com">sauravi.rai@gmail.com</a></li>
-            <li>📱 +91 91210 18331</li>
-            <li>📍 Whitefield, Bengaluru · 🇮🇳</li>
-            <li>🛂 US Citizen · OCI · No visa friction</li>
+      <div class="mt-8 grid sm:grid-cols-2 gap-8">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-gray-500">Direct</p>
+          <ul class="mt-3 space-y-2 text-sm text-gray-300">
+            <li><a class="underline underline-offset-2 hover:text-white transition" href="mailto:sauravi.rai@gmail.com">sauravi.rai@gmail.com</a></li>
+            <li>+91 91210 18331</li>
+            <li>Whitefield, Bengaluru 🇮🇳</li>
           </ul>
         </div>
-        <div class="card bg-white/10 backdrop-blur border border-white/20 text-white p-6">
-          <h3 class="font-bold">Online</h3>
-          <ul class="mt-3 space-y-2 text-sm">
-            <li>🔗 <a class="underline" href="https://www.linkedin.com/in/sauravirai/" target="_blank" rel="noopener">linkedin.com/in/sauravirai</a></li>
-            <li>💻 <a class="underline" href="https://github.com/sauravirai" target="_blank" rel="noopener">github.com/sauravirai</a></li>
-            <li>📄 <a class="underline" href="./resume.pdf">Download résumé (PDF)</a></li>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-gray-500">Online</p>
+          <ul class="mt-3 space-y-2 text-sm text-gray-300">
+            <li><a class="underline underline-offset-2 hover:text-white transition" href="https://www.linkedin.com/in/sauravirai/" target="_blank">linkedin.com/in/sauravirai</a></li>
+            <li><a class="underline underline-offset-2 hover:text-white transition" href="https://github.com/sauravirai" target="_blank">github.com/sauravirai</a></li>
+            <li><a class="underline underline-offset-2 hover:text-white transition" href="./resume.pdf">Download résumé (PDF)</a></li>
           </ul>
         </div>
       </div>
     </div>
   </section>
 
-  <footer class="bg-ink-160 text-white/70 text-sm">
-    <div class="max-w-6xl mx-auto px-6 py-8 flex flex-wrap items-center justify-between gap-3">
-      <div>© <span id="yr"></span> Sauravi Rai · Bengaluru</div>
-      <div class="text-white/50">Built with HTML + Tailwind. Hosted on GitHub Pages.</div>
+  <footer class="bg-gray-900 border-t border-gray-800 text-gray-600 text-xs">
+    <div class="container py-5 flex items-center justify-between">
+      <span>© <span id="yr"></span> Sauravi Rai</span>
+      <span>HTML + Tailwind</span>
     </div>
   </footer>
-  <script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+
+  <script>
+    document.getElementById('yr').textContent = new Date().getFullYear();
+    const obs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('show'); obs.unobserve(e.target); } }), { threshold: .15 });
+    document.querySelectorAll('.fade').forEach(el => obs.observe(el));
+  </script>
 </body>
 </html>
