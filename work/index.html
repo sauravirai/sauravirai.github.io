@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Portfolio of AI agent work: architecture blueprints, engineering postmortems, dashboards, and how-to guides. Sanitized for public viewing." />
+  <title>AI Agent Portfolio — 9 Pieces</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            // Brand palette
+            'wm-blue': {
+              90:  '#0041cc',
+              100: '#0053e2',
+              110: '#1466f5',
+              140: '#3b82f6',
+            },
+            'wm-spark': {
+              10:  '#fff7e6',
+              100: '#ffc220',
+              140: '#995213',
+            },
+            'wm-gray': {
+              5:   '#f8f9fa',
+              10:  '#e9ecef',
+              20:  '#dee2e6',
+              50:  '#adb5bd',
+              100: '#495057',
+              160: '#212529',
+            },
+            'wm-green': { 100: '#2a8703' },
+            'wm-red':   { 100: '#ea1100' },
+          },
+          fontFamily: {
+            sans: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* Smooth scroll for nav anchors */
+    html { scroll-behavior: smooth; }
+    /* Skip-to-content link for keyboard users (WCAG 2.4.1) */
+    .skip-link {
+      position: absolute; left: -9999px; top: 0;
+      background: #0053e2; color: #fff; padding: .75rem 1rem;
+      z-index: 100; font-weight: 600;
+    }
+    .skip-link:focus { left: 0; outline: 3px solid #ffc220; outline-offset: 2px; }
+    /* Visible focus rings everywhere (WCAG 2.4.7) */
+    *:focus-visible {
+      outline: 3px solid #ffc220;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    /* Thumbnail aspect lock */
+    .thumb { aspect-ratio: 16 / 10; object-fit: cover; object-position: top; }
+    /* Card hover lift */
+    .card { transition: transform .18s ease, box-shadow .18s ease; }
+    .card:hover, .card:focus-within {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px -8px rgba(0, 83, 226, 0.25);
+    }
+  </style>
+</head>
+
+<body class="bg-white text-wm-gray-160 font-sans antialiased">
+
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- ════════ Sticky nav ════════ -->
+  <nav class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-wm-gray-10 shadow-sm" aria-label="Primary">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-14">
+      <a href="#top" class="flex items-center gap-2 font-bold text-wm-gray-160 hover:text-wm-blue-100">
+        <span class="text-2xl" aria-hidden="true">🎨</span>
+        <span>AI Portfolio</span>
+      </a>
+      <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+        <a href="#about-me" class="text-wm-gray-100 hover:text-wm-blue-100">About Me</a>
+        <a href="#architecture" class="text-wm-gray-100 hover:text-wm-blue-100">Architecture</a>
+        <a href="#engineering" class="text-wm-gray-100 hover:text-wm-blue-100">Engineering</a>
+        <a href="#dashboards" class="text-wm-gray-100 hover:text-wm-blue-100">Dashboards</a>
+        <a href="https://github.com/sauravirai/ai-experiments"
+           class="inline-flex items-center gap-1.5 bg-wm-blue-100 hover:bg-wm-blue-110 text-white px-3 py-1.5 rounded-md font-semibold"
+           rel="noopener">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2.1c-3.2.7-3.87-1.36-3.87-1.36-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.73-1.53-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.89-.39s1.97.13 2.89.39c2.21-1.49 3.18-1.18 3.18-1.18.62 1.59.23 2.76.11 3.05.74.8 1.18 1.83 1.18 3.09 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.05.78 2.12v3.15c0 .31.21.68.79.56C20.21 21.38 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/>
+          </svg>
+          Repo
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main">
+
+    <!-- ════════ Hero ════════ -->
+    <section id="top" class="relative bg-gradient-to-br from-wm-blue-100 via-wm-blue-110 to-wm-blue-140 text-white overflow-hidden">
+      <div class="absolute inset-0 opacity-10" aria-hidden="true">
+        <div class="absolute top-10 left-10 w-72 h-72 bg-wm-spark-100 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-10 right-10 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+      </div>
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+        <div class="max-w-3xl">
+          <p class="inline-flex items-center gap-2 bg-wm-spark-100 text-wm-gray-160 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+            <span aria-hidden="true">✨</span> 9 Pieces · All Sanitized · 100% Self-Contained HTML
+          </p>
+          <h1 class="mt-6 text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight">
+            AI Agent Portfolio
+          </h1>
+          <p class="mt-6 text-xl sm:text-2xl text-blue-50 leading-relaxed">
+            Architecture blueprints, engineering postmortems, live dashboards, and practical how-tos —
+            from a year of building production AI agents.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href="#architecture"
+               class="inline-flex items-center gap-2 bg-white text-wm-blue-100 hover:bg-wm-gray-5 px-5 py-3 rounded-md font-semibold shadow-lg">
+              Browse pieces
+              <span aria-hidden="true">↓</span>
+            </a>
+            <a href="#about"
+               class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur border-2 border-white/40 text-white px-5 py-3 rounded-md font-semibold">
+              How this was built
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ About Me ════════ -->
+    <section id="about-me" class="py-16 lg:py-20">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 items-center">
+
+          <!-- Photo column -->
+          <div class="md:col-span-1 flex justify-center md:justify-start">
+            <div class="relative">
+              <div class="absolute -inset-2 bg-gradient-to-br from-wm-blue-100 to-wm-spark-100 rounded-2xl opacity-20 blur-xl" aria-hidden="true"></div>
+              <img src="./assets/about-headshot.jpg"
+                   alt="Portrait photograph of Sauravi Rai"
+                   class="relative w-48 h-48 md:w-64 md:h-64 object-cover rounded-2xl shadow-2xl border-4 border-white"
+                   loading="eager" />
+            </div>
+          </div>
+
+          <!-- Bio column -->
+          <div class="md:col-span-2">
+            <p class="text-sm font-bold text-wm-blue-100 uppercase tracking-wider">About Me</p>
+            <h2 class="mt-2 text-3xl sm:text-4xl font-extrabold text-wm-gray-160">
+              Hi, I&rsquo;m Sauravi Rai
+            </h2>
+            <p class="mt-3 text-xl text-wm-gray-100 font-medium">
+              Product leader building agentic AI systems &mdash; from blueprint to production.
+            </p>
+            <p class="mt-6 text-base text-wm-gray-100 leading-relaxed">
+              I spend my days designing and shipping AI agents that do real work &mdash; not demos. My recent focus is on
+              <strong class="text-wm-gray-160">composable multi-agent architectures</strong>: small, specialized agents that
+              cooperate around a shared memory and identity model, with humans always in the loop.
+              The pieces in this portfolio are my own attempts to build, document, and stress-test that idea.
+            </p>
+
+            <!-- Skill chips -->
+            <div class="mt-6 flex flex-wrap gap-2">
+              <span class="inline-flex items-center gap-1.5 bg-wm-blue-100/10 text-wm-blue-90 text-sm font-semibold px-3 py-1.5 rounded-full">
+                <span aria-hidden="true">🤖</span> Agent Architecture
+              </span>
+              <span class="inline-flex items-center gap-1.5 bg-wm-blue-100/10 text-wm-blue-90 text-sm font-semibold px-3 py-1.5 rounded-full">
+                <span aria-hidden="true">📦</span> Product × AI Integration
+              </span>
+              <span class="inline-flex items-center gap-1.5 bg-wm-blue-100/10 text-wm-blue-90 text-sm font-semibold px-3 py-1.5 rounded-full">
+                <span aria-hidden="true">🏗️</span> Org &amp; Ops Engineering
+              </span>
+              <span class="inline-flex items-center gap-1.5 bg-wm-blue-100/10 text-wm-blue-90 text-sm font-semibold px-3 py-1.5 rounded-full">
+                <span aria-hidden="true">📝</span> Engineering Storytelling
+              </span>
+            </div>
+
+            <!-- Contact CTAs -->
+            <div class="mt-8 flex flex-wrap gap-3">
+              <a href="https://linkedin.com/in/sauravirai"
+                 class="inline-flex items-center gap-2 bg-wm-blue-100 hover:bg-wm-blue-110 text-white px-4 py-2 rounded-md font-semibold text-sm shadow-sm"
+                 rel="noopener">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M20.45 20.45h-3.55v-5.56c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/>
+                </svg>
+                LinkedIn
+              </a>
+              <a href="https://github.com/sauravirai"
+                 class="inline-flex items-center gap-2 bg-wm-gray-160 hover:bg-wm-gray-100 text-white px-4 py-2 rounded-md font-semibold text-sm shadow-sm"
+                 rel="noopener">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2.1c-3.2.7-3.87-1.36-3.87-1.36-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.73-1.53-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.89-.39s1.97.13 2.89.39c2.21-1.49 3.18-1.18 3.18-1.18.62 1.59.23 2.76.11 3.05.74.8 1.18 1.83 1.18 3.09 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.05.78 2.12v3.15c0 .31.21.68.79.56C20.21 21.38 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/>
+                </svg>
+                GitHub
+              </a>
+              <a href="#architecture"
+                 class="inline-flex items-center gap-2 bg-white hover:bg-wm-gray-5 border-2 border-wm-gray-20 text-wm-gray-160 px-4 py-2 rounded-md font-semibold text-sm">
+                See my work <span aria-hidden="true">↓</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ Stats strip ════════ -->
+    <section class="bg-wm-gray-5 border-y border-wm-gray-10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <dl class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <div>
+            <dt class="text-sm text-wm-gray-100 uppercase tracking-wider font-semibold">Pieces</dt>
+            <dd class="mt-1 text-3xl font-extrabold text-wm-blue-100">9</dd>
+          </div>
+          <div>
+            <dt class="text-sm text-wm-gray-100 uppercase tracking-wider font-semibold">Substitutions Applied</dt>
+            <dd class="mt-1 text-3xl font-extrabold text-wm-blue-100">~550</dd>
+          </div>
+          <div>
+            <dt class="text-sm text-wm-gray-100 uppercase tracking-wider font-semibold">PII Leaks</dt>
+            <dd class="mt-1 text-3xl font-extrabold text-wm-green-100">0</dd>
+          </div>
+          <div>
+            <dt class="text-sm text-wm-gray-100 uppercase tracking-wider font-semibold">Build Dependencies</dt>
+            <dd class="mt-1 text-3xl font-extrabold text-wm-blue-100">0</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ════════ Section: Architecture & Strategy ════════ -->
+    <section id="architecture" class="py-16 lg:py-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <header class="mb-10">
+          <p class="text-sm font-bold text-wm-blue-100 uppercase tracking-wider">Section 1 of 3</p>
+          <h2 class="mt-2 text-3xl sm:text-4xl font-extrabold text-wm-gray-160">🌟 Architecture &amp; Strategy</h2>
+          <p class="mt-3 text-lg text-wm-gray-100 max-w-3xl">
+            System-design thinking. How agents should be structured, scored, and evolved over time.
+          </p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          <!-- Card: digital-twin -->
+          <article class="card bg-white border border-wm-gray-10 rounded-xl overflow-hidden shadow-sm hover:border-wm-blue-100">
+            <a href="./digital-twin-blueprint.html" class="block">
+              <img src="./assets/thumbnails/digital-twin-blueprint.png"
+                   alt="Preview of the Digital Twin Blueprint page"
+                   class="thumb w-full bg-wm-gray-10" loading="lazy" />
+            </a>
+            <div class="p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="inline-flex items-center gap-1 bg-wm-spark-10 text-wm-spark-140 text-xs font-bold px-2 py-1 rounded-full">⭐ FLAGSHIP</span>
+                <span class="inline-flex items-center bg-wm-gray-10 text-wm-gray-100 text-xs font-medium px-2 py-1 rounded-full">124 KB</span>
+              </div>
+              <h3 class="text-lg font-bold text-wm-gray-160">Digital Twin Blueprint</h3>
+              <p class="mt-2 text-sm text-wm-gray-100 leading-relaxed">
+                Three-tier digital-twin agent architecture: 6 domain agents, 11+ capabilities, memory &amp; identity model, 6-phase rollout with trust-calibration gates, and the "twin earns autonomy" framing.
+              </p>
+              <a href="./digital-twin-blueprint.html"
+                 class="mt-4 inline-flex items-center gap-1 text-wm-blue-100 hover:text-wm-blue-90 font-semibold text-sm">
+                View blueprint <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Card: portability -->
+          <article class="card bg-white border border-wm-gray-10 rounded-xl overflow-hidden shadow-sm hover:border-wm-blue-100">
+            <a href="./agent-runtime-portability.html" class="block">
+              <img src="./assets/thumbnails/agent-runtime-portability.png"
+                   alt="Preview of the Agent Runtime Portability analysis"
+                   class="thumb w-full bg-wm-gray-10" loading="lazy" />
+            </a>
+            <div class="p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="inline-flex items-center bg-wm-gray-10 text-wm-gray-100 text-xs font-medium px-2 py-1 rounded-full">21 KB</span>
+              </div>
+              <h3 class="text-lg font-bold text-wm-gray-160">Agent Runtime Portability</h3>
+              <p class="mt-2 text-sm text-wm-gray-100 leading-relaxed">
+                Scorecard analysis of 6 agents 🟢🟡🔴, evaluating which should be ported from Runtime A → Runtime B. Includes a reusable decision framework.
+              </p>
+              <a href="./agent-runtime-portability.html"
+                 class="mt-4 inline-flex items-center gap-1 text-wm-blue-100 hover:text-wm-blue-90 font-semibold text-sm">
+                View analysis <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Card: stack-journey -->
+          <article class="card bg-white border border-wm-gray-10 rounded-xl overflow-hidden shadow-sm hover:border-wm-blue-100">
+            <a href="./agent-stack-journey-story.html" class="block">
+              <img src="./assets/thumbnails/agent-stack-journey-story.png"
+                   alt="Preview of the Agent Stack Journey Story"
+                   class="thumb w-full bg-wm-gray-10" loading="lazy" />
+            </a>
+            <div class="p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="inline-flex items-center bg-wm-gray-10 text-wm-gray-100 text-xs font-medium px-2 py-1 rounded-full">29 KB</span>
+              </div>
+              <h3 class="text-lg font-bold text-wm-gray-160">Agent Stack Journey Story</h3>
+              <p class="mt-2 text-sm text-wm-gray-100 leading-relaxed">
+                The "why" behind building a personal multi-agent stack. Composability mindset (agents as building blocks, not monoliths) with progress over time.
+              </p>
+              <a href="./agent-stack-journey-story.html"
+                 class="mt-4 inline-flex items-center gap-1 text-wm-blue-100 hover:text-wm-blue-90 font-semibold text-sm">
+                Read journey <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ Section: Engineering Practice ════════ -->
+    <section id="engineering" class="py-16 lg:py-20 bg-wm-gray-5">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <header class="mb-10">
+          <p class="text-sm font-bold text-wm-blue-100 uppercase tracking-wider">Section 2 of 3</p>
+          <h2 class="mt-2 text-3xl sm:text-4xl font-extrabold text-wm-gray-160">🛠️ Engineering Practice</h2>
+          <p class="mt-3 text-lg text-wm-gray-100 max-w-3xl">
+            Real debugging, real workarounds, real how-tos. Showing the work, not just the polish.
+          </p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          <!-- Card: copilot-postmortem -->
+          <article class="card bg-white border border-wm-gray-10 rounded-xl overflow-hidden shadow-sm hover:border-wm-blue-100">
+            <a href="./copilot-studio-postmortem.html" class="block">
+              <img src="./assets/thumbnails/copilot-studio-postmortem.png"
+                   alt="Preview of the Copilot Studio Postmortem"
+                   class="thumb w-full bg-wm-gray-10" loading="lazy" />
+            </a>
+            <div class="p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="inline-flex items-center gap-1 bg-wm-spark-10 text-wm-spark-140 text-xs font-bold px-2 py-1 rounded-full">🎯 HIRE-ME PIECE</span>
+                <span class="inline-flex items-center bg-wm-gray-10 text-wm-gray-100 text-xs font-medium px-2 py-1 rounded-full">50 KB</span>
+              </div>
+              <h3 class="text-lg font-bold text-wm-gray-160">Copilot Studio Postmortem</h3>
+              <p class="mt-2 text-sm text-wm-gray-100 leading-relaxed">
+                Honest engineering postmortem: platform pivot, DLP wrangling, debugging a sneaky <code class="text-xs bg-wm-gray-10 px-1 rounded">operationId</code> typo, and writeup of abandoned plans.
+              </p>
+              <a href="./copilot-studio-postmortem.html"
+                 class="mt-4 inline-flex items-center gap-1 text-wm-blue-100 hover:text-wm-blue-90 font-semibold text-sm">
+                Read postmortem <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Card: scheduling guide -->
+          <article class="card bg-white border border-wm-gray-10 rounded-xl overflow-hidden shadow-sm hover:border-wm-blue-100">
+            <a href="./scheduling-llm-agents-guide.html" class="block">
+              <img src="./assets/thumbnails/scheduling-llm-agents-guide.png"
+                   alt="Preview of the LLM Agent Scheduling Guide"
+                   class="thumb w-full bg-wm-gray-10" loading="lazy" />
+            </a>
+            <div class="p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="inline-flex items-center bg-wm-gray-10 text-wm-gray-100 text-xs font-medium px-2 py-1 rounded-full">17 KB</span>
+              </div>
+              <h3 class="text-lg font-bold text-wm-gray-160">Scheduling LLM Agents Guide</h3>
+              <p class="mt-2 text-sm text-wm-gray-100 leading-relaxed">
+                Practical how-to: scheduling LLM agents to run automatically — cloud CI/CD path and macOS <code class="text-xs bg-wm-gray-10 px-1 rounded">launchd</code> path. Includes an IST↔UTC cron cheat sheet.
+              </p>
+              <a href="./scheduling-llm-agents-guide.html"
+                 class="mt-4 inline-flex items-center gap-1 text-wm-blue-100 hover:text-wm-blue-90 font-semibold text-sm">
+                Read guide <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Card: first-agent-video -->
+          <article class="card bg-white border border-wm-gray-10 rounded-xl overflow-hidden shadow-sm hover:border-wm-blue-100">
+            <a href="./first-agent-with-video.html" class="block">
+              <img src="./assets/thumbnails/first-agent-with-video.png"
+                   alt="Preview of the First Agent with embedded video"
+                   class="thumb w-full bg-wm-gray-10" loading="lazy" />
+            </a>
+            <div class="p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="inline-flex items-center gap-1 bg-wm-blue-100/10 text-wm-blue-100 text-xs font-bold px-2 py-1 rounded-full">🎬 INCLUDES VIDEO</span>
+                <span class="inline-flex items-center bg-wm-gray-10 text-wm-gray-100 text-xs font-medium px-2 py-1 rounded-full">137 KB + 12 MB</span>
+              </div>
+              <h3 class="text-lg font-bold text-wm-gray-160">First Agent (with HeyGen avatar)</h3>
+              <p class="mt-2 text-sm text-wm-gray-100 leading-relaxed">
+                "My first agent" walkthrough with embedded HeyGen avatar video. Demonstrates the <strong>X-Frame-Options workaround</strong> (inline <code class="text-xs bg-wm-gray-10 px-1 rounded">&lt;video&gt;</code> instead of <code class="text-xs bg-wm-gray-10 px-1 rounded">&lt;iframe&gt;</code>).
+              </p>
+              <a href="./first-agent-with-video.html"
+                 class="mt-4 inline-flex items-center gap-1 text-wm-blue-100 hover:text-wm-blue-90 font-semibold text-sm">
+                Watch demo <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ Section: Dashboards & Storytelling ════════ -->
+    <section id="dashboards" class="py-16 lg:py-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <header class="mb-10">
+          <p class="text-sm font-bold text-wm-blue-100 uppercase tracking-wider">Section 3 of 3</p>
+          <h2 class="mt-2 text-3xl sm:text-4xl font-extrabold text-wm-gray-160">📊 Dashboards &amp; Storytelling</h2>
+          <p class="mt-3 text-lg text-wm-gray-100 max-w-3xl">
+            Living, breathing artifacts. Measuring real-world adoption and telling the story of what got built.
+          </p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          <!-- Card: AI tools adoption -->
+          <article class="card bg-white border border-wm-gray-10 rounded-xl overflow-hidden shadow-sm hover:border-wm-blue-100">
+            <a href="./ai-tools-adoption-dashboard.html" class="block">
+              <img src="./assets/thumbnails/ai-tools-adoption-dashboard.png"
+                   alt="Preview of the AI Tools Adoption Dashboard"
+                   class="thumb w-full bg-wm-gray-10" loading="lazy" />
+            </a>
+            <div class="p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="inline-flex items-center gap-1 bg-wm-spark-10 text-wm-spark-140 text-xs font-bold px-2 py-1 rounded-full">🏆 V73</span>
+                <span class="inline-flex items-center bg-wm-gray-10 text-wm-gray-100 text-xs font-medium px-2 py-1 rounded-full">177 KB</span>
+              </div>
+              <h3 class="text-lg font-bold text-wm-gray-160">AI Tools Adoption Dashboard</h3>
+              <p class="mt-2 text-sm text-wm-gray-100 leading-relaxed">
+                Team AI-tools adoption tracker. Per-tool usage across a team with leaderboards, trend lines, and per-person breakdowns. Heavily iterated (73 versions in the original).
+              </p>
+              <a href="./ai-tools-adoption-dashboard.html"
+                 class="mt-4 inline-flex items-center gap-1 text-wm-blue-100 hover:text-wm-blue-90 font-semibold text-sm">
+                View dashboard <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Card: personal agent stack -->
+          <article class="card bg-white border border-wm-gray-10 rounded-xl overflow-hidden shadow-sm hover:border-wm-blue-100">
+            <a href="./personal-agent-stack-dashboard.html" class="block">
+              <img src="./assets/thumbnails/personal-agent-stack-dashboard.png"
+                   alt="Preview of the Personal Agent Stack Dashboard"
+                   class="thumb w-full bg-wm-gray-10" loading="lazy" />
+            </a>
+            <div class="p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="inline-flex items-center bg-wm-gray-10 text-wm-gray-100 text-xs font-medium px-2 py-1 rounded-full">22 KB</span>
+              </div>
+              <h3 class="text-lg font-bold text-wm-gray-160">Personal Agent Stack Dashboard</h3>
+              <p class="mt-2 text-sm text-wm-gray-100 leading-relaxed">
+                Personal multi-agent stack status dashboard. Visualizes which agents exist, their maturity, and how they compose together.
+              </p>
+              <a href="./personal-agent-stack-dashboard.html"
+                 class="mt-4 inline-flex items-center gap-1 text-wm-blue-100 hover:text-wm-blue-90 font-semibold text-sm">
+                View dashboard <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Card: virtual EA story -->
+          <article class="card bg-white border border-wm-gray-10 rounded-xl overflow-hidden shadow-sm hover:border-wm-blue-100">
+            <a href="./virtual-ea-story.html" class="block">
+              <img src="./assets/thumbnails/virtual-ea-story.png"
+                   alt="Preview of the Virtual EA Story"
+                   class="thumb w-full bg-wm-gray-10" loading="lazy" />
+            </a>
+            <div class="p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="inline-flex items-center bg-wm-gray-10 text-wm-gray-100 text-xs font-medium px-2 py-1 rounded-full">45 KB</span>
+              </div>
+              <h3 class="text-lg font-bold text-wm-gray-160">Virtual EA Story</h3>
+              <p class="mt-2 text-sm text-wm-gray-100 leading-relaxed">
+                End-to-end story of building a Virtual Executive Assistant agent — problem framing → architectural decisions → measurable outcomes.
+              </p>
+              <a href="./virtual-ea-story.html"
+                 class="mt-4 inline-flex items-center gap-1 text-wm-blue-100 hover:text-wm-blue-90 font-semibold text-sm">
+                Read story <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ About this portfolio (methodology) ════════ -->
+    <section id="methodology" class="py-16 lg:py-20 bg-gradient-to-br from-wm-gray-160 to-wm-gray-100 text-white">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <header class="mb-10 text-center">
+          <p class="text-sm font-bold text-wm-spark-100 uppercase tracking-wider">Behind the scenes</p>
+          <h2 class="mt-2 text-3xl sm:text-4xl font-extrabold">How this portfolio was built</h2>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="bg-white/5 backdrop-blur rounded-xl p-6 border border-white/10">
+            <div class="text-3xl mb-3" aria-hidden="true">🎯</div>
+            <h3 class="font-bold text-lg mb-2">Curated, not exhaustive</h3>
+            <p class="text-sm text-gray-300 leading-relaxed">
+              From 27 internal share-pages + dozens of local artifacts, 9 made the cut. Every piece had to be either generalizable, technically interesting, or methodologically novel — not just a status update.
+            </p>
+          </div>
+
+          <div class="bg-white/5 backdrop-blur rounded-xl p-6 border border-white/10">
+            <div class="text-3xl mb-3" aria-hidden="true">🛡️</div>
+            <h3 class="font-bold text-lg mb-2">Multi-pass sanitization</h3>
+            <p class="text-sm text-gray-300 leading-relaxed">
+              ~550 substitutions across the 9 files: real names → role placeholders, corporate emails redacted, internal vendor/system names genericized. Verified zero leaks across 7 categories.
+            </p>
+          </div>
+
+          <div class="bg-white/5 backdrop-blur rounded-xl p-6 border border-white/10">
+            <div class="text-3xl mb-3" aria-hidden="true">📦</div>
+            <h3 class="font-bold text-lg mb-2">Zero build dependencies</h3>
+            <p class="text-sm text-gray-300 leading-relaxed">
+              Every piece is a single self-contained HTML file (or HTML + co-located <code>assets/</code>). No webpack, no npm install — just open in any browser.
+            </p>
+          </div>
+
+          <div class="bg-white/5 backdrop-blur rounded-xl p-6 border border-white/10">
+            <div class="text-3xl mb-3" aria-hidden="true">♿</div>
+            <h3 class="font-bold text-lg mb-2">WCAG 2.2 Level AA</h3>
+            <p class="text-sm text-gray-300 leading-relaxed">
+              This index page ships with skip-to-content, visible focus rings, semantic landmarks, sufficient color contrast, and proper alt-text on every thumbnail.
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-10 text-center">
+          <a href="https://github.com/sauravirai/ai-experiments"
+             class="inline-flex items-center gap-2 bg-wm-spark-100 hover:bg-wm-spark-100/90 text-wm-gray-160 px-6 py-3 rounded-md font-bold shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2.1c-3.2.7-3.87-1.36-3.87-1.36-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.73-1.53-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.89-.39s1.97.13 2.89.39c2.21-1.49 3.18-1.18 3.18-1.18.62 1.59.23 2.76.11 3.05.74.8 1.18 1.83 1.18 3.09 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.05.78 2.12v3.15c0 .31.21.68.79.56C20.21 21.38 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/>
+            </svg>
+            View the source (private repo)
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ════════ Footer ════════ -->
+  <footer class="bg-wm-gray-160 text-gray-400 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-3 text-sm">
+      <p>👋 Made by <strong class="text-white">Sauravi Rai</strong> · Private portfolio · Selectively shared</p>
+      <p>© 2026 · Built with Tailwind CSS · WCAG 2.2 AA</p>
+    </div>
+  </footer>
+
+</body>
+</html>

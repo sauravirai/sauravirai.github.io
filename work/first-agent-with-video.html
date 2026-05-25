@@ -1,0 +1,2328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My First Agent — The Story (with video) | Sauravi</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* ── TOKENS ─────────────────────────────────────── */
+    :root {
+      --blue:      #0053e2;
+      --blue-dark: #003eac;
+      --blue-deep: #00287a;
+      --yellow:    #ffc220;
+      --yellow-lt: #fff3cc;
+      --white:     #ffffff;
+      --gray-10:   #f5f6fa;
+      --gray-50:   #e0e3eb;
+      --gray-100:  #adb3c3;
+      --gray-160:  #333740;
+      --black:     #0d0d0d;
+      --green:     #2a8703;
+      --font: 'Segoe UI', -apple-system, Arial, sans-serif;
+      --mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      --radius: 12px;
+      --shadow: 0 4px 24px rgba(0,83,226,0.10);
+    }
+
+    /* ── RESET ──────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #001a5c; font-family: var(--font); }
+
+    /* ── PROGRESS BAR ───────────────────────────────── */
+    #progress-track {
+      position: fixed; top: 0; left: 0; right: 0; height: 5px;
+      background: rgba(255,255,255,0.15); z-index: 9999;
+    }
+    #progress-fill {
+      height: 100%; background: var(--yellow);
+      transition: width 0.4s ease; width: 0%;
+    }
+
+    /* ── SLIDES ─────────────────────────────────────── */
+    .slide {
+      display: none;
+      width: 100vw; height: 100vh;
+      position: absolute; top: 0; left: 0;
+      overflow: hidden;
+      animation: fadeIn 0.35s ease;
+    }
+    .slide.active { display: flex; flex-direction: column; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── LAYOUT: white content slide ───────────────── */
+    .slide-content {
+      background: var(--white);
+      padding: 52px 64px 80px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    /* ── TITLE SLIDE ────────────────────────────────── */
+    .slide-title {
+      background: linear-gradient(145deg, #001f7a 0%, #0053e2 60%, #0070ff 100%);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 72px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .slide-title::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: rgba(255,194,32,0.07);
+      right: -150px; top: -150px;
+    }
+    .slide-title::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+      right: 100px; bottom: -100px;
+    }
+    .title-eyebrow {
+      font-size: 14px; font-weight: 600; letter-spacing: 2.5px;
+      color: var(--yellow); text-transform: uppercase; margin-bottom: 24px;
+    }
+    .title-h1 {
+      font-size: clamp(36px, 4.5vw, 60px);
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.15;
+      max-width: 780px;
+      margin-bottom: 24px;
+    }
+    .title-h1 span { color: var(--yellow); }
+    .title-sub {
+      font-size: clamp(16px, 2vw, 22px);
+      color: rgba(255,255,255,0.78);
+      max-width: 600px;
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+    .title-meta {
+      display: flex; gap: 28px; align-items: center;
+    }
+    .meta-badge {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 30px;
+      padding: 8px 18px;
+      color: #fff; font-size: 14px; font-weight: 500;
+    }
+    .meta-badge i { color: var(--yellow); }
+
+    /* ── SLIDE HEADER ───────────────────────────────── */
+    .slide-header {
+      display: flex; align-items: flex-start; gap: 18px;
+      margin-bottom: 36px;
+      border-bottom: 3px solid var(--gray-50);
+      padding-bottom: 20px;
+    }
+    .slide-icon {
+      width: 48px; height: 48px; min-width: 48px;
+      background: var(--blue); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 22px;
+    }
+    .slide-icon.yellow { background: var(--yellow); color: var(--blue-deep); }
+    .slide-icon.green  { background: var(--green); }
+    .slide-icon.dark   { background: var(--blue-deep); }
+    .slide-h1 {
+      font-size: clamp(26px, 3.2vw, 40px);
+      font-weight: 800;
+      color: var(--blue);
+      line-height: 1.2;
+    }
+    .slide-h1 .accent { color: var(--yellow); }
+    .slide-sub {
+      font-size: clamp(14px, 1.5vw, 17px);
+      color: var(--gray-100);
+      margin-top: 4px;
+      font-weight: 400;
+    }
+
+    /* ── BODY TEXT ──────────────────────────────────── */
+    .body-text {
+      font-size: clamp(15px, 1.8vw, 19px);
+      color: var(--gray-160);
+      line-height: 1.65;
+      max-width: 820px;
+    }
+
+    /* ── BULLET LIST ────────────────────────────────── */
+    .bullet-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .bullet-list li {
+      display: flex; align-items: flex-start; gap: 14px;
+      font-size: clamp(14px, 1.7vw, 18px);
+      color: var(--gray-160);
+      line-height: 1.55;
+    }
+    .bullet-list li .bicon {
+      min-width: 28px; height: 28px;
+      background: var(--blue);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 12px;
+      margin-top: 1px;
+    }
+    .bullet-list li .bicon.yellow { background: var(--yellow); color: var(--blue-deep); }
+    .bullet-list li .bicon.green  { background: var(--green); }
+    .bullet-list li strong { color: var(--blue); }
+
+    /* ── CHAOS CARD ROW ─────────────────────────────── */
+    .chaos-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 8px;
+    }
+    .chaos-card {
+      background: var(--gray-10);
+      border: 2px solid var(--gray-50);
+      border-radius: var(--radius);
+      padding: 22px 20px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .chaos-card .chaos-icon {
+      width: 42px; height: 42px;
+      background: #fce8e6;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: #c0392b; font-size: 18px;
+    }
+    .chaos-card h3 { font-size: 15px; font-weight: 700; color: var(--gray-160); }
+    .chaos-card p  { font-size: 13px; color: var(--gray-100); line-height: 1.5; }
+
+    /* ── TWO-COL ────────────────────────────────────── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+    .two-col-40-60 { display: grid; grid-template-columns: 40% 1fr; gap: 32px; }
+
+    /* ── CALLOUT / AHA ──────────────────────────────── */
+    .aha-box {
+      background: linear-gradient(135deg, #e8f0fe 0%, #fff3cc 100%);
+      border: 2px solid var(--blue);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      display: flex; gap: 20px; align-items: flex-start;
+    }
+    .aha-box .aha-icon {
+      min-width: 52px; height: 52px;
+      background: var(--yellow);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--blue-deep); font-size: 24px;
+    }
+    .aha-box .aha-text h3 { font-size: 17px; font-weight: 700; color: var(--blue); margin-bottom: 6px; }
+    .aha-box .aha-text p  { font-size: 15px; color: var(--gray-160); line-height: 1.6; }
+
+    /* ── CODE BLOCK ─────────────────────────────────── */
+    .code-wrap {
+      background: #0d1117;
+      border-radius: 10px;
+      overflow: hidden;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.7;
+    }
+    .code-bar {
+      background: #161b22;
+      padding: 8px 14px;
+      display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid #30363d;
+    }
+    .code-bar .dot {
+      width: 12px; height: 12px; border-radius: 50%;
+    }
+    .code-bar .dot.r { background: #ff5f56; }
+    .code-bar .dot.y { background: #ffbd2e; }
+    .code-bar .dot.g { background: #27c93f; }
+    .code-bar .filename {
+      font-size: 11px; color: #8b949e;
+      font-family: var(--mono); margin-left: 6px;
+    }
+    .code-body { padding: 16px 20px; overflow: auto; max-height: 330px; color: #e6edf3; }
+    /* YAML colors */
+    .y-key   { color: #79c0ff; }
+    .y-val   { color: #a5d6ff; }
+    .y-str   { color: #a8d8a8; }
+    .y-num   { color: #d2a8ff; }
+    .y-bool  { color: #f78166; }
+    .y-cmt   { color: #8b949e; font-style: italic; }
+    .y-head  { color: #ffa657; font-weight: bold; }
+    /* prompt colors */
+    .p-section { color: #ffa657; font-weight: bold; }
+    .p-rule    { color: #a8d8a8; }
+    .p-var     { color: #d2a8ff; }
+    .p-cmt     { color: #8b949e; font-style: italic; }
+
+    /* ── FLOW DIAGRAM ───────────────────────────────── */
+    .flow-row {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      margin: 12px 0;
+    }
+    .flow-step {
+      flex: 1;
+      background: var(--white);
+      border: 2.5px solid var(--blue);
+      border-radius: 10px;
+      padding: 16px 14px;
+      text-align: center;
+      position: relative;
+    }
+    .flow-step .fs-num {
+      width: 28px; height: 28px;
+      background: var(--blue); color: #fff;
+      border-radius: 50%; font-size: 13px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 8px;
+    }
+    .flow-step .fs-title { font-size: 13px; font-weight: 700; color: var(--blue); }
+    .flow-step .fs-desc  { font-size: 11.5px; color: var(--gray-100); margin-top: 4px; line-height: 1.4; }
+    .flow-step.highlight { background: var(--yellow-lt); border-color: var(--yellow); }
+    .flow-step.highlight .fs-num { background: var(--yellow); color: var(--blue-deep); }
+    .flow-step.highlight .fs-title { color: var(--blue-deep); }
+    .flow-arrow {
+      display: flex; align-items: center; padding: 0 6px;
+      color: var(--blue); font-size: 18px;
+    }
+
+    /* ── DEMO FLOW ──────────────────────────────────── */
+    .demo-row {
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .demo-bubble {
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .demo-bubble.right { flex-direction: row-reverse; }
+    .demo-avatar {
+      min-width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff; font-size: 13px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .demo-avatar.agent { background: var(--yellow); color: var(--blue-deep); }
+    .demo-msg {
+      max-width: 72%;
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-size: 13.5px;
+      line-height: 1.55;
+    }
+    .demo-bubble .demo-msg {
+      background: var(--gray-10);
+      border: 1px solid var(--gray-50);
+      color: var(--gray-160);
+      border-top-left-radius: 4px;
+    }
+    .demo-bubble.right .demo-msg {
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-top-right-radius: 4px;
+    }
+    .demo-bubble.right .demo-avatar { background: #e0e3eb; color: var(--blue); }
+
+    /* ── IDEAS GRID ─────────────────────────────────── */
+    .ideas-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .idea-card {
+      background: var(--gray-10);
+      border: 2px solid var(--gray-50);
+      border-radius: var(--radius);
+      padding: 20px 18px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .idea-card:hover { border-color: var(--blue); box-shadow: var(--shadow); }
+    .idea-card .idea-icon {
+      width: 40px; height: 40px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; color: #fff; margin-bottom: 10px;
+    }
+    .idea-card h3 { font-size: 14px; font-weight: 700; color: var(--gray-160); margin-bottom: 4px; }
+    .idea-card p  { font-size: 12.5px; color: var(--gray-100); line-height: 1.45; }
+
+    /* ── STEPS ──────────────────────────────────────── */
+    .steps-list { display: flex; flex-direction: column; gap: 14px; }
+    .step-item {
+      display: flex; align-items: flex-start; gap: 16px;
+      background: var(--gray-10);
+      border: 1.5px solid var(--gray-50);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+    }
+    .step-num {
+      min-width: 36px; height: 36px;
+      background: var(--blue); color: #fff;
+      border-radius: 50%; font-size: 15px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .step-body h3 { font-size: 15px; font-weight: 700; color: var(--blue); margin-bottom: 3px; }
+    .step-body p  { font-size: 13px; color: var(--gray-160); line-height: 1.5; }
+    .step-body code {
+      background: #e8f0fe; color: var(--blue);
+      padding: 1px 7px; border-radius: 4px;
+      font-family: var(--mono); font-size: 12.5px;
+    }
+
+    /* ── RESOURCE CARDS ─────────────────────────────── */
+    .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .res-card {
+      background: var(--gray-10);
+      border: 2px solid var(--gray-50);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      display: flex; gap: 14px; align-items: flex-start;
+    }
+    .res-icon {
+      min-width: 40px; height: 40px;
+      border-radius: 8px;
+      background: var(--blue);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+    }
+    .res-card h3 { font-size: 14px; font-weight: 700; color: var(--gray-160); margin-bottom: 3px; }
+    .res-card a  {
+      font-size: 13px; color: var(--blue);
+      text-decoration: none; word-break: break-all;
+    }
+    .res-card a:hover { text-decoration: underline; }
+
+    /* ── CLOSING ────────────────────────────────────── */
+    .closing-slide {
+      background: linear-gradient(145deg, #001f7a 0%, #0053e2 60%, #0070ff 100%);
+      flex: 1;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 60px;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .closing-slide::before {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: rgba(255,194,32,0.06);
+      left: -200px; top: -100px;
+    }
+    .quote-mark {
+      font-size: 80px; line-height: 1;
+      color: rgba(255,194,32,0.35);
+      font-family: Georgia, serif;
+      margin-bottom: -20px;
+    }
+    .quote-text {
+      font-size: clamp(22px, 2.8vw, 34px);
+      font-weight: 700;
+      color: #fff;
+      max-width: 760px;
+      line-height: 1.4;
+      margin-bottom: 20px;
+    }
+    .quote-text em { color: var(--yellow); font-style: normal; }
+    .quote-attr {
+      font-size: 16px; color: rgba(255,255,255,0.65);
+      margin-bottom: 40px;
+    }
+    .cta-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--yellow); color: var(--blue-deep);
+      padding: 14px 32px; border-radius: 30px;
+      font-size: 16px; font-weight: 700;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(255,194,32,0.4);
+    }
+    .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,194,32,0.55); }
+
+    /* ── PILL TAGS ──────────────────────────────────── */
+    .tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #e8f0fe; color: var(--blue);
+      border-radius: 20px; padding: 3px 10px;
+      font-size: 12px; font-weight: 600;
+    }
+    .tag.yellow { background: var(--yellow-lt); color: var(--blue-deep); }
+
+    /* ── V1/V2 COMPARE ──────────────────────────────── */
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .compare-col {
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .compare-header {
+      padding: 12px 18px;
+      font-size: 14px; font-weight: 700;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .compare-header.v1 { background: #fce8e6; color: #c0392b; }
+    .compare-header.v2 { background: #e8f7e8; color: #1e6b1e; }
+    .compare-body {
+      border: 2px solid var(--gray-50);
+      border-top: none;
+      border-bottom-left-radius: var(--radius);
+      border-bottom-right-radius: var(--radius);
+      padding: 16px 18px;
+      background: var(--gray-10);
+    }
+    .compare-body ul { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+    .compare-body li {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 13px; color: var(--gray-160); line-height: 1.5;
+    }
+    .compare-body li i { margin-top: 2px; min-width: 14px; }
+    .compare-body li i.fa-times-circle { color: #e74c3c; }
+    .compare-body li i.fa-check-circle { color: var(--green); }
+
+    /* ── NAVIGATION ─────────────────────────────────── */
+    .slide-nav {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 12px; align-items: center;
+      background: rgba(0,0,0,0.82);
+      backdrop-filter: blur(10px);
+      padding: 10px 24px; border-radius: 30px;
+      z-index: 9000; border: 1px solid rgba(255,255,255,0.1);
+    }
+    .nav-btn {
+      background: none; border: none;
+      color: rgba(255,255,255,0.8); font-size: 16px;
+      cursor: pointer; padding: 4px 8px;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-btn:hover { color: var(--yellow); background: rgba(255,194,32,0.12); }
+    .slide-counter {
+      color: #fff; font-size: 13px; font-weight: 500;
+      min-width: 52px; text-align: center;
+    }
+    .nav-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.18); }
+
+    /* ── SPEAKER NOTES ──────────────────────────────── */
+    #notes-panel {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(13,17,23,0.95);
+      backdrop-filter: blur(10px);
+      border-top: 2px solid var(--yellow);
+      padding: 16px 40px 24px;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+      z-index: 8000;
+      max-height: 30vh;
+      overflow-y: auto;
+    }
+    #notes-panel.open { transform: translateY(0); }
+    #notes-panel .notes-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      color: var(--yellow); text-transform: uppercase; margin-bottom: 8px;
+    }
+    #notes-panel .notes-body {
+      font-size: 14px; color: rgba(255,255,255,0.85); line-height: 1.65;
+    }
+
+    /* ── UTILITY ────────────────────────────────────── */
+    .mt-sm { margin-top: 12px; }
+    .mt-md { margin-top: 20px; }
+    .mt-lg { margin-top: 32px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--yellow-lt); color: var(--blue-deep);
+      border: 1.5px solid var(--yellow);
+      border-radius: 20px; padding: 4px 12px;
+      font-size: 12px; font-weight: 600;
+    }
+    .section-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--gray-100);
+      margin-bottom: 20px;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--gray-50); border-radius: 10px; }
+    /* ── FEEDBACK WIDGET ──────────────────────────────── */
+    #feedback-btn {
+      position: fixed; bottom: 24px; right: 24px; z-index: 10000;
+      width: 52px; height: 52px;
+      background: var(--yellow); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; color: var(--blue-deep);
+      border: none; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    #feedback-btn:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(0,0,0,0.28); }
+    #feedback-btn .fb-badge {
+      position: absolute; top: -4px; right: -4px;
+      background: var(--blue); color: #fff;
+      font-size: 10px; font-weight: 700;
+      width: 18px; height: 18px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #feedback-overlay {
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.45); align-items: flex-end;
+      justify-content: flex-end; padding: 90px 24px 24px;
+    }
+    #feedback-overlay.open { display: flex; }
+    #feedback-modal {
+      background: #fff; border-radius: 16px;
+      width: 340px; box-shadow: 0 8px 40px rgba(0,83,226,0.18);
+      overflow: hidden; animation: fadeIn 0.25s ease;
+    }
+    .fb-header {
+      background: var(--blue); color: #fff;
+      padding: 16px 20px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .fb-header h3 { font-size: 15px; font-weight: 700; }
+    .fb-header button { background: none; border: none; color: rgba(255,255,255,0.7); cursor: pointer; font-size: 18px; line-height: 1; }
+    .fb-body { padding: 20px; }
+    .fb-label { font-size: 12px; font-weight: 600; color: var(--gray-100); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+    .fb-emojis { display: flex; gap: 8px; margin-bottom: 16px; }
+    .fb-emojis button {
+      flex: 1; padding: 8px 0; font-size: 20px;
+      border: 2px solid var(--gray-50); border-radius: 8px;
+      background: var(--gray-10); cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .fb-emojis button:hover, .fb-emojis button.selected {
+      border-color: var(--blue); background: #e8f0fe;
+    }
+    .fb-topic-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .fb-topic {
+      font-size: 11px; font-weight: 600; padding: 4px 10px;
+      border: 1.5px solid var(--gray-50); border-radius: 20px;
+      background: var(--gray-10); cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .fb-topic:hover, .fb-topic.selected { border-color: var(--blue); background: #e8f0fe; color: var(--blue); }
+    .fb-textarea {
+      width: 100%; border: 1.5px solid var(--gray-50); border-radius: 8px;
+      padding: 10px; font-size: 13px; font-family: var(--font);
+      resize: vertical; min-height: 72px;
+      color: var(--gray-160); outline: none;
+    }
+    .fb-textarea:focus { border-color: var(--blue); }
+    .fb-footer { padding: 0 20px 20px; display: flex; gap: 8px; }
+    .fb-submit {
+      flex: 1; background: var(--blue); color: #fff;
+      border: none; border-radius: 8px; padding: 10px;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+    }
+    .fb-submit:hover { background: var(--blue-dark); }
+    .fb-cancel { background: none; border: 1.5px solid var(--gray-50); border-radius: 8px; padding: 10px 14px; cursor: pointer; color: var(--gray-100); font-size: 14px; }
+    .fb-cancel:hover { border-color: var(--gray-100); }
+    .fb-success { padding: 32px 20px; text-align: center; }
+    .fb-success .fb-tick { font-size: 40px; margin-bottom: 12px; }
+    .fb-success h3 { font-size: 16px; font-weight: 700; color: var(--blue); margin-bottom: 6px; }
+    .fb-success p  { font-size: 13px; color: var(--gray-100); }
+
+  </style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div id="progress-track"><div id="progress-fill"></div></div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SLIDE 01 — TITLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="slide active" data-notes="Welcome everyone! Today's session is Sauravi's personal story of building her very first AI agent. Quick intro: Sauravi is a Senior Director of Product Management at Walmart Global Technology in Bangalore — she leads product across international and domestic commerce, and manages a team of directors and PMs. The test use case: calendar and meeting room booking — a real, repeatable workflow. The result: a working AI agent, built with configuration and no code. By the end of today, you’ll know exactly how to do the same thing for your own workflow. Let’s go.">
+  <div class="slide-title">
+    <div class="title-eyebrow"><i class="fas fa-dog"></i> &nbsp;Walmart Global Technology · Bangalore · 2026</div>
+    <h1 class="title-h1">My First Agent<br><span>What I Built &amp; What I Learned</span></h1>
+    <p class="title-sub">A real scheduling problem. A working agent. Zero code written.</p>
+    <!-- AI Avatar — replace src with your puppy-pages avatar URL -->
+    <div style="display:flex;align-items:center;gap:18px;margin-bottom:16px;">
+      <div style="position:relative;flex-shrink:0;">
+        <img
+          src="assets/first-agent-image-1.png"
+          alt="Sauravi's AI avatar"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+          style="width:80px;height:80px;border-radius:50%;border:3px solid #ffc220;object-fit:cover;display:block;"
+        />
+        <!-- fallback initials (shown if img fails to load) -->
+        <div style="display:none;width:80px;height:80px;border-radius:50%;border:3px solid #ffc220;background:linear-gradient(135deg,#0053e2,#001f7a);align-items:center;justify-content:center;font-size:26px;font-weight:900;color:#ffc220;letter-spacing:-1px;">SR</div>
+        <div style="position:absolute;bottom:2px;right:2px;width:22px;height:22px;border-radius:50%;background:#ffc220;border:2px solid #001f7a;display:flex;align-items:center;justify-content:center;font-size:10px;">🤖</div>
+      </div>
+      <div>
+        <div style="font-size:22px;font-weight:900;color:#fff;line-height:1.1;">Sauravi</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.7);margin-top:3px;">Senior Director, Product Management</div>
+        <div style="font-size:11px;color:#ffc220;margin-top:4px;font-weight:600;">Walmart Global Technology · Bangalore</div>
+      </div>
+    </div>
+
+    <div class="title-meta">
+      <div class="meta-badge"><i class="fas fa-map-marker-alt"></i> Walmart Global Technology · Bangalore</div>
+      <div class="meta-badge"><i class="fas fa-calendar-alt"></i> April 2026</div>
+    </div>
+    <div style="margin-top:20px;">
+      <a href="https://agent-platform.example.com target="_blank"
+         style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,194,32,0.5);border-radius:30px;padding:7px 16px;color:rgba(255,255,255,0.75);font-size:13px;text-decoration:none;">
+        <i class="fas fa-dog" style="color:var(--yellow);"></i>
+        <span><strong style="color:var(--yellow);">Prerequisite:</strong> New to AgentRunner? Get started at <u>internal.example.com/doghouse</u> first &rarr;</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SLIDE 02 — THE STORY IN 30 SECONDS (VIDEO)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="slide" data-notes="This is the 30-second hook. Let it play. The video was made with HeyGen — an AI avatar reading my script — which fits the theme: I&#39;m telling an AI story using AI tools. After it plays, we go deep on the architecture, the journey, the receipts, and how you can build your own. Don&#39;t skip the rest — this video only sets up the why.">
+  <div class="slide-title" style="justify-content:center;align-items:center;text-align:center;padding:48px 60px 40px;">
+
+    <!-- Eyebrow -->
+    <div class="title-eyebrow" style="text-align:center;margin-bottom:16px;">🎬 THE STORY IN 30 SECONDS</div>
+
+    <!-- Title -->
+    <h1 class="title-h1" style="font-size:clamp(32px,4vw,48px);font-weight:800;text-align:center;max-width:100%;margin-bottom:12px;">
+      Watch <span style="color:var(--yellow)">how it started</span>
+    </h1>
+
+    <!-- Subtitle -->
+    <p class="title-sub" style="text-align:center;max-width:620px;margin:0 auto 24px;font-size:clamp(14px,1.6vw,18px);">
+      Before we dive into the architecture, hear it directly from Sauravi — built with an AI avatar to match the AI story being told.
+    </p>
+
+    <!-- Video frame: portrait 9:16 -->
+    <div style="position:relative;width:100%;max-width:360px;margin:0 auto 22px;border-radius:18px;overflow:hidden;box-shadow:0 8px 48px rgba(0,20,100,0.6),0 0 0 2px rgba(255,194,32,0.28);aspect-ratio:9/16;">
+      <video src="first-agent-video.mp4" controls preload="metadata" style="max-width:100%;height:auto;"></video>
+    </div>
+
+    <!-- Three-card meta strip -->
+    <div class="title-meta" style="justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+      <div class="meta-badge" style="flex-direction:column;align-items:flex-start;gap:4px;max-width:200px;text-align:left;">
+        <span style="font-weight:700;">🎬 Generated with HeyGen</span>
+        <span style="color:rgba(255,255,255,0.65);font-size:12px;">AI avatar reading Sauravi&#39;s script — same tools we&#39;re talking about</span>
+      </div>
+      <div class="meta-badge" style="flex-direction:column;align-items:flex-start;gap:4px;max-width:200px;text-align:left;">
+        <span style="font-weight:700;">☁️ Hosted on OneDrive</span>
+        <span style="color:rgba(255,255,255,0.65);font-size:12px;">Walmart-internal share, view-only</span>
+      </div>
+      <div class="meta-badge" style="flex-direction:column;align-items:flex-start;gap:4px;max-width:200px;text-align:left;">
+        <span style="font-weight:700;">⏱️ ~30 seconds</span>
+        <span style="color:rgba(255,255,255,0.65);font-size:12px;">The 30-second pitch — full story unfolds in the slides ahead</span>
+      </div>
+    </div>
+
+    <!-- OneDrive fallback link -->
+    <a href="https://internal.example.com
+       target="_blank"
+       rel="noopener noreferrer"
+       style="color:var(--yellow);font-size:13px;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(255,194,32,0.35);padding-bottom:1px;">
+      ↗ Open in OneDrive
+    </a>
+
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SLIDE 02 — BEFORE & AFTER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="slide" data-notes="Open with the pain. Ask the room: how many of you deal with any of these? They will all raise their hands. Then flip to the right side — and show that every single one of those problems has a solution. The point: this is not a one-off trick. It systematically addresses a real, recurring workflow. That's what makes it a useful agent, not just a clever demo.">
+  <div class="slide-content">
+    <div class="slide-header">
+      <div class="slide-icon" style="background:#e74c3c;"><i class="fas fa-calendar-times"></i></div>
+      <div>
+        <div class="slide-h1">The Problem — <span class="accent">and What Got Built</span></div>
+        <div class="slide-sub">Scheduling a global team with no EA and a calendar that fights back. The perfect test case for AgentRunner.</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:10px;border-radius:12px;overflow:hidden;border:1.5px solid var(--gray-50);">
+
+      <!-- ── BEFORE ── -->
+      <div style="background:#fff8f8;padding:16px 20px;border-right:1.5px solid var(--gray-50);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <div style="width:26px;height:26px;background:#e74c3c;border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;"><i class="fas fa-times"></i></div>
+          <span style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:#c0392b;">Before</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="display:flex;gap:10px;padding:8px 10px;background:#fff;border-radius:8px;border:1px solid #ffd0d0;align-items:flex-start;">
+            <i class="fas fa-door-open" style="color:#c0392b;margin-top:2px;min-width:13px;font-size:12px;"></i>
+            <div><div style="font-size:12px;font-weight:700;color:var(--gray-160);">Room Roulette</div><div style="font-size:11px;color:var(--gray-100);">Multiple rooms, all heavily booked in office hours. Open calendars one by one and hope.</div></div>
+          </div>
+          <div style="display:flex;gap:10px;padding:8px 10px;background:#fff;border-radius:8px;border:1px solid #ffd0d0;align-items:flex-start;">
+            <i class="fas fa-video-slash" style="color:#c0392b;margin-top:2px;min-width:13px;font-size:12px;"></i>
+            <div><div style="font-size:12px;font-weight:700;color:var(--gray-160);">Zoom or Teams?</div><div style="font-size:11px;color:var(--gray-100);">Add the link manually, every time — and hope everyone joins the right platform.</div></div>
+          </div>
+          <div style="display:flex;gap:10px;padding:8px 10px;background:#fff;border-radius:8px;border:1px solid #ffd0d0;align-items:flex-start;">
+            <i class="fas fa-globe" style="color:#c0392b;margin-top:2px;min-width:13px;font-size:12px;"></i>
+            <div><div style="font-size:12px;font-weight:700;color:var(--gray-160);">IST ↔ UTC in your head</div><div style="font-size:11px;color:var(--gray-100);">Every external meeting. Mental math, every time. A silent tax on focus.</div></div>
+          </div>
+          <div style="display:flex;gap:10px;padding:8px 10px;background:#fff;border-radius:8px;border:1px solid #ffd0d0;align-items:flex-start;">
+            <i class="fas fa-edit" style="color:#c0392b;margin-top:2px;min-width:13px;font-size:12px;"></i>
+            <div><div style="font-size:12px;font-weight:700;color:var(--gray-160);">Opaque updates</div><div style="font-size:11px;color:var(--gray-100);">Changed the time? Type a manual note. No guarantee anyone reads it.</div></div>
+          </div>
+          <div style="display:flex;gap:10px;padding:8px 10px;background:#fff;border-radius:8px;border:1px solid #ffd0d0;align-items:flex-start;">
+            <i class="fas fa-lock" style="color:#c0392b;margin-top:2px;min-width:13px;font-size:12px;"></i>
+            <div><div style="font-size:12px;font-weight:700;color:var(--gray-160);">Hard blocks ignored</div><div style="font-size:11px;color:var(--gray-100);">Lunch, family time — people book right over them because the calendar doesn't know.</div></div>
+          </div>
+          <div style="display:flex;gap:10px;padding:8px 10px;background:#fff;border-radius:8px;border:1px solid #ffd0d0;align-items:flex-start;">
+            <i class="fas fa-user-clock" style="color:#c0392b;margin-top:2px;min-width:13px;font-size:12px;"></i>
+            <div><div style="font-size:12px;font-weight:700;color:var(--gray-160);">No EA, global team</div><div style="font-size:11px;color:var(--gray-100);">Leading across India, US, international markets — every booking and reschedule is manual, all you.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── AFTER ── -->
+      <div style="background:#f0faf0;padding:16px 20px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <div style="width:26px;height:26px;background:var(--green);border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;"><i class="fas fa-check"></i></div>
+          <span style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--green);">Her agent solved it</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="display:flex;gap:10px;padding:8px 10px;background:#fff;border-radius:8px;border:1px solid #c8eec8;align-items:flex-start;">
+            <i class="fas fa-check-circle" style="color:var(--green);margin-top:2px;min-width:13px;font-size:12px;"></i>
+            <div><div style="font-size:12px;font-weight:700;color:var(--gray-160);">Agent books the right room</div><div style="font-size:11px;color:var(--gray-100);">Checks availability across all rooms, picks by size and preference. One command.</div></div>
+          </div>
+          <div style="display:flex;gap:10px;padding:8px 10px;background:#fff;border-radius:8px;border:1px solid #c8eec8;align-items:flex-start;">
+            <i class="fas fa-check-circle" style="color:var(--green);margin-top:2px;min-width:13px;font-size:12px;"></i>
+            <div><div style="font-size:12px;font-weight:700;color:var(--gray-160);">Meeting link auto-added</div><div style="font-size:11px;color:var(--gray-100);">Zoom URL inserted into every invite, automatically. Never forgotten again.</div></div>
+          </div>
+          <div style="display:flex;gap:10px;padding:8px 10px;background:#fff;border-radius:8px;border:1px solid #c8eec8;align-items:flex-start;">
+            <i class="fas fa-check-circle" style="color:var(--green);margin-top:2px;min-width:13px;font-size:12px;"></i>
+            <div><div style="font-size:12px;font-weight:700;color:var(--gray-160);">Timezone handled silently</div><div style="font-size:11px;color:var(--gray-100);">Say "2pm" in IST. Agent converts to UTC for the API, confirms back in IST. Zero mental math.</div></div>
+          </div>
+          <div style="display:flex;gap:10px;padding:8px 10px;background:#fff;border-radius:8px;border:1px solid #c8eec8;align-items:flex-start;">
+            <i class="fas fa-check-circle" style="color:var(--green);margin-top:2px;min-width:13px;font-size:12px;"></i>
+            <div><div style="font-size:12px;font-weight:700;color:var(--gray-160);">Timestamped change notes</div><div style="font-size:11px;color:var(--gray-100);">Any update appends a clear note to the invite description. Transparent, automatic.</div></div>
+          </div>
+          <div style="display:flex;gap:10px;padding:8px 10px;background:#fff;border-radius:8px;border:1px solid #c8eec8;align-items:flex-start;">
+            <i class="fas fa-check-circle" style="color:var(--green);margin-top:2px;min-width:13px;font-size:12px;"></i>
+            <div><div style="font-size:12px;font-weight:700;color:var(--gray-160);">Hard blocks always respected</div><div style="font-size:11px;color:var(--gray-100);">Agent knows your protected time and never suggests anything inside those windows.</div></div>
+          </div>
+          <div style="display:flex;gap:10px;padding:8px 10px;background:#fff;border-radius:8px;border:1px solid var(--yellow);background:var(--yellow-lt);align-items:flex-start;">
+            <i class="fas fa-road" style="color:#995213;margin-top:2px;min-width:13px;font-size:12px;"></i>
+            <div><div style="font-size:12px;font-weight:700;color:#995213;">EA orchestration — on the roadmap</div><div style="font-size:11px;color:#7a5c00;">The team-ready Meeting Room Agent adds shared config; EA–EA coordination and schedule defrag are next.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="aha-box mt-sm" style="padding:10px 16px;">
+      <div class="aha-icon" style="min-width:32px;height:32px;font-size:14px;"><i class="fas fa-lightbulb"></i></div>
+      <div class="aha-text">
+        <p style="font-size:13px;">Scheduling was the test case — concrete, repeatable, and obviously broken. Solve it, and you have a template for the next workflow too.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SLIDE 04 — FROM PROBLEM TO SOLUTION: HOW IT WAS BUILT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="slide" data-notes="This is the 'before the aha' moment. Walk the audience through what Sauravi actually did — not the magic, but the messy start. Important framing: she IS an engineer by training — but like many leaders, she hadn't written code in years. And crucially, she didn't need to here. She just wrote down the things she hated doing and started asking AgentRunner about them one by one. No code was written — only configuration. The message: this is NOT a coding journey. It's a 'what do I hate doing, and how do I configure an agent to fix it' journey.">
+  <div class="slide-content">
+    <div class="slide-header">
+      <div class="slide-icon" style="background:#8e44ad;"><i class="fas fa-search"></i></div>
+      <div>
+        <div class="slide-h1">Spotting the Gap: <span class="accent">First Tinkering</span></div>
+        <div class="slide-sub">Before the breakthrough, there was just curiosity — and a list of things that wasted time.</div>
+      </div>
+    </div>
+
+    <div class="two-col" style="gap:32px;align-items:start;">
+      <div>
+        <div class="section-label"><i class="fas fa-bullseye"></i> &nbsp;Why scheduling was the right test case</div>
+        <ul class="bullet-list" style="margin-top:12px;">
+          <li>
+            <span class="bicon" style="background:#8e44ad;"><i class="fas fa-redo"></i></span>
+            <span><strong>Repetitive</strong> — done multiple times a day, every day. Small gain × high frequency = real time back.</span>
+          </li>
+          <li>
+            <span class="bicon" style="background:#e74c3c;"><i class="fas fa-check-circle"></i></span>
+            <span><strong>Clear success criteria</strong> — either the room is booked correctly or it isn't. Easy to verify.</span>
+          </li>
+          <li>
+            <span class="bicon" style="background:#e67e22;"><i class="fas fa-box"></i></span>
+            <span><strong>Self-contained</strong> — calendar + room data + one API. No complex dependencies to untangle first.</span>
+          </li>
+          <li>
+            <span class="bicon" style="background:#27ae60;"><i class="fas fa-user-slash"></i></span>
+            <span><strong>Zero EA</strong> — leading a global team with no executive assistant means every booking is manual, every time.</span>
+          </li>
+          <li>
+            <span class="bicon" style="background:#2980b9;"><i class="fas fa-lightbulb"></i></span>
+            <span><strong>Transferable pattern</strong> — solve one repetitive workflow with an agent, and you have the blueprint for the next.</span>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="section-label"><i class="fas fa-comments"></i> &nbsp;How the conversations with AgentRunner evolved</div>
+        <div class="steps-list" style="margin-top:12px;">
+          <div class="step-item">
+            <div class="step-num" style="background:#8e44ad;font-size:11px;">V0</div>
+            <div class="step-body">
+              <h3>"Can you book a room for me?"</h3>
+              <p>First prompt. Sauravi just asked plainly. AgentRunner explained it needed calendar access. She gave it. It worked — once.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num" style="font-size:11px;">V0.5</div>
+            <div class="step-body">
+              <h3>"What if I tell you my preferences?"</h3>
+              <p>She described her room order, her Zoom link, her timezone — in plain English, inside the chat. The agent followed them. But she had to re-explain them every session.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num" style="background:var(--green);font-size:11px;">V1</div>
+            <div class="step-body">
+              <h3>"Let's write all this into the system prompt."</h3>
+              <p>AgentRunner helped her move the rules and preferences into a persistent system prompt. Now it remembered everything. One prompt, no re-explaining.</p>
+            </div>
+          </div>
+          <div class="step-item" style="border-color:var(--yellow);background:var(--yellow-lt);">
+            <div class="step-num" style="background:var(--yellow);color:var(--blue-deep);font-size:11px;"><i class="fas fa-lightbulb"></i></div>
+            <div class="step-body">
+              <h3>"Wait — can my teammate use this too?"</h3>
+              <p>And that's when it hit her. The agent was hers — it had her Zoom link, her timezone, her room list. It couldn't be anyone else's. <em>Yet.</em></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="aha-box mt-md" style="padding:14px 20px;">
+      <div class="aha-icon" style="min-width:36px;height:36px;font-size:16px;"><i class="fas fa-lightbulb"></i></div>
+      <div class="aha-text">
+        <p style="font-size:14px;">The real breakthrough wasn't the first booking — it was a teammate asking <em>"Can I use this too?"</em> That one question exposed the hard-coded limits and unlocked the whole team design.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SLIDE 05 — MAKING IT WORK FOR THE TEAM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="slide" data-notes="Sauravi’s personalized Meeting Room Agent had a fundamental problem: everything was hard-coded for one person — her Zoom link, her timezone, her room preferences. The goal was always team-scale, so the question became: how do you give the agent a different identity per user without rewriting the whole prompt? Answer: a per-user config file.">
+  <div class="slide-content">
+    <div class="slide-header">
+      <div class="slide-icon yellow"><i class="fas fa-lightbulb"></i></div>
+      <div>
+        <div class="slide-h1">Making It Work <span class="accent">for the Whole Team</span></div>
+        <div class="slide-sub">Sauravi’s personalized Meeting Room Agent worked for one person. The goal: make it usable by the whole team without rebuilding from scratch.</div>
+      </div>
+    </div>
+
+    <div class="two-col-40-60" style="align-items:start;gap:36px;">
+      <div>
+        <div class="section-label">The Scaling Insight</div>
+        <ul class="bullet-list">
+          <li>
+            <span class="bicon yellow"><i class="fas fa-file-code"></i></span>
+            <span>What if you could describe <strong>any user</strong> in a YAML file — their timezone, their Zoom link, their room preferences?</span>
+          </li>
+          <li>
+            <span class="bicon yellow"><i class="fas fa-brain"></i></span>
+            <span>The agent reads that file at session start and <strong>just knows</strong> who it's talking to. One agent brain, infinite identities.</span>
+          </li>
+          <li>
+            <span class="bicon yellow"><i class="fas fa-users-cog"></i></span>
+            <span>It goes from <strong>Sauravi's agent</strong> to <strong>the team's agent</strong> — just by adding a YAML file per person.</span>
+          </li>
+          <li>
+            <span class="bicon yellow"><i class="fas fa-repeat"></i></span>
+            <span>When preferences change, update <strong>one file</strong>. The agent adapts instantly. Zero redeployment. Zero friction.</span>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="section-label">What the agent "knows" about Sauravi</div>
+        <div class="code-wrap">
+          <div class="code-bar">
+            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+            <span class="filename">prefs/sauravi.rai@example.com.yaml</span>
+          </div>
+          <div class="code-body">
+<pre><span class="y-cmt"># Sauravi's personal agent preferences</span>
+
+<span class="y-key">identity</span>:
+  <span class="y-key">name</span>:     <span class="y-str">"Sauravi"</span>
+  <span class="y-key">email</span>:    <span class="y-str">"sauravi.rai@example.com"</span>
+  <span class="y-key">timezone</span>: <span class="y-str">"Asia/Kolkata"</span>  <span class="y-cmt"># IST UTC+5:30</span>
+
+<span class="y-key">conferencing</span>:
+  <span class="y-key">zoom_link</span>: <span class="y-str">"https://internal.example.com
+  <span class="y-key">always_add</span>: <span class="y-bool">true</span>
+
+<span class="y-key">office_hours</span>:
+  <span class="y-key">work_start</span>:      <span class="y-str">"09:30"</span>
+  <span class="y-key">work_end</span>:        <span class="y-str">"17:30"</span>
+  <span class="y-key">preferred_start</span>: <span class="y-str">"10:00"</span>
+  <span class="y-key">preferred_end</span>:   <span class="y-str">"15:00"</span>
+  <span class="y-key">hard_blocks</span>:
+    - <span class="y-key">label</span>: <span class="y-str">"Lunch"</span>
+      <span class="y-key">start</span>: <span class="y-str">"13:00"</span>  <span class="y-key">end</span>: <span class="y-str">"14:00"</span>
+    - <span class="y-key">label</span>: <span class="y-str">"Family time"</span>
+      <span class="y-key">start</span>: <span class="y-str">"16:30"</span>  <span class="y-key">end</span>: <span class="y-str">"19:30"</span>
+
+<span class="y-key">room_priority</span>:
+  <span class="y-cmt"># Tier 1 — preferred (airy, window view)</span>
+  - <span class="y-str">Alderaan</span>
+  - <span class="y-str">Solaris</span>
+  <span class="y-cmt"># Tier 2 — standard</span>
+  - <span class="y-str">Skywalker</span>
+  - <span class="y-str">Arrakis</span>
+  - <span class="y-str">Babylon</span>
+  <span class="y-cmt"># Tier 3 — last resort</span>
+  - <span class="y-str">Skynet</span>
+  - <span class="y-str">Mandalore</span>
+
+<span class="y-key">booking_rules</span>:
+  <span class="y-key">confirm_before_change</span>: <span class="y-bool">true</span>
+  <span class="y-key">append_update_note</span>:   <span class="y-bool">true</span>
+  <span class="y-key">note_prefix</span>: <span class="y-str">"[Updated"</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SLIDE 06 — V1 → V2: THE JOURNEY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="slide" data-notes="This slide is about normalizing iteration. Sauravi didn't start with the 'correct' architecture. She started with something that worked. v1 was a big blob of a system prompt with everything hard-coded. It worked! And then she made it better. This is exactly how good software is built — start simple, identify friction, refactor. The lesson: don't let perfect be the enemy of shipped.">
+  <div class="slide-content">
+    <div class="slide-header">
+      <div class="slide-icon"><i class="fas fa-code-branch"></i></div>
+      <div>
+        <div class="slide-h1">Personal → Team: <span class="accent">How the Agent Got Better</span></div>
+        <div class="slide-sub">Start simple. Ship it. Hit a real wall. Then make it better. This is the story of every good tool ever built.</div>
+      </div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-col">
+        <div class="compare-header v1"><i class="fas fa-exclamation-triangle"></i> &nbsp;Sauravi’s agent — one person, hard-coded</div>
+        <div class="compare-body">
+          <ul>
+            <li><i class="fas fa-times-circle"></i> All preferences baked directly into the system prompt markdown file</li>
+            <li><i class="fas fa-times-circle"></i> Sauravi's Zoom link was a literal string in the prompt</li>
+            <li><i class="fas fa-times-circle"></i> Timezone, room list, working hours — all hard-coded</li>
+            <li><i class="fas fa-times-circle"></i> Only worked for one person — Sauravi</li>
+            <li><i class="fas fa-times-circle"></i> Changing preferences meant editing the prompt and re-reading it</li>
+            <li><i class="fas fa-times-circle"></i> No shared room data — rooms described in plain English inside the prompt</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="compare-col">
+        <div class="compare-header v2"><i class="fas fa-check-circle"></i> &nbsp;Meeting Room Agent — shared, configurable</div>
+        <div class="compare-body">
+          <ul>
+            <li><i class="fas fa-check-circle"></i> Structured YAML preferences file per user — clean separation of concerns</li>
+            <li><i class="fas fa-check-circle"></i> <code style="background:#e8f7e8;color:#1e6b1e;padding:1px 5px;border-radius:3px;">prefs/_template.yaml</code> — new user onboarding in minutes</li>
+            <li><i class="fas fa-check-circle"></i> Shared org-catalog YAML — rooms discoverable by any team member</li>
+            <li><i class="fas fa-check-circle"></i> Python tools to load/save preferences and room catalogs cleanly</li>
+            <li><i class="fas fa-check-circle"></i> Agent bootstraps from data — one prompt serves the whole team</li>
+            <li><i class="fas fa-check-circle"></i> Update a preference → agent adapts instantly, zero re-deployment</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-md">
+      <div class="flow-row">
+        <div class="flow-step">
+          <div class="fs-num">1</div>
+          <div class="fs-title">Start Messy</div>
+          <div class="fs-desc">One big system prompt. Hard-coded values. It works!</div>
+        </div>
+        <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+        <div class="flow-step">
+          <div class="fs-num">2</div>
+          <div class="fs-title">Feel the Friction</div>
+          <div class="fs-desc">The config is hard-coded for one person. Changing preferences means editing the whole prompt.</div>
+        </div>
+        <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+        <div class="flow-step highlight">
+          <div class="fs-num">3</div>
+          <div class="fs-title">Extract the Data</div>
+          <div class="fs-desc">Pull preferences into YAML. Build the shared room catalog.</div>
+        </div>
+        <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+        <div class="flow-step highlight">
+          <div class="fs-num">4</div>
+          <div class="fs-title">Team Ready</div>
+          <div class="fs-desc">Copy the template YAML. Fill in your details. Done.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-md">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray-100);margin-bottom:10px;"><i class="fas fa-flag-checkered"></i> &nbsp;Timeline: key milestones from the journey</div>
+      <div style="display:flex;gap:0;">
+        <div style="flex:1;border-left:3px solid var(--blue);padding:10px 14px;background:var(--gray-10);border-radius:8px 0 0 8px;">
+          <div style="font-size:10px;font-weight:700;color:var(--gray-100);text-transform:uppercase;margin-bottom:3px;">Mar 23, 2026 ✅</div>
+          <div style="font-size:18px;margin-bottom:4px;">🚀</div>
+          <div style="font-size:12px;font-weight:700;color:var(--blue);">First session</div>
+          <div style="font-size:11px;color:var(--gray-100);margin-top:2px;">AgentRunner opened, calendar connected, first tinkering begins</div>
+        </div>
+        <div style="width:1px;background:var(--gray-50);"></div>
+        <div style="flex:1;border-left:3px solid var(--blue);padding:10px 14px;background:var(--gray-10);">
+          <div style="font-size:10px;font-weight:700;color:var(--blue);text-transform:uppercase;margin-bottom:3px;font-weight:800;">Mar 25, 2026 ✅</div>
+          <div style="font-size:18px;margin-bottom:4px;">📅</div>
+          <div style="font-size:12px;font-weight:700;color:var(--blue);">First real booking</div>
+          <div style="font-size:11px;color:var(--gray-100);margin-top:2px;">Alderaan booked live. Zoom link auto-added. "It actually worked!"</div>
+        </div>
+        <div style="width:1px;background:var(--gray-50);"></div>
+        <div style="flex:1;border-left:3px solid #e67e22;padding:10px 14px;background:#fff8f0;">
+          <div style="font-size:10px;font-weight:700;color:var(--gray-100);text-transform:uppercase;margin-bottom:3px;">Late Mar 2026</div>
+          <div style="font-size:18px;margin-bottom:4px;">👥</div>
+          <div style="font-size:12px;font-weight:700;color:#e67e22;">Teammate asks to join</div>
+          <div style="font-size:11px;color:var(--gray-100);margin-top:2px;">Exposed the single-user hard-coding problem instantly</div>
+        </div>
+        <div style="width:1px;background:var(--gray-50);"></div>
+        <div style="flex:1;border-left:3px solid var(--green);padding:10px 14px;background:#f0faf0;">
+          <div style="font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;margin-bottom:3px;font-weight:800;">Apr 17, 2026 ✅</div>
+          <div style="font-size:18px;margin-bottom:4px;">📄</div>
+          <div style="font-size:12px;font-weight:700;color:var(--green);">V2: Config split</div>
+          <div style="font-size:11px;color:var(--gray-100);margin-top:2px;">Preferences → YAML. 82M tokens, 16K lines in a single sprint</div>
+        </div>
+        <div style="width:1px;background:var(--gray-50);"></div>
+        <div style="flex:1;border-left:3px solid var(--green);padding:10px 14px;background:#f0faf0;border-radius:0 8px 8px 0;">
+          <div style="font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;margin-bottom:3px;font-weight:800;">Apr 17, 2026 ✅</div>
+          <div style="font-size:18px;margin-bottom:4px;">🗺️</div>
+          <div style="font-size:12px;font-weight:700;color:var(--green);">Room catalog live</div>
+          <div style="font-size:11px;color:var(--gray-100);margin-top:2px;">Floor plan → shared YAML config. Team-ready, same sprint</div>
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--gray-100);margin-top:8px;font-style:italic;"><i class="fas fa-database"></i> &nbsp;Dates confirmed from MS Graph calendar watermarks + InternalLLMGateway AI usage logs.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SLIDE 07 — HOW IT'S BUILT: THE TWO FILES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="slide" data-notes="The two-file model is the key architectural concept. File 1: the system prompt (what the agent IS — its personality, its rules, its tools, its behavior). File 2: the preferences YAML (what YOU want — your specific context). The system prompt stays the same for any user. Only the YAML changes. This is how one agent serves a whole team.">
+  <div class="slide-content">
+    <div class="slide-header">
+      <div class="slide-icon"><i class="fas fa-file-code"></i></div>
+      <div>
+        <div class="slide-h1">How It's Built: <span class="accent">The Two Files</span></div>
+        <div class="slide-sub">All custom agent behavior comes from just two files. That's it.</div>
+      </div>
+    </div>
+
+    <div class="two-col" style="gap:24px;">
+      <!-- System Prompt -->
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <span class="tag"><i class="fas fa-scroll"></i> File 1</span>
+          <span style="font-size:14px;font-weight:700;color:var(--gray-160)">System Prompt — <em style="font-style:normal;color:var(--gray-100)">agent's brain & rules</em></span>
+        </div>
+        <div class="code-wrap">
+          <div class="code-bar">
+            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+            <span class="filename">system-prompt.md</span>
+          </div>
+          <div class="code-body">
+<pre><span class="p-section">## Identity</span>
+You are the Meeting Room Agent for Walmart Bengaluru
+PTPP2 2nd floor. You manage calendars via
+MS Graph API on behalf of <span class="p-var">{user}</span>.
+
+<span class="p-section">## Session Start</span>
+<span class="p-rule">1.</span> Load prefs from <span class="p-var">prefs/{user_email}.yaml</span>
+<span class="p-rule">2.</span> Load room catalog from
+   <span class="p-var">org-catalog/PTPP2-2F.yaml</span>
+<span class="p-rule">3.</span> List today's calendar events for user
+<span class="p-rule">4.</span> Greet user with a summary
+
+<span class="p-section">## Room Booking Rules</span>
+<span class="p-rule">-</span> Always check availability first
+<span class="p-rule">-</span> Match room capacity to meeting size
+<span class="p-rule">-</span> Respect user's room_priority order
+<span class="p-rule">-</span> ALWAYS add zoom_link if always_add=true
+<span class="p-rule">-</span> NEVER modify without explicit confirmation
+
+<span class="p-section">## On Any Change</span>
+<span class="p-rule">-</span> Append timestamped note to description
+<span class="p-rule">-</span> Handle recurring series via seriesMasterId
+<span class="p-rule">-</span> Confirm scope: "this event" vs "all events"
+
+<span class="p-section">## Time Handling</span>
+<span class="p-rule">-</span> User speaks in IST, API uses UTC
+<span class="p-rule">-</span> Convert silently; confirm in IST to user
+<span class="p-rule">-</span> Respect hard_blocks — never suggest times
+   that fall within them</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Room Catalog -->
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <span class="tag yellow"><i class="fas fa-building"></i> Bonus File</span>
+          <span style="font-size:14px;font-weight:700;color:var(--gray-160)">Room Catalog — <em style="font-style:normal;color:var(--gray-100)">PTPP2 Floor 2 room layout</em></span>
+        </div>
+        <div class="code-wrap">
+          <div class="code-bar">
+            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+            <span class="filename">org-catalog/PTPP2-2F.yaml</span>
+          </div>
+          <div class="code-body">
+<pre><span class="y-key">floor</span>:    <span class="y-str">"PTPP2 2nd Floor"</span>
+<span class="y-key">location</span>: <span class="y-str">"Walmart Bengaluru, Bangalore"</span>
+
+<span class="y-key">rooms</span>:
+  - <span class="y-key">name</span>:     <span class="y-str">Alderaan</span>
+    <span class="y-key">capacity</span>: <span class="y-num">6</span>
+    <span class="y-key">email</span>:    <span class="y-str">alderaan@example.com</span>
+    <span class="y-key">features</span>: [<span class="y-str">window_view</span>, <span class="y-str">whiteboard</span>, <span class="y-str">airy</span>]
+
+  - <span class="y-key">name</span>:     <span class="y-str">Solaris</span>
+    <span class="y-key">capacity</span>: <span class="y-num">8</span>
+    <span class="y-key">email</span>:    <span class="y-str">solaris@example.com</span>
+    <span class="y-key">features</span>: [<span class="y-str">av_system</span>, <span class="y-str">whiteboard</span>]
+
+  - <span class="y-key">name</span>:     <span class="y-str">Skywalker</span>
+    <span class="y-key">capacity</span>: <span class="y-num">12</span>
+    <span class="y-key">email</span>:    <span class="y-str">skywalker@example.com</span>
+    <span class="y-key">features</span>: [<span class="y-str">av_system</span>, <span class="y-str">projector</span>]
+
+  - <span class="y-key">name</span>:     <span class="y-str">Mandalore</span>
+    <span class="y-key">capacity</span>: <span class="y-num">20</span>
+    <span class="y-key">email</span>:    <span class="y-str">mandalore@example.com</span>
+    <span class="y-key">features</span>: [<span class="y-str">large_screen</span>, <span class="y-str">av_system</span>]
+    <span class="y-key">notes</span>:    <span class="y-str">"Last resort — far from team pods"</span>
+
+<span class="y-cmt"># Add more rooms as your org grows</span>
+<span class="y-cmt"># This file is shared across all users</span></pre>
+          </div>
+        </div>
+
+        <div class="aha-box mt-sm" style="padding:14px 18px;">
+          <div class="aha-icon" style="min-width:36px;height:36px;font-size:16px;"><i class="fas fa-users"></i></div>
+          <div class="aha-text">
+            <h3 style="font-size:13px;">One floor layout, one file</h3>
+            <p style="font-size:12.5px;">The PTPP2 Floor 2 room config is shared across the whole team. Update capacity or a room name once, everyone benefits.</p>
+          </div>
+        </div>
+
+        <div style="margin-top:10px;background:#f5eaff;border:1.5px solid #d4b0f0;border-radius:10px;padding:12px 16px;display:flex;gap:12px;align-items:flex-start;">
+          <div style="min-width:32px;height:32px;background:#8e44ad;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;">
+            <i class="fas fa-image"></i>
+          </div>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#8e44ad;margin-bottom:3px;">How the catalog was created</div>
+            <p style="font-size:12px;color:var(--gray-160);line-height:1.5;">Sauravi annotated a photo of the <strong>PTPP2 floor plan</strong> in another GenAI tool, which extracted room names, capacities, and positions into structured YAML.
+            <br><br>
+            <i class="fas fa-arrow-right" style="color:#8e44ad;"></i> <strong>Next step:</strong> bring this into the agent itself — AgentRunner can read image files directly, so the floor plan annotation workflow can live entirely inside the agent going forward.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SLIDE 08 — ARCHITECTURE: HOW THE AGENT ACTUALLY WORKS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="slide" data-notes="This is the technical heart of the talk. Walk through the call chain from left to right: User says something → AgentRunner reads 3 files → makes MS Graph calls → patches the event → reports back. The key insight: no code runs on Sauravi's machine. Everything is configuration driving a hosted LLM which calls a standard REST API. The agent is stateless per conversation — it re-reads the YAML files each time.">
+  <div class="slide-content">
+    <div class="slide-header">
+      <div class="slide-icon" style="background:var(--blue-deep,#00287a);"><i class="fas fa-sitemap"></i></div>
+      <div>
+        <div class="slide-h1">Under the Hood: <span class="accent">How It Actually Works</span></div>
+        <div class="slide-sub">One conversation → three file reads → four API calls → calendar patched. No code. Just config.</div>
+      </div>
+    </div>
+
+    <!-- Key Concepts strip — for newcomers to AI agents -->
+    <div style="margin-top:14px;margin-bottom:6px;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--gray-100);margin-bottom:8px;">
+        <i class="fas fa-graduation-cap"></i> &nbsp;New to AI agents? The 6 concepts you need to follow this slide:
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+
+        <div style="flex:1;min-width:140px;background:#f0f4ff;border:1.5px solid #c0d0ff;border-radius:9px;padding:9px 11px;">
+          <div style="font-size:16px;margin-bottom:3px;">🧠</div>
+          <div style="font-size:11px;font-weight:800;color:var(--blue);margin-bottom:2px;">LLM</div>
+          <div style="font-size:10px;color:var(--gray-160);line-height:1.4;">Large Language Model. The AI brain — reads your words and decides what to do. GPT, Claude, Gemini are all LLMs.</div>
+        </div>
+
+        <div style="flex:1;min-width:140px;background:#fff3e0;border:1.5px solid #ffd080;border-radius:9px;padding:9px 11px;">
+          <div style="font-size:16px;margin-bottom:3px;">🐶</div>
+          <div style="font-size:11px;font-weight:800;color:#8a4500;margin-bottom:2px;">Agent</div>
+          <div style="font-size:10px;color:var(--gray-160);line-height:1.4;">An LLM given a <em>goal</em>, a <em>set of tools</em>, and permission to <em>take action</em>. It thinks in steps until the job is done.</div>
+        </div>
+
+        <div style="flex:1;min-width:140px;background:#f0fff4;border:1.5px solid #90e0aa;border-radius:9px;padding:9px 11px;">
+          <div style="font-size:16px;margin-bottom:3px;">📋</div>
+          <div style="font-size:11px;font-weight:800;color:#1a6b35;margin-bottom:2px;">System Prompt</div>
+          <div style="font-size:10px;color:var(--gray-160);line-height:1.4;">The agent's written job description. Tells it <em>who it is</em>, what rules to follow, and what tools it has. This is the main config file.</div>
+        </div>
+
+        <div style="flex:1;min-width:140px;background:#faf0ff;border:1.5px solid #d4a8f0;border-radius:9px;padding:9px 11px;">
+          <div style="font-size:16px;margin-bottom:3px;">🔧</div>
+          <div style="font-size:11px;font-weight:800;color:#6c2bd9;margin-bottom:2px;">Tool / Subagent</div>
+          <div style="font-size:10px;color:var(--gray-160);line-height:1.4;">A specific capability the agent can call: "check my calendar," "book a room," "send a Teams message." This agent's key tool is <em>msgraph</em>.</div>
+        </div>
+
+        <div style="flex:1;min-width:140px;background:#e8fff8;border:1.5px solid #70d4b4;border-radius:9px;padding:9px 11px;">
+          <div style="font-size:16px;margin-bottom:3px;">🔌</div>
+          <div style="font-size:11px;font-weight:800;color:#006b4a;margin-bottom:2px;">MCP</div>
+          <div style="font-size:10px;color:var(--gray-160);line-height:1.4;"><strong>Model Context Protocol.</strong> The universal standard for connecting agents to tools — like USB, but for AI. Means any agent can talk to any compatible service.</div>
+        </div>
+
+        <div style="flex:1;min-width:140px;background:#fff8f0;border:1.5px solid #f0c090;border-radius:9px;padding:9px 11px;">
+          <div style="font-size:16px;margin-bottom:3px;">💭</div>
+          <div style="font-size:11px;font-weight:800;color:#7a3d00;margin-bottom:2px;">Context Window</div>
+          <div style="font-size:10px;color:var(--gray-160);line-height:1.4;">The agent's working memory — everything it can "see" at once: your conversation, its instructions, and loaded data. Finite in size.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Runtime flow diagram -->
+    <div style="display:flex;align-items:center;gap:0;margin-top:18px;overflow-x:auto;">
+
+      <!-- Step 1: User -->
+      <div style="flex:0 0 auto;text-align:center;min-width:90px;">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--gray-10);border:2px solid var(--gray-50);display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 6px;">👤</div>
+        <div style="font-size:11px;font-weight:700;color:var(--gray-160);">You</div>
+        <div style="font-size:10px;color:var(--gray-100);margin-top:2px;line-height:1.3;">"Book me a quiet<br>room for 2pm"</div>
+      </div>
+
+      <!-- Arrow -->
+      <div style="flex:0 0 32px;text-align:center;color:var(--blue);font-size:18px;">→</div>
+
+      <!-- Step 2: AgentRunner (LLM core) -->
+      <div style="flex:1;min-width:130px;background:linear-gradient(135deg,#e8f0ff,#c8d8ff);border:2px solid var(--blue);border-radius:10px;padding:10px 12px;text-align:center;position:relative;">
+        <div style="font-size:18px;margin-bottom:4px;">🐶</div>
+        <div style="font-size:12px;font-weight:700;color:var(--blue);">AgentRunner</div>
+        <div style="font-size:10px;color:var(--gray-100);margin-top:2px;">LLM core<br>(InternalLLMGateway AI / Claude)</div>
+        <!-- File reads -->
+        <div style="margin-top:8px;display:flex;flex-direction:column;gap:4px;">
+          <div style="background:#fff;border:1px solid var(--gray-50);border-radius:5px;padding:3px 7px;font-size:10px;font-family:monospace;color:var(--blue-deep,#00287a);text-align:left;"><i class="fas fa-file-alt" style="font-size:9px;"></i> system_prompt.md</div>
+          <div style="background:#fff;border:1px solid var(--gray-50);border-radius:5px;padding:3px 7px;font-size:10px;font-family:monospace;color:var(--blue-deep,#00287a);text-align:left;"><i class="fas fa-user-cog" style="font-size:9px;"></i> prefs/you.yaml</div>
+          <div style="background:#fff;border:1px solid var(--gray-50);border-radius:5px;padding:3px 7px;font-size:10px;font-family:monospace;color:var(--blue-deep,#00287a);text-align:left;"><i class="fas fa-door-open" style="font-size:9px;"></i> rooms.yaml</div>
+        </div>
+      </div>
+
+      <!-- Arrow -->
+      <div style="flex:0 0 32px;text-align:center;color:var(--blue);font-size:18px;">→</div>
+
+      <!-- Step 3: msgraph subagent -->
+      <div style="flex:0 0 auto;min-width:120px;background:linear-gradient(135deg,#fff3cc,#ffe580);border:2px solid var(--yellow);border-radius:10px;padding:10px 12px;text-align:center;">
+        <div style="font-size:18px;margin-bottom:4px;">⚡</div>
+        <div style="font-size:12px;font-weight:700;color:#7a5200;">msgraph</div>
+        <div style="font-size:10px;color:#7a5200;margin-top:2px;">AgentRunner<br>subagent</div>
+        <div style="font-size:10px;color:#7a5200;margin-top:4px;font-style:italic;">handles auth<br>token refresh</div>
+      </div>
+
+      <!-- Arrow -->
+      <div style="flex:0 0 32px;text-align:center;color:var(--blue);font-size:18px;">→</div>
+
+      <!-- Step 4: MS Graph API -->
+      <div style="flex:1;min-width:150px;background:linear-gradient(135deg,#e8fff0,#c0f0d0);border:2px solid var(--green);border-radius:10px;padding:10px 12px;">
+        <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:6px;text-align:center;"><i class="fas fa-cloud"></i> MS Graph API</div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <div style="background:#fff;border:1px solid #b0e8c0;border-radius:5px;padding:3px 8px;font-size:10px;color:var(--gray-160);"><span style="color:var(--green);font-weight:700;">GET</span> /me/calendar/events</div>
+          <div style="background:#fff;border:1px solid #b0e8c0;border-radius:5px;padding:3px 8px;font-size:10px;color:var(--gray-160);"><span style="color:#e67e22;font-weight:700;">POST</span> findMeetingTimes</div>
+          <div style="background:#fff;border:1px solid #b0e8c0;border-radius:5px;padding:3px 8px;font-size:10px;color:var(--gray-160);"><span style="color:var(--blue);font-weight:700;">PATCH</span> /events/{id}</div>
+          <div style="background:#fff;border:1px solid #b0e8c0;border-radius:5px;padding:3px 8px;font-size:10px;color:var(--gray-160);"><span style="color:var(--blue);font-weight:700;">PATCH</span> description + note</div>
+        </div>
+      </div>
+
+      <!-- Arrow -->
+      <div style="flex:0 0 32px;text-align:center;color:var(--blue);font-size:18px;">→</div>
+
+      <!-- Step 5: Result -->
+      <div style="flex:0 0 auto;text-align:center;min-width:90px;">
+        <div style="width:56px;height:56px;border-radius:50%;background:#e8fff0;border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 6px;">✅</div>
+        <div style="font-size:11px;font-weight:700;color:var(--green);">Booked!</div>
+        <div style="font-size:10px;color:var(--gray-100);margin-top:2px;line-height:1.3;">~8 seconds<br>start to finish</div>
+      </div>
+
+    </div><!-- end flow row -->
+
+    <!-- Two callout boxes below -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px;">
+      <div style="background:var(--gray-10);border-radius:10px;padding:12px 16px;border-left:4px solid var(--blue);">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--blue);margin-bottom:6px;"><i class="fas fa-lock"></i> &nbsp;Auth & Security</div>
+        <p style="font-size:12px;color:var(--gray-160);line-height:1.5;margin:0;">The msgraph subagent handles your Walmart M365 token — no credentials are ever stored in the YAML files. Token refresh is automatic. Read/write scopes are Calendars.ReadWrite only.</p>
+      </div>
+      <div style="background:var(--gray-10);border-radius:10px;padding:12px 16px;border-left:4px solid var(--yellow);">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#7a5200;margin-bottom:6px;"><i class="fas fa-database"></i> &nbsp;State & Storage</div>
+        <p style="font-size:12px;color:var(--gray-160);line-height:1.5;margin:0;">The agent is <strong>stateless per conversation</strong> — it re-reads both YAML files at the start of each session. Conversation history lives in AgentRunner's context window only. No database, no backend.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SLIDE 09 — TECHNICAL OPTIMIZATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="slide" data-notes="This slide is for the engineers in the room — or for Sauravi's own roadmap. Not blocking things, but good 'version 3' work. Highlight: findMeetingTimes is the biggest win (1 API call vs 3-4 sequential ones). The system prompt compression is low-effort, moderate gain. Webhook subscriptions are the most architecturally interesting — they'd let the agent flip from reactive to proactive.">
+  <div class="slide-content">
+    <div class="slide-header">
+      <div class="slide-icon" style="background:#6c2bd9;"><i class="fas fa-bolt"></i></div>
+      <div>
+        <div class="slide-h1">Technical Optimizations: <span class="accent">What V3 Could Look Like</span></div>
+        <div class="slide-sub">The agent works great today. Here's what a more production-hardened version would add.</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px;">
+
+      <!-- Opt 1: Batch room checks -->
+      <div style="border-radius:10px;padding:14px 16px;border:1.5px solid #ffd6d6;background:#fff8f8;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <span style="background:#ea1100;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;letter-spacing:0.5px;">HIGH IMPACT</span>
+          <span style="font-size:13px;font-weight:700;color:var(--gray-160);">Batch Room Availability</span>
+        </div>
+        <p style="font-size:12px;color:var(--gray-160);line-height:1.5;margin:0 0 8px;">Currently checks room availability room-by-room (N sequential API calls). <strong>Replace with <code>findMeetingTimes</code></strong> — one call, all rooms ranked by preference simultaneously.</p>
+        <div style="font-size:11px;color:#ea1100;font-weight:600;"><i class="fas fa-arrow-right"></i> ~70% fewer API calls &nbsp;·&nbsp; ~2-3s faster</div>
+      </div>
+
+      <!-- Opt 2: System prompt compression -->
+      <div style="border-radius:10px;padding:14px 16px;border:1.5px solid #fff0cc;background:#fffaf0;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <span style="background:#e67e22;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;letter-spacing:0.5px;">MEDIUM</span>
+          <span style="font-size:13px;font-weight:700;color:var(--gray-160);">Prompt Compression</span>
+        </div>
+        <p style="font-size:12px;color:var(--gray-160);line-height:1.5;margin:0 0 8px;">The system prompt is verbose (~1,800 tokens). Rewrite in structured shorthand — same instructions, ~30% fewer tokens per conversation turn.</p>
+        <div style="font-size:11px;color:#e67e22;font-weight:600;"><i class="fas fa-arrow-right"></i> ~$0.001 saved per conversation &nbsp;·&nbsp; faster latency</div>
+      </div>
+
+      <!-- Opt 3: Session-level caching -->
+      <div style="border-radius:10px;padding:14px 16px;border:1.5px solid #fff0cc;background:#fffaf0;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <span style="background:#e67e22;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;letter-spacing:0.5px;">MEDIUM</span>
+          <span style="font-size:13px;font-weight:700;color:var(--gray-160);">Session-Level Calendar Cache</span>
+        </div>
+        <p style="font-size:12px;color:var(--gray-160);line-height:1.5;margin:0 0 8px;">Today, each booking request re-fetches your calendar. In a multi-booking session, cache the day view once at conversation start and reuse it.</p>
+        <div style="font-size:11px;color:#e67e22;font-weight:600;"><i class="fas fa-arrow-right"></i> Eliminates redundant GET calls in multi-turn sessions</div>
+      </div>
+
+      <!-- Opt 4: Proactive webhooks -->
+      <div style="border-radius:10px;padding:14px 16px;border:1.5px solid #e0f0e0;background:#f5fff5;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <span style="background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;letter-spacing:0.5px;">FUTURE</span>
+          <span style="font-size:13px;font-weight:700;color:var(--gray-160);">Proactive Room Notifications</span>
+        </div>
+        <p style="font-size:12px;color:var(--gray-160);line-height:1.5;margin:0 0 8px;">Subscribe to MS Graph <strong>webhook notifications</strong> on room calendars. When your preferred room gets freed mid-day, the agent pings you via Teams — without you asking.</p>
+        <div style="font-size:11px;color:var(--green);font-weight:600;"><i class="fas fa-arrow-right"></i> Reactive → Proactive. Game changer for packed days.</div>
+      </div>
+
+    </div>
+
+    <!-- Extra row: error handling + tz validation -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;">
+      <div style="border-radius:10px;padding:11px 14px;background:var(--gray-10);border:1.5px solid var(--gray-50);display:flex;gap:10px;align-items:flex-start;">
+        <div style="min-width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;"><i class="fas fa-shield-alt"></i></div>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:var(--gray-160);margin-bottom:2px;">Graceful Auth Expiry Handling</div>
+          <div style="font-size:11px;color:var(--gray-100);">If the MS Graph token expires mid-conversation, the agent currently errors. Add a retry-with-reauth flow.</div>
+        </div>
+      </div>
+      <div style="border-radius:10px;padding:11px 14px;background:var(--gray-10);border:1.5px solid var(--gray-50);display:flex;gap:10px;align-items:flex-start;">
+        <div style="min-width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;"><i class="fas fa-globe"></i></div>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:var(--gray-160);margin-bottom:2px;">Timezone Auto-Detection</div>
+          <div style="font-size:11px;color:var(--gray-100);">Currently reads timezone from YAML. Could auto-detect from your most recent calendar event instead — one less thing to configure.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SLIDE 10 — COST TO BUILD + RUNNING COST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="slide" data-notes="The cost story here is extremely compelling: essentially $0 in infrastructure, and the only real cost is Sauravi's time. Use the ROI numbers to make the business case — even conservative estimates show payback within the first week of team use. Note: the build time and booking volume numbers have been estimated — Sauravi should confirm or update them before presenting.">
+  <div class="slide-content">
+    <div class="slide-header">
+      <div class="slide-icon" style="background:var(--green);"><i class="fas fa-chart-line"></i></div>
+      <div>
+        <div class="slide-h1">The Real Numbers: <span class="accent">Cost to Build &amp; Run</span></div>
+        <div class="slide-sub">Real data from MS Graph + InternalLLMGateway AI usage. V1 live <strong>Mar 25, 2026</strong>. V2 launched in a single-day sprint on <strong>Apr 17, 2026</strong>. Every ✅ number is sourced.</div>
+      </div>
+    </div>
+
+    <!-- Top stat strip — sourced from MS Graph + InternalLLMGateway AI usage data -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:10px;border-radius:10px;overflow:hidden;border:1.5px solid var(--gray-50);">
+      <div style="padding:10px 14px;background:var(--blue);color:#fff;border-right:1px solid rgba(255,255,255,0.2);">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;opacity:0.8;">V1 Live ✅</div>
+        <div style="font-size:20px;font-weight:900;margin-top:2px;">Mar 25, 2026</div>
+        <div style="font-size:10px;opacity:0.75;margin-top:1px;">Earliest agent watermark in MS Graph calendar</div>
+      </div>
+      <div style="padding:10px 14px;background:var(--blue);color:#fff;border-right:1px solid rgba(255,255,255,0.2);">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;opacity:0.8;">V2 Live ✅</div>
+        <div style="font-size:20px;font-weight:900;margin-top:2px;">Apr 17, 2026</div>
+        <div style="font-size:10px;opacity:0.75;margin-top:1px;">One-day sprint · 82M tokens · 16,623 lines</div>
+      </div>
+      <div style="padding:10px 14px;background:var(--green);color:#fff;border-right:1px solid rgba(255,255,255,0.2);">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;opacity:0.8;">Build total ✅</div>
+        <div style="font-size:20px;font-weight:900;margin-top:2px;">7 active days</div>
+        <div style="font-size:10px;opacity:0.75;margin-top:1px;">117.6M tokens · 1,778 requests · 23,533 lines</div>
+      </div>
+      <div style="padding:10px 14px;background:var(--green);color:#fff;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;opacity:0.8;">Your weekly meetings ✅</div>
+        <div style="font-size:20px;font-weight:900;margin-top:2px;">~55 / week</div>
+        <div style="font-size:10px;opacity:0.75;margin-top:1px;">703 events in 90 days — exact from MS Graph</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:14px;">
+
+      <!-- Build cost — real data from InternalLLMGateway AI usage.json -->
+      <div style="border-radius:10px;border:1.5px solid var(--gray-50);overflow:hidden;">
+        <div style="background:var(--blue);padding:10px 14px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.7);">Build Cost ✅</div>
+          <div style="font-size:22px;font-weight:900;color:#fff;margin-top:2px;">7 active days</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:1px;">V1 in late-March · V2 as a one-day sprint</div>
+        </div>
+        <div style="padding:12px 14px;background:#fff;">
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid var(--gray-50);padding-bottom:6px;">
+              <span>V1 build (Mar 23–25)</span><span style="font-weight:700;color:var(--blue);">3 days · 3.8M tok ✅</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid var(--gray-50);padding-bottom:6px;">
+              <span>V2 sprint (Apr 17)</span><span style="font-weight:700;color:var(--blue);">1 day · 82M tok · 16K lines ✅</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid var(--gray-50);padding-bottom:6px;">
+              <span>Code written by Sauravi</span><span style="font-weight:700;color:var(--green);">0 lines</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;">
+              <span>AgentRunner + infra cost</span><span style="font-weight:700;color:var(--green);">$0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Running cost — real token data from InternalLLMGateway AI + cache insight -->
+      <div style="border-radius:10px;border:1.5px solid var(--gray-50);overflow:hidden;">
+        <div style="background:#2a8703;padding:10px 14px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.7);">Token Cost ✅</div>
+          <div style="font-size:22px;font-weight:900;color:#fff;margin-top:2px;">98% cached</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:1px;">Only 1.81M of 117.6M tokens were new completions</div>
+        </div>
+        <div style="padding:12px 14px;background:#fff;">
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid var(--gray-50);padding-bottom:6px;">
+              <span>Total tokens (build + run)</span><span style="font-weight:700;color:var(--blue);">117.6M ✅</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid var(--gray-50);padding-bottom:6px;">
+              <span>Completion tokens (billable)</span><span style="font-weight:700;color:#e67e22;">1.81M (1.5%) ✅</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid var(--gray-50);padding-bottom:6px;">
+              <span>$ cost → check InternalLLMGateway portal</span><span style="font-weight:700;color:#e67e22;"><a href="https://github.example.com style="color:#e67e22;">look it up →</a></span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;">
+              <span>MS Graph + infra</span><span style="font-weight:700;color:var(--green);">$0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROI — real meeting data -->
+      <div style="border-radius:10px;border:1.5px solid var(--gray-50);overflow:hidden;">
+        <div style="background:linear-gradient(135deg,#7a5200,#c8860a);padding:10px 14px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.7);">ROI — real data</div>
+          <div style="font-size:22px;font-weight:900;color:var(--yellow);margin-top:2px;">4+ hrs saved</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:1px;">confirmed minimum (50 bookings × 5 min)</div>
+        </div>
+        <div style="padding:12px 14px;background:#fff;">
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid var(--gray-50);padding-bottom:6px;">
+              <span>Confirmed bookings since Apr 17</span><span style="font-weight:700;color:var(--blue);">50+ ✅</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid var(--gray-50);padding-bottom:6px;">
+              <span>5 active recurring series</span><span style="font-weight:700;color:var(--blue);">→ Apr 2027 ✅</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid var(--gray-50);padding-bottom:6px;">
+              <span>Projected annual savings</span><span style="font-weight:700;color:var(--green);">~21 hrs/yr</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;">
+              <span>Your meeting load (55/wk)</span><span style="font-weight:700;color:var(--green);">high — room friction is real</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Data sources + InternalLLMGateway portal note -->
+    <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div style="background:#e8f0ff;border:1.5px solid #c0d0ff;border-radius:10px;padding:10px 14px;font-size:11px;color:var(--gray-160);">
+        <div style="font-weight:700;color:var(--blue);margin-bottom:4px;"><i class="fas fa-database"></i> &nbsp;Data sources (✅ = live from MS Graph)</div>
+        <div>✅ 703 events / 90 days = 55 meetings/week &nbsp;|&nbsp; ✅ V1 watermark: Mar 25, 2026 (meeting-room-agent-a02a88) &nbsp;|&nbsp; ✅ V2: Apr 17, 2026 (user confirmed) &nbsp;|&nbsp; ✅ 7 active AgentRunner days · 117.6M tokens · 1.81M completion &nbsp;|&nbsp; ✅ 5 recurring room holds through Apr 2027</div>
+      </div>
+      <div style="background:#fff8e6;border:1.5px solid #f5c842;border-radius:10px;padding:10px 14px;font-size:11px;color:var(--gray-160);display:flex;gap:10px;align-items:flex-start;">
+        <i class="fas fa-pencil-alt" style="color:#7a5200;font-size:15px;flex-shrink:0;margin-top:1px;"></i>
+        <span><strong>One gap left:</strong> Token cost in $ — check your usage on the <a href="https://github.example.com style="color:var(--blue);">InternalLLMGateway GenAI portal</a> (Looker password reset → IT helpdesk). Everything else on this slide is sourced from live data. ✅</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SLIDE 07 — TRY IT YOURSELF
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="slide" data-notes="Don't just demo it — invite everyone to try it RIGHT NOW. The agent is live and published. Walk through what it can do using the demo conversation on screen, then direct people to the marketplace link to install it themselves. Remind them: VPN or Corporate WiFi is required. Ask: who already has AgentRunner installed? Those folks can open the agent right now.">
+  <div class="slide-content">
+    <div class="slide-header">
+      <div class="slide-icon green"><i class="fas fa-hand-pointer"></i></div>
+      <div>
+        <div class="slide-h1">Try It Yourself: <span class="accent">The Agent is Live</span></div>
+        <div class="slide-sub">Sauravi's personalized Meeting Room Agent is published. Download it and try it out — right now, if you have AgentRunner installed.</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:34% 1fr;gap:28px;align-items:start;">
+
+      <!-- LEFT: muted reference conversation -->
+      <div style="opacity:0.38;pointer-events:none;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray-100);margin-bottom:10px;">
+          <i class="fas fa-comment-dots"></i> &nbsp;Example conversation
+        </div>
+        <div class="demo-row" style="font-size:12px;">
+          <div class="demo-bubble right">
+            <div class="demo-avatar" style="width:28px;height:28px;font-size:11px;"><i class="fas fa-user"></i></div>
+            <div class="demo-msg" style="font-size:12px;">Book me a room for my 2pm 1:1 with [colleague] today. Just us two.</div>
+          </div>
+          <div class="demo-bubble">
+            <div class="demo-avatar agent" style="width:28px;height:28px;font-size:11px;"><i class="fas fa-dog"></i></div>
+            <div class="demo-msg" style="font-size:12px;">
+              <strong>Checking availability 2:00–3:00 PM IST...</strong><br><br>
+              <i class="fas fa-check" style="color:var(--green)"></i> <strong>Alderaan</strong> is free<br>
+              <i class="fas fa-times" style="color:#e74c3c"></i> Solaris booked until 3pm<br><br>
+              Shall I book Alderaan &amp; add your Zoom link?
+            </div>
+          </div>
+          <div class="demo-bubble right">
+            <div class="demo-avatar" style="width:28px;height:28px;font-size:11px;"><i class="fas fa-user"></i></div>
+            <div class="demo-msg" style="font-size:12px;">Yes, do it.</div>
+          </div>
+          <div class="demo-bubble">
+            <div class="demo-avatar agent" style="width:28px;height:28px;font-size:11px;"><i class="fas fa-dog"></i></div>
+            <div class="demo-msg" style="font-size:12px;">
+              <i class="fas fa-check-circle" style="color:var(--green)"></i> <strong>Done!</strong> Room booked, Zoom link added, note appended.<br><br>~8 sec vs ~5–7 min manually.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: hero download CTA -->
+      <div>
+        <div class="section-label"><i class="fas fa-download"></i> &nbsp;Get the Agent</div>
+        <div style="display:flex;flex-direction:column;gap:14px;margin-top:12px;">
+          <a href="https://agent-platform.example.com target="_blank"
+             style="display:flex;align-items:center;gap:14px;background:var(--blue);color:#fff;border-radius:10px;padding:16px 20px;text-decoration:none;font-weight:700;font-size:15px;">
+            <i class="fas fa-dog" style="font-size:22px;"></i>
+            <div>
+              <div>Sauravi's Meeting Room Agent</div>
+              <div style="font-size:12px;font-weight:400;opacity:0.8;margin-top:2px;">internal.example.com/marketplace</div>
+            </div>
+            <i class="fas fa-external-link-alt" style="margin-left:auto;opacity:0.7;"></i>
+          </a>
+
+          <a href="https://agent-platform.example.com target="_blank"
+             style="display:flex;align-items:center;gap:14px;background:var(--gray-10);color:var(--gray-160);border:2px solid var(--gray-50);border-radius:10px;padding:16px 20px;text-decoration:none;font-weight:700;font-size:15px;">
+            <i class="fas fa-file-code" style="font-size:22px;color:var(--blue);"></i>
+            <div>
+              <div>YAML Templates &amp; Agent Files</div>
+              <div style="font-size:12px;font-weight:400;color:var(--gray-100);margin-top:2px;">Copy prefs/_template.yaml to get started</div>
+            </div>
+            <i class="fas fa-external-link-alt" style="margin-left:auto;color:var(--gray-100);"></i>
+          </a>
+        </div>
+
+        <div class="section-label" style="margin-top:20px;"><i class="fas fa-tasks"></i> &nbsp;What to try first</div>
+        <ul class="bullet-list" style="margin-top:10px;">
+          <li>
+            <span class="bicon green"><i class="fas fa-check"></i></span>
+            <span>Fill in <code style="background:#e8f7e8;color:#1e6b1e;padding:1px 5px;border-radius:3px;">prefs/your.name@example.com.yaml</code> with your timezone, Zoom link, and room order.</span>
+          </li>
+          <li>
+            <span class="bicon green"><i class="fas fa-check"></i></span>
+            <span>Ask it: <em>"Book me a quiet room for a 30-min sync tomorrow at 11am."</em></span>
+          </li>
+          <li>
+            <span class="bicon green"><i class="fas fa-check"></i></span>
+            <span>Watch it check availability, pick from your priority list, add your Zoom link, and patch the invite — all in one shot.</span>
+          </li>
+        </ul>
+
+        <div class="aha-box mt-md" style="padding:12px 16px;">
+          <div class="aha-icon" style="min-width:32px;height:32px;font-size:14px;"><i class="fas fa-lock"></i></div>
+          <div class="aha-text">
+            <h3 style="font-size:13px;">VPN or Corporate WiFi required</h3>
+            <p style="font-size:12px;">internal.example.com is Walmart-internal. Make sure you're on the network before clicking the links above.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SLIDE 08 — STARTS TODAY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="slide" data-notes="Make this feel achievable. The five steps are NOT overwhelming — Step 1 takes 2 minutes, Step 3 is literally just chatting. The quick links and rule of thumb are there for reference, not to be read out loud. Close with the roadmap bullets as a teaser: this thing is still growing. Leave it up during Q&A. The key CTA: open internal.example.com right now, not next week.">
+  <div class="slide-content">
+    <div class="slide-header">
+      <div class="slide-icon green"><i class="fas fa-rocket"></i></div>
+      <div>
+        <div class="slide-h1">🐾 Start Today!</div>
+        <div class="slide-sub">Pick any workflow that costs you 10 minutes a day. That's your first use case — just like Sauravi did.</div>
+      </div>
+    </div>
+
+    <!-- How long it took Sauravi — real numbers to inspire the room -->
+    <div style="margin-top:10px;margin-bottom:16px;">
+
+      <!-- Section labels -->
+      <div style="display:grid;grid-template-columns:3fr 1fr;gap:8px;margin-bottom:5px;padding:0 2px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.1px;color:var(--gray-100);">
+          <i class="fas fa-route"></i> &nbsp;Sauravi's journey
+        </div>
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.1px;color:var(--blue);text-align:center;">
+          <i class="fas fa-arrow-right"></i> &nbsp;Your turn
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:3fr 1fr;gap:8px;">
+
+        <!-- Journey cells 1–3 -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-radius:10px;overflow:hidden;border:1.5px solid var(--gray-50);">
+
+          <!-- Cell 1: Day 1 -->
+          <div style="padding:12px 14px;background:#f0f4ff;border-right:1px solid #c0d0ff;">
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.9px;color:#6080c0;margin-bottom:5px;">Start</div>
+            <div style="font-size:20px;font-weight:900;color:var(--blue);line-height:1;">Day 1</div>
+            <div style="font-size:10px;color:var(--gray-100);margin-top:4px;">first booking &middot; <strong style="color:var(--blue);">Mar 25 ✅</strong></div>
+          </div>
+
+          <!-- Cell 2: ~1 week -->
+          <div style="padding:12px 14px;background:#e4ecff;border-right:1px solid #b0c4ff;">
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.9px;color:#5070b8;margin-bottom:5px;">Habit</div>
+            <div style="font-size:20px;font-weight:900;color:var(--blue);line-height:1;">~1 week</div>
+            <div style="font-size:10px;color:var(--gray-100);margin-top:4px;">V1 in daily use</div>
+          </div>
+
+          <!-- Cell 3: ~3 weeks -->
+          <div style="padding:12px 14px;background:#e8fff0;">
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.9px;color:#1a6b35;margin-bottom:5px;">Team</div>
+            <div style="font-size:20px;font-weight:900;color:var(--green);line-height:1;">~3 weeks</div>
+            <div style="font-size:10px;color:var(--gray-100);margin-top:4px;">V1 → V2, team-ready ✅</div>
+          </div>
+
+        </div>
+
+        <!-- Cell 4: Your turn — Walmart spark yellow CTA -->
+        <div style="padding:12px 14px;background:#ffc220;border-radius:10px;border:1.5px solid #e6a800;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.9px;color:#5a3800;margin-bottom:5px;">You</div>
+          <div style="font-size:20px;font-weight:900;color:#00287a;line-height:1;">~30 min</div>
+          <div style="font-size:10px;font-weight:600;color:#3d2700;margin-top:4px;">your first agent</div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ── HERO QUOTE — full width, prominent ── -->
+    <div style="margin:12px 0 14px;padding:16px 22px;background:linear-gradient(135deg,#001f7a 0%,#0053e2 100%);border-radius:14px;display:flex;align-items:center;gap:20px;">
+      <!-- Avatar -->
+      <div style="position:relative;flex-shrink:0;">
+        <img
+          src="assets/first-agent-image-2.png"
+              alt="Sauravi AI avatar"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+          style="width:72px;height:72px;border-radius:50%;border:3px solid #ffc220;object-fit:cover;display:block;"
+        />
+        <div style="display:none;width:72px;height:72px;border-radius:50%;border:3px solid #ffc220;background:linear-gradient(135deg,#001240,#0053e2);align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#ffc220;">SR</div>
+        <div style="position:absolute;bottom:1px;right:1px;width:20px;height:20px;border-radius:50%;background:#ffc220;border:2px solid #001f7a;display:flex;align-items:center;justify-content:center;font-size:10px;">🤖</div>
+      </div>
+      <!-- Quote -->
+      <div style="flex:1;">
+        <div style="font-size:16px;font-style:italic;font-weight:600;color:#fff;line-height:1.5;">
+          "If I can build a working AI agent in a morning, <span style="color:#ffc220;font-weight:800;">so can you.</span> Start with one annoying workflow."
+        </div>
+        <div style="margin-top:8px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.65);text-transform:uppercase;letter-spacing:1.2px;">— Sauravi · Senior Director, Product Management</div>
+      </div>
+    </div>
+
+    <div class="two-col" style="gap:28px;align-items:start;">
+
+      <!-- ── LEFT: 5 Steps ── -->
+      <div class="steps-list">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h3>Install AgentRunner</h3>
+            <p>Connect to <strong>VPN or Corporate WiFi</strong>, then <a href="https://agent-platform.example.com style="color:var(--blue);">internal.example.com</a> → install guide. About 2 minutes.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h3>Open terminal and run agent-creator</h3>
+            <p>Type <code>/agent agent-creator</code>. It walks you through building your first agent config interactively.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h3>Describe what you want</h3>
+            <p><em>"Help me design an agent that handles my X every day."</em> AgentRunner asks the right questions and drafts your system prompt.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h3>Fill in your preferences file</h3>
+            <p>Copy <code>prefs/_template.yaml</code> from the shared workspace. Fill in timezone, email, preferences. That's your identity file.</p>
+          </div>
+        </div>
+        <div class="step-item" style="border-color:var(--yellow);background:var(--yellow-lt);">
+          <div class="step-num" style="background:var(--yellow);color:var(--blue-deep);">5</div>
+          <div class="step-body">
+            <h3>Iterate — you're doing agile AI</h3>
+            <p>Run it. Notice what's off. Update one line. Run again. This is exactly how the first version was built.</p>
+          </div>
+        </div>
+        <div class="mt-sm" style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="badge"><i class="fas fa-clock"></i> First agent: ~30 min</span>
+          <span class="badge yellow"><i class="fas fa-pencil-alt"></i> No app deployment</span>
+        </div>
+      </div>
+
+      <!-- ── RIGHT: Links + Tip + What's Next ── -->
+      <div style="display:flex;flex-direction:column;gap:14px;">
+
+        <!-- Quick links -->
+        <div>
+          <div class="section-label" style="margin-bottom:8px;"><i class="fas fa-link"></i> &nbsp;Quick links <span class="badge" style="margin-left:6px;"><i class="fas fa-lock"></i> VPN required</span></div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;padding:6px 10px;background:var(--gray-10);border-radius:7px;">
+              <i class="fas fa-dog" style="color:var(--blue);min-width:14px;"></i>
+              <span style="font-weight:700;color:var(--gray-160);min-width:120px;">AgentRunner</span>
+              <a href="https://agent-platform.example.com style="color:var(--blue);">internal.example.com</a>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;padding:6px 10px;background:var(--gray-10);border-radius:7px;">
+              <i class="fas fa-graduation-cap" style="color:#8e44ad;min-width:14px;"></i>
+              <span style="font-weight:700;color:var(--gray-160);min-width:120px;">Dog House</span>
+              <a href="https://agent-platform.example.com style="color:var(--blue);">internal.example.com/doghouse</a>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;padding:6px 10px;background:var(--gray-10);border-radius:7px;">
+              <i class="fas fa-store" style="color:#27ae60;min-width:14px;"></i>
+              <span style="font-weight:700;color:var(--gray-160);min-width:120px;">Agent Marketplace</span>
+              <a href="https://agent-platform.example.com style="color:var(--blue);">internal.example.com/marketplace</a>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;padding:6px 10px;background:var(--gray-10);border-radius:7px;">
+              <i class="fab fa-slack" style="color:#6c5ce7;min-width:14px;"></i>
+              <span style="font-weight:700;color:var(--gray-160);min-width:120px;">Slack</span>
+              <a href="https://example.slack.com style="color:var(--blue);">#code-puppy</a>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;padding:6px 10px;background:var(--gray-10);border-radius:7px;">
+              <i class="fas fa-folder-open" style="color:#e67e22;min-width:14px;"></i>
+              <span style="font-weight:700;color:var(--gray-160);min-width:120px;">Shared files</span>
+              <a href="https://agent-platform.example.com style="color:var(--blue);">internal.example.com/sharing/user-id</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slack Room Agent CTA -->
+        <div style="background:#ffc220;border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:14px;margin-top:4px;">
+          <div style="flex-shrink:0;width:38px;height:38px;background:#4A154B;border-radius:8px;
+                      display:flex;align-items:center;justify-content:center;">
+            <svg width="20" height="20" viewBox="0 0 122.8 122.8" xmlns="http://www.w3.org/2000/svg">
+              <path d="M25.8 77.6c0 7.1-5.8 12.9-12.9 12.9S0 84.7 0 77.6s5.8-12.9 12.9-12.9h12.9v12.9zm6.5 0c0-7.1 5.8-12.9 12.9-12.9s12.9 5.8 12.9 12.9v32.3c0 7.1-5.8 12.9-12.9 12.9s-12.9-5.8-12.9-12.9V77.6z" fill="#E01E5A"/>
+              <path d="M45.2 25.8c-7.1 0-12.9-5.8-12.9-12.9S38.1 0 45.2 0s12.9 5.8 12.9 12.9v12.9H45.2zm0 6.5c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9H12.9C5.8 58.1 0 52.3 0 45.2s5.8-12.9 12.9-12.9h32.3z" fill="#36C5F0"/>
+              <path d="M97 45.2c0-7.1 5.8-12.9 12.9-12.9s12.9 5.8 12.9 12.9-5.8 12.9-12.9 12.9H97V45.2zm-6.5 0c0 7.1-5.8 12.9-12.9 12.9s-12.9-5.8-12.9-12.9V12.9C64.7 5.8 70.5 0 77.6 0s12.9 5.8 12.9 12.9v32.3z" fill="#2EB67D"/>
+              <path d="M77.6 97c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9-12.9-5.8-12.9-12.9V97h12.9zm0-6.5c-7.1 0-12.9-5.8-12.9-12.9s5.8-12.9 12.9-12.9h32.3c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9H77.6z" fill="#ECB22E"/>
+            </svg>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:12px;font-weight:800;color:#3d2700;">
+              Already on the team? Try the Room Agent right now
+            </div>
+            <div style="font-size:11px;color:#5a3800;margin-top:2px;">
+              Type <code style="background:rgba(0,0,0,0.12);padding:1px 6px;border-radius:4px;font-weight:700;">/book</code>
+              in Slack → your room is booked, Zoom added, timezone handled. No forms. No waiting.
+            </div>
+          </div>
+          <div style="flex-shrink:0;font-size:11px;font-weight:800;color:#3d2700;
+                      background:rgba(0,0,0,0.1);border-radius:6px;padding:4px 10px;white-space:nowrap;">
+            /book →
+          </div>
+        </div>
+
+        <!-- Skills vs Agents tip -->
+        <div style="background:linear-gradient(135deg,#001f7a,#0053e2);border-radius:10px;padding:12px 14px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="font-size:20px;">🎯</div>
+            <div style="color:#fff;flex:1;">
+              <div style="font-weight:800;font-size:12px;margin-bottom:2px;">InternalAgentPlatform Skill or AgentRunner Agent?</div>
+              <div style="font-size:11px;opacity:0.9;">Repeatable prompt pattern → <strong>InternalAgentPlatform Skill</strong> &nbsp;|&nbsp; Think &amp; act across steps → <strong>Agent</strong></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:9px;flex-wrap:wrap;">
+            <a href="https://agent-platform.example.com style="font-size:10px;font-weight:700;color:#ffc220;background:rgba(255,255,255,0.12);border-radius:5px;padding:3px 8px;text-decoration:none;"><i class="fas fa-store" style="margin-right:4px;"></i>Skill Marketplace</a>
+            <span style="font-size:10px;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.1);border-radius:5px;padding:3px 8px;"><i class="fas fa-terminal" style="margin-right:4px;"></i><code style="color:#ffc220;">/skill-market</code></span>
+            <a href="https://github.example.com style="font-size:10px;font-weight:700;color:#ffc220;background:rgba(255,255,255,0.12);border-radius:5px;padding:3px 8px;text-decoration:none;"><i class="fab fa-github" style="margin-right:4px;"></i>InternalAgentPlatform on GitHub</a>
+          </div>
+        </div>
+
+        <!-- What's next -->
+        <div>
+          <div class="section-label" style="margin-bottom:8px;"><i class="fas fa-road"></i> &nbsp;What's next for this agent</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;gap:8px;align-items:flex-start;font-size:12px;padding:6px 10px;background:var(--gray-10);border-radius:7px;">
+              <i class="fas fa-puzzle-piece" style="color:var(--blue);margin-top:2px;min-width:13px;"></i>
+              <span><strong>Schedule defrag</strong> — cluster meetings, protect focus windows</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:flex-start;font-size:12px;padding:6px 10px;background:var(--gray-10);border-radius:7px;">
+              <i class="fas fa-handshake" style="color:#8e44ad;margin-top:2px;min-width:13px;"></i>
+              <span><strong>EA–EA coordination</strong> — two agents scheduling across leaders</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:flex-start;font-size:12px;padding:6px 10px;background:var(--gray-10);border-radius:7px;">
+              <i class="fas fa-microphone" style="color:var(--green);margin-top:2px;min-width:13px;"></i>
+              <span><strong>Voice interface</strong> — "Book me a room" without typing</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     NAVIGATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="slide-nav" role="navigation" aria-label="Slide navigation">
+  <button class="nav-btn" id="btn-prev" aria-label="Previous slide" title="Previous (←)">
+    <i class="fas fa-chevron-left"></i>
+  </button>
+  <span class="slide-counter" id="counter" aria-live="polite">1 / 8</span>
+  <button class="nav-btn" id="btn-next" aria-label="Next slide" title="Next (→)">
+    <i class="fas fa-chevron-right"></i>
+  </button>
+  <div class="nav-divider"></div>
+  <button class="nav-btn" id="btn-notes" aria-label="Toggle speaker notes" title="Speaker notes (N)">
+    <i class="fas fa-comment-alt"></i>
+  </button>
+  <button class="nav-btn" id="btn-fs" aria-label="Toggle fullscreen" title="Fullscreen (F)">
+    <i class="fas fa-expand"></i>
+  </button>
+</div>
+
+<!-- SPEAKER NOTES PANEL -->
+<div id="notes-panel" role="complementary" aria-label="Speaker notes">
+  <div class="notes-label"><i class="fas fa-microphone"></i> &nbsp;Speaker Notes</div>
+  <div class="notes-body" id="notes-body"></div>
+</div>
+
+<script>
+  /* ── STATE ────────────────────────────────── */
+  const slides   = document.querySelectorAll('.slide');
+  const counter  = document.getElementById('counter');
+  const progress = document.getElementById('progress-fill');
+  const notesPanel = document.getElementById('notes-panel');
+  const notesBody  = document.getElementById('notes-body');
+  let current = 0;
+  let notesOpen = false;
+
+  /* ── SHOW SLIDE ───────────────────────────── */
+  function showSlide(n) {
+    slides[current].classList.remove('active');
+    current = ((n % slides.length) + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    counter.textContent = `${current + 1} / ${slides.length}`;
+    progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+    notesBody.textContent = slides[current].dataset.notes || '';
+  }
+
+  /* ── NAVIGATION ───────────────────────────── */
+  document.getElementById('btn-prev').addEventListener('click', () => showSlide(current - 1));
+  document.getElementById('btn-next').addEventListener('click', () => showSlide(current + 1));
+
+  document.getElementById('btn-notes').addEventListener('click', () => {
+    notesOpen = !notesOpen;
+    notesPanel.classList.toggle('open', notesOpen);
+  });
+
+  document.getElementById('btn-fs').addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    switch (e.key) {
+      case 'ArrowRight': case ' ': case 'PageDown': e.preventDefault(); showSlide(current + 1); break;
+      case 'ArrowLeft':  case 'PageUp':             e.preventDefault(); showSlide(current - 1); break;
+      case 'Home':       e.preventDefault(); showSlide(0);             break;
+      case 'End':        e.preventDefault(); showSlide(slides.length - 1); break;
+      case 'n': case 'N': document.getElementById('btn-notes').click(); break;
+      case 'f': case 'F': document.getElementById('btn-fs').click();    break;
+    }
+  });
+
+  /* ── TOUCH SWIPE ──────────────────────────── */
+  let touchStartX = 0;
+  document.addEventListener('touchstart',  e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+  document.addEventListener('touchend',    e => {
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(dx) > 50) { dx < 0 ? showSlide(current + 1) : showSlide(current - 1); }
+  });
+
+  /* ── INIT ─────────────────────────────────── */
+  showSlide(0);
+</script>
+<!-- ═══════════════════ IDENTITY BANNER ═══════════════════ -->
+<div id="id-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:10000;
+     background:linear-gradient(135deg,#001f7a,#0053e2);color:#fff;
+     padding:14px 24px;display:none;align-items:center;gap:16px;
+     box-shadow:0 -4px 24px rgba(0,83,226,0.25);animation:slideUp 0.4s ease;">
+  <div style="font-size:22px;flex-shrink:0;">👋</div>
+  <div style="flex:1;min-width:0;">
+    <div style="font-size:13px;font-weight:700;margin-bottom:4px;">
+      Let Sauravi know you're watching — it helps her track who found this useful.
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <input id="id-name"  type="text"  placeholder="Your name"              maxlength="60"
+             style="flex:1;min-width:140px;padding:6px 10px;border-radius:6px;border:none;
+                    font-size:13px;background:rgba(255,255,255,0.15);color:#fff;outline:none;"
+             oninput="this.style.background='rgba(255,255,255,0.2)'" />
+      <input id="id-email" type="email" placeholder="your.id@example.com (optional)" maxlength="80"
+             style="flex:2;min-width:200px;padding:6px 10px;border-radius:6px;border:none;
+                    font-size:13px;background:rgba(255,255,255,0.15);color:#fff;outline:none;"
+             oninput="this.style.background='rgba(255,255,255,0.2)'" />
+      <button id="id-go" onclick="saveIdentity()"
+              style="padding:6px 18px;background:#ffc220;color:#001f7a;font-weight:800;
+                     border:none;border-radius:6px;cursor:pointer;font-size:13px;white-space:nowrap;">
+        ✓ Send
+      </button>
+    </div>
+  </div>
+  <button onclick="skipIdentity()"
+          style="background:none;border:none;color:rgba(255,255,255,0.55);font-size:20px;
+                 cursor:pointer;flex-shrink:0;line-height:1;" title="Skip">&times;</button>
+</div>
+<style>
+  @keyframes slideUp { from { transform:translateY(100%); opacity:0; } to { transform:translateY(0); opacity:1; } }
+</style>
+
+<!-- ═══════════════════ FEEDBACK WIDGET ═══════════════════ -->
+<button id="feedback-btn" aria-label="Leave feedback" title="Leave feedback">
+  <i class="fas fa-comment-smile"></i>
+  <span class="fb-badge" id="fb-badge" style="display:none;">0</span>
+</button>
+
+<!-- Slack analytics shortcut — bottom-left corner -->
+<a id="slack-link" href="SLACK_CHANNEL_URL_HERE" target="_blank" rel="noopener"
+   title="View analytics &amp; feedback in Slack"
+   style="position:fixed;bottom:20px;left:20px;z-index:9998;
+          width:42px;height:42px;border-radius:50%;
+          background:#4A154B;color:#fff;border:none;cursor:pointer;
+          display:flex;align-items:center;justify-content:center;
+          box-shadow:0 4px 16px rgba(74,21,75,0.45);
+          font-size:18px;text-decoration:none;transition:transform 0.2s;">
+  <svg width="20" height="20" viewBox="0 0 122.8 122.8" xmlns="http://www.w3.org/2000/svg">
+    <path d="M25.8 77.6c0 7.1-5.8 12.9-12.9 12.9S0 84.7 0 77.6s5.8-12.9 12.9-12.9h12.9v12.9zm6.5 0c0-7.1 5.8-12.9 12.9-12.9s12.9 5.8 12.9 12.9v32.3c0 7.1-5.8 12.9-12.9 12.9s-12.9-5.8-12.9-12.9V77.6z" fill="#E01E5A"/>
+    <path d="M45.2 25.8c-7.1 0-12.9-5.8-12.9-12.9S38.1 0 45.2 0s12.9 5.8 12.9 12.9v12.9H45.2zm0 6.5c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9H12.9C5.8 58.1 0 52.3 0 45.2s5.8-12.9 12.9-12.9h32.3z" fill="#36C5F0"/>
+    <path d="M97 45.2c0-7.1 5.8-12.9 12.9-12.9s12.9 5.8 12.9 12.9-5.8 12.9-12.9 12.9H97V45.2zm-6.5 0c0 7.1-5.8 12.9-12.9 12.9s-12.9-5.8-12.9-12.9V12.9C64.7 5.8 70.5 0 77.6 0s12.9 5.8 12.9 12.9v32.3z" fill="#2EB67D"/>
+    <path d="M77.6 97c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9-12.9-5.8-12.9-12.9V97h12.9zm0-6.5c-7.1 0-12.9-5.8-12.9-12.9s5.8-12.9 12.9-12.9h32.3c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9H77.6z" fill="#ECB22E"/>
+  </svg>
+</a>
+
+<div id="feedback-overlay" role="dialog" aria-modal="true" aria-label="Feedback">
+  <div id="feedback-modal">
+    <div class="fb-header">
+      <h3><i class="fas fa-comment-smile"></i> &nbsp;Quick Feedback</h3>
+      <button id="fb-close" aria-label="Close">&times;</button>
+    </div>
+    <div id="fb-form">
+      <div class="fb-body">
+        <div class="fb-label">How useful was this session?</div>
+        <div class="fb-emojis" id="fb-emojis">
+          <button data-val="1" title="Not useful">😐</button>
+          <button data-val="2" title="Somewhat useful">🙂</button>
+          <button data-val="3" title="Useful">😊</button>
+          <button data-val="4" title="Very useful">🤩</button>
+          <button data-val="5" title="Mind-blowing!">🤯</button>
+        </div>
+        <div class="fb-label">What excited you most?</div>
+        <div class="fb-topic-grid" id="fb-topics">
+          <span class="fb-topic" data-topic="golden-hours">Golden Hours</span>
+          <span class="fb-topic" data-topic="schedule-defrag">Schedule Defrag</span>
+          <span class="fb-topic" data-topic="gui-for-ea">GUI for EAs</span>
+          <span class="fb-topic" data-topic="copilot">Copilot Integration</span>
+          <span class="fb-topic" data-topic="ea-persona">EA–EA Collab</span>
+          <span class="fb-topic" data-topic="voice">Voice Interface</span>
+          <span class="fb-topic" data-topic="travel">Travel Planner</span>
+          <span class="fb-topic" data-topic="try-agent">Try the Agent</span>
+        </div>
+        <div class="fb-label">Any thoughts or suggestions?</div>
+        <textarea class="fb-textarea" id="fb-comment" placeholder="Totally optional — any ideas, questions, or feedback..."></textarea>
+      </div>
+      <div class="fb-footer">
+        <button class="fb-cancel" id="fb-cancel">Cancel</button>
+        <button class="fb-submit" id="fb-submit"><i class="fas fa-paper-plane"></i> &nbsp;Submit</button>
+      </div>
+    </div>
+    <div id="fb-success" class="fb-success" style="display:none;">
+      <div class="fb-tick">🎉</div>
+      <h3>Sent to Slack!</h3>
+      <p>Sauravi will see your feedback in real time. Thank you!</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   CONFIG — paste your Slack webhook + channel URL below
+   Webhook:  Slack app → Incoming Webhooks → Add New Webhook
+   Channel:  right-click your Slack channel → Copy Link
+════════════════════════════════════════════════════════════════ */
+const SLACK_WEBHOOK     = 'PASTE_YOUR_SLACK_WEBHOOK_URL_HERE';
+const SLACK_CHANNEL_URL = 'PASTE_YOUR_SLACK_CHANNEL_URL_HERE';
+const PAGE_LABEL        = 'my-first-agent';
+
+/* ── update Slack shortcut href ─────────────────────────── */
+document.getElementById('slack-link').href = SLACK_CHANNEL_URL;
+
+/* ── Slack helper ───────────────────────────────────────── */
+function postToSlack(text) {
+  if (!SLACK_WEBHOOK || SLACK_WEBHOOK.startsWith('PASTE')) return;
+  try {
+    fetch(SLACK_WEBHOOK, {
+      method:  'POST',
+      mode:    'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body:    JSON.stringify({ text })
+    });
+  } catch(e) { /* silent — don't break UX */ }
+}
+
+/* ── IST timestamp ──────────────────────────────────────── */
+function nowIST() {
+  return new Date().toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: '2-digit', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', hour12: true
+  }) + ' IST';
+}
+
+/* ── Browser / OS fingerprint ───────────────────────────── */
+function deviceInfo() {
+  const ua = navigator.userAgent;
+  const browser = /Edg/.test(ua) ? 'Edge' : /Chrome/.test(ua) ? 'Chrome'
+    : /Firefox/.test(ua) ? 'Firefox' : /Safari/.test(ua) ? 'Safari' : 'Browser';
+  const os = /Win/.test(ua) ? 'Windows' : /Mac/.test(ua) ? 'macOS'
+    : /Linux/.test(ua) ? 'Linux' : /Android/.test(ua) ? 'Android' : 'iOS';
+  return `${browser} on ${os}`;
+}
+
+/* ══════════════════════════════════════════════════════════
+   IDENTITY BANNER
+══════════════════════════════════════════════════════════ */
+const VIEWER_KEY = 'mfa-viewer';
+
+function getViewer() {
+  try { return JSON.parse(localStorage.getItem(VIEWER_KEY) || 'null'); } catch(e) { return null; }
+}
+function storeViewer(v) {
+  localStorage.setItem(VIEWER_KEY, JSON.stringify(v));
+}
+
+function saveIdentity() {
+  const name  = document.getElementById('id-name').value.trim();
+  const email = document.getElementById('id-email').value.trim();
+  if (!name) { document.getElementById('id-name').focus(); return; }
+  const v = { name, email, ts: new Date().toISOString() };
+  storeViewer(v);
+  hideBanner();
+  pingView(v);
+}
+
+function skipIdentity() {
+  storeViewer({ name: 'Anonymous', email: '', ts: new Date().toISOString(), skipped: true });
+  hideBanner();
+  pingView(getViewer());
+}
+
+function hideBanner() {
+  const b = document.getElementById('id-banner');
+  b.style.animation = 'slideUp 0.3s ease reverse';
+  setTimeout(() => { b.style.display = 'none'; }, 280);
+}
+
+(function initBanner() {
+  const existing = getViewer();
+  if (!existing) {
+    const b = document.getElementById('id-banner');
+    b.style.display = 'flex';
+    /* enter key support */
+    ['id-name','id-email'].forEach(id => {
+      document.getElementById(id).addEventListener('keydown', e => {
+        if (e.key === 'Enter') saveIdentity();
+      });
+    });
+    /* auto-skip after 25 s of no interaction */
+    setTimeout(() => {
+      if (b.style.display !== 'none') skipIdentity();
+    }, 25000);
+  }
+})();
+
+/* ══════════════════════════════════════════════════════════
+   VIEW TRACKER  — fires once per browser session
+══════════════════════════════════════════════════════════ */
+function pingView(viewer) {
+  if (sessionStorage.getItem('mfa-pinged')) return;
+  sessionStorage.setItem('mfa-pinged', '1');
+
+  const who   = viewer && !viewer.skipped
+    ? `*${viewer.name}*${viewer.email ? ' (' + viewer.email + ')' : ''}`
+    : '_Anonymous_';
+  const slide = (typeof current !== 'undefined') ? `Slide ${current + 1}` : 'Slide 1';
+
+  postToSlack(
+    `👁️ *New view — ${PAGE_LABEL}*
+` +
+    `*Who:*    ${who}
+` +
+    `*When:*   ${nowIST()}
+` +
+    `*Device:* ${deviceInfo()}
+` +
+    `*Landed:* ${slide}`
+  );
+}
+
+/* Fire view ping — viewer may already exist from a previous visit */
+(function initViewPing() {
+  const viewer = getViewer();
+  if (viewer) pingView(viewer);
+  /* If banner is shown, pingView will be called after they identify */
+})();
+
+/* ══════════════════════════════════════════════════════════
+   FEEDBACK WIDGET
+══════════════════════════════════════════════════════════ */
+(function() {
+  const STORAGE_KEY = 'mfa-feedback';
+  const RATING_EMOJI = { 1:'😐', 2:'🙂', 3:'😊', 4:'🤩', 5:'🤯' };
+  const RATING_LABEL = { 1:'Not useful', 2:'Somewhat useful', 3:'Useful', 4:'Very useful', 5:'Mind-blowing!' };
+  let rating = 0;
+  let topics = new Set();
+
+  const overlay  = document.getElementById('feedback-overlay');
+  const btn      = document.getElementById('feedback-btn');
+  const badge    = document.getElementById('fb-badge');
+  const form     = document.getElementById('fb-form');
+  const success  = document.getElementById('fb-success');
+  const emojiRow = document.getElementById('fb-emojis');
+  const topicRow = document.getElementById('fb-topics');
+  const comment  = document.getElementById('fb-comment');
+
+  function openModal()  { overlay.classList.add('open'); }
+  function closeModal() { overlay.classList.remove('open'); resetForm(); }
+  function resetForm()  {
+    rating = 0; topics.clear();
+    form.style.display = ''; success.style.display = 'none';
+    comment.value = '';
+    emojiRow.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+    topicRow.querySelectorAll('.fb-topic').forEach(t => t.classList.remove('selected'));
+  }
+
+  btn.addEventListener('click', openModal);
+  document.getElementById('fb-close').addEventListener('click', closeModal);
+  document.getElementById('fb-cancel').addEventListener('click', closeModal);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+
+  emojiRow.addEventListener('click', e => {
+    const b = e.target.closest('button[data-val]');
+    if (!b) return;
+    rating = +b.dataset.val;
+    emojiRow.querySelectorAll('button').forEach(x => x.classList.remove('selected'));
+    b.classList.add('selected');
+  });
+
+  topicRow.addEventListener('click', e => {
+    const t = e.target.closest('.fb-topic');
+    if (!t) return;
+    if (topics.has(t.dataset.topic)) { topics.delete(t.dataset.topic); t.classList.remove('selected'); }
+    else { topics.add(t.dataset.topic); t.classList.add('selected'); }
+  });
+
+  document.getElementById('fb-submit').addEventListener('click', () => {
+    const viewer   = getViewer();
+    const who      = viewer && !viewer.skipped ? `${viewer.name}${viewer.email ? ' (' + viewer.email + ')' : ''}` : 'Anonymous';
+    const slideNum = (typeof current !== 'undefined') ? current + 1 : '?';
+    const topicStr = topics.size ? [...topics].join(', ') : 'none selected';
+    const note     = comment.value.trim();
+    const rLabel   = rating ? `${RATING_EMOJI[rating]} ${RATING_LABEL[rating]} (${rating}/5)` : 'no rating';
+
+    /* ── Slack ── */
+    postToSlack(
+      `💬 *Feedback — ${PAGE_LABEL}*
+` +
+      `*From:*    ${who}
+` +
+      `*Rating:*  ${rLabel}
+` +
+      `*Topics:*  ${topicStr}
+` +
+      `*Slide:*   ${slideNum}
+` +
+      `*When:*    ${nowIST()}` +
+      (note ? `
+*Comment:* "${note}"` : '')
+    );
+
+    /* ── localStorage backup ── */
+    const entry = { ts: new Date().toISOString(), rating, topics: [...topics], comment: note, slide: slideNum };
+    const all   = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    all.push(entry);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+
+    badge.textContent = all.length;
+    badge.style.display = 'flex';
+
+    form.style.display    = 'none';
+    success.style.display = 'block';
+    setTimeout(closeModal, 2600);
+  });
+})();
+</script>
+
+</body>
+</html>
