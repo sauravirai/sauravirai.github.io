@@ -1,32 +1,27 @@
 # sauravirai.github.io
 
-🌐 **Live site:** https://sauravirai.github.io _(GitHub Pages — will go live when repo is made public, or you can deploy via Vercel/Cloudflare with the repo private)_
+🌐 **Live:** https://sauravirai.github.io
 
-Personal portfolio for **Sauravi Rai** — Senior Director, Product Management. 23 years across Walmart, Amazon, Microsoft, Nordstrom, and Oracle. Bengaluru-based, open to opportunities.
+Personal portfolio site for **Sauravi Rai** — Global Product Leader · Walmart Inc. (eCommerce). 23 years across Walmart, Amazon, Microsoft, Nordstrom, and Oracle. Bengaluru-based, open to opportunities.
 
-## What's here
+## Structure
 
-- **`index.html`** — single-page landing site: About, Selected Impact, Experience, How I Lead, AI Experiments, More Writing & Repos, Contact
-- **`work/`** — nine deep-dive AI experiment pieces (sanitized, name-attributed)
-  - architecture blueprints, runtime analysis, deployment postmortems, dashboards, narrative stories
-- **`resume.pdf`** — drop-in résumé, linked from the landing page
+| File / Directory | Purpose |
+|---|---|
+| `index.html` | Single-page landing site — About, What I Do, Career, Awards, Writing & Experiments, Contact |
+| `resume.pdf` | Current résumé (May 2026) — linked from the homepage hero and the Writing section |
+| `work/` | Nine deep-dive AI experiment pages — architecture blueprints, runtime portability analysis, deployment postmortems, dashboards, narrative stories. Indexed at `work/index.html`. |
+| `design-patterns/` | Reference patterns for multi-agent system design and governance |
+| `cost-analysis.md` | 90-day telemetry-backed breakdown of personal AI agent CLI costs across providers |
+| `user-preferences-template.md` | Sanitized template of the agent assistant preferences file — fork for your own setup |
 
 ## Stack
 
 - Single-page static site (`index.html`) + individual deep-dive pages under `work/`
-- [Tailwind CSS](https://tailwindcss.com) (via CDN)
-- Inter / Inter Tight (Google Fonts)
-- Chart.js for the dashboards
-- WCAG 2.2 Level AA — skip-to-content, focus rings, semantic landmarks, alt text
-
-## Hosting options
-
-| Path | Cost | Privacy |
-|---|---|---|
-| GitHub Pages (public repo) | Free | Repo + history public |
-| GitHub Pro + Pages (private repo) | $4/mo | URL public, repo private |
-| Vercel free | Free | Repo private, URL shareable |
-| Cloudflare Pages + Access | Free | Repo private, restrict viewers by email |
+- [Tailwind CSS](https://tailwindcss.com) via CDN
+- Inter (Google Fonts)
+- WCAG 2.2 Level AA — skip-to-content link, focus rings, semantic landmarks, color contrast checked
+- No build step. No tracking. No external JS beyond Tailwind CDN.
 
 ## Local preview
 
@@ -37,12 +32,17 @@ python3 -m http.server 8000
 
 ## Sanitization
 
-All `work/` pieces were derived from real engagements and run through a multi-pass sanitizer:
+All `work/` pieces and `user-preferences-template.md` were derived from real engagements and run through a multi-pass sanitizer:
 - Colleague names → role placeholders (`a colleague`, `the EA`, etc.)
-- Internal vendor/system names → genericized (`the travel booking system`, etc.)
-- Personality assessments → kept generic (`Hogan scale` without trait specifics)
-- Verified zero placeholders, zero internal hostnames, zero PII
+- Internal vendor/system names → genericized
+- Personality assessments kept generic (no trait specifics)
+- Zero placeholders, zero internal hostnames, zero PII verified
 
 ## License
 
-Content © Sauravi Rai. Code under MIT — fork the structure if it's useful to you.
+Content © Sauravi Rai. Code (HTML/CSS structure) under MIT — fork if useful.
+
+## Contact
+
+- LinkedIn: [linkedin.com/in/sauravirai](https://www.linkedin.com/in/sauravirai/)
+- Email: sauravi.rai@gmail.com
