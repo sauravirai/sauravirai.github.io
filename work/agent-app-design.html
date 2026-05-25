@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shipping AI Agents as App Store Apps · Sauravi Rai</title>
+  <meta name="description" content="A practical reference design for deploying AI agents as iOS App Store apps — architecture, App Store gotchas, real consumer examples, and benchmarks." />
+  <meta property="og:title" content="Shipping AI Agents as App Store Apps" />
+  <meta property="og:description" content="Reference architecture, real consumer examples, and performance benchmarks for shipping agent-powered apps." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      wmblue: { 100: "#0053e2", 110: "#003fb1", 130: "#002a82" },
+      spark:  { 100: "#ffc220", 10:  "#fffaeb", 140: "#995213" },
+      ink:    { 5: "#fafbfc", 50: "#f5f7fa", 100: "#e5e9f0", 160: "#1c2530" },
+      grn:    { 100: "#2a8703" }
+    } } } };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', system-ui, sans-serif; color: #1c2530; }
+    h1,h2,h3,h4 { font-family: 'Inter Tight', system-ui, sans-serif; letter-spacing: -0.01em; }
+    code, pre { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.875rem; }
+    .pad { @apply max-w-5xl mx-auto px-6 py-14; }
+    .card { @apply bg-white rounded-2xl border border-ink-100; }
+    .pill { @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold; }
+    table { @apply w-full text-sm border-collapse; }
+    th { @apply text-left bg-ink-50 font-semibold px-3 py-2 border-b border-ink-100; }
+    td { @apply px-3 py-2 border-b border-ink-100 align-top; }
+    .prose-list li { @apply my-1; }
+    pre { @apply bg-ink-160 text-ink-5 rounded-xl p-4 overflow-x-auto; }
+  </style>
+</head>
+<body class="bg-ink-5">
+
+<nav class="sticky top-0 z-20 bg-white/85 backdrop-blur border-b border-ink-100">
+  <div class="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between text-sm">
+    <a href="https://sauravirai.github.io" class="font-bold">Sauravi Rai</a>
+    <div class="flex gap-5 text-ink-160/80">
+      <a href="#arch" class="hover:text-wmblue-100">Architecture</a>
+      <a href="#apps" class="hover:text-wmblue-100">Consumer apps</a>
+      <a href="#bench" class="hover:text-wmblue-100">Benchmarks</a>
+      <a href="#starter" class="hover:text-wmblue-100">Starter</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="bg-gradient-to-br from-wmblue-130 via-wmblue-110 to-wmblue-100 text-white">
+  <div class="pad">
+    <p class="text-spark-100 font-semibold tracking-widest uppercase text-sm">Design Note · 2026</p>
+    <h1 class="text-4xl md:text-5xl font-extrabold mt-3">Shipping AI Agents as App Store Apps</h1>
+    <p class="text-xl mt-4 text-white/90 max-w-3xl">
+      A practical reference design — architecture, App Store gotchas, what's actually shipping on consumers'
+      phones, and the unit economics that make it sustainable.
+    </p>
+    <div class="flex flex-wrap gap-2 mt-6">
+      <span class="pill bg-white text-wmblue-100">Architecture</span>
+      <span class="pill bg-white text-wmblue-100">Consumer examples</span>
+      <span class="pill bg-white text-wmblue-100">Benchmarks</span>
+      <span class="pill bg-spark-100 text-spark-140">Working starter code</span>
+    </div>
+  </div>
+</header>
+
+<!-- WHY -->
+<section class="pad">
+  <h2 class="text-3xl font-bold">Why now</h2>
+  <div class="mt-6 grid md:grid-cols-3 gap-4">
+    <div class="card p-5"><div class="text-2xl">📉</div><h3 class="font-bold mt-2">Token costs collapsed</h3><p class="text-sm mt-1 text-ink-160/80">~90% drop YoY on frontier models. Per-session cost of a useful agent is now $0.005–0.05.</p></div>
+    <div class="card p-5"><div class="text-2xl">📱</div><h3 class="font-bold mt-2">On-device inference is real</h3><p class="text-sm mt-1 text-ink-160/80">Apple Foundation Models, Gemini Nano, MLX run real workloads on a phone — privacy + zero infra cost.</p></div>
+    <div class="card p-5"><div class="text-2xl">🛠️</div><h3 class="font-bold mt-2">Agent frameworks matured</h3><p class="text-sm mt-1 text-ink-160/80">Pydantic AI, LangGraph, OpenAI Agents SDK have abstracted the painful 2023 plumbing.</p></div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section id="arch" class="bg-white border-y border-ink-100">
+  <div class="pad">
+    <h2 class="text-3xl font-bold">Reference Architecture</h2>
+    <p class="mt-2 text-ink-160/70 max-w-2xl">Hybrid: heavy reasoning in cloud, low-latency / private work on-device. Streaming everywhere.</p>
+
+    <figure class="mt-8 card p-4 overflow-x-auto">
+      <svg viewBox="0 0 920 560" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto" role="img" aria-label="Reference architecture diagram for an agent-powered iOS app">
+        <defs>
+          <linearGradient id="bgIos" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#003fb1"/><stop offset="1" stop-color="#0053e2"/></linearGradient>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1c2530"/></marker>
+        </defs>
+        <style>
+          .lbl { font: 600 12px 'Inter', sans-serif; fill: #1c2530; }
+          .lblw { font: 600 13px 'Inter', sans-serif; fill: white; }
+          .sub { font: 500 11px 'Inter', sans-serif; fill: #1c2530; }
+          .subw { font: 500 11px 'Inter', sans-serif; fill: #ffffff; opacity: .85; }
+          .ttl { font: 700 14px 'Inter Tight', sans-serif; }
+          .box { fill: white; stroke: #e5e9f0; stroke-width: 1.5; }
+          .boxBlue { fill: url(#bgIos); }
+          .boxGold { fill: #fffaeb; stroke: #ffc220; stroke-width: 1.5; }
+          .line { stroke: #1c2530; stroke-width: 1.5; fill: none; }
+          .ldash { stroke: #6b7280; stroke-width: 1.2; stroke-dasharray: 5 4; fill: none; }
+        </style>
+
+        <!-- iOS APP -->
+        <rect class="boxBlue" x="40"  y="30"  rx="14" ry="14" width="380" height="170"/>
+        <text class="lblw ttl" x="60" y="60">📱 iOS App (SwiftUI)</text>
+        <text class="subw"  x="60" y="82">Streaming chat UI · App Intents (Siri/Spotlight)</text>
+        <text class="subw"  x="60" y="100">Sign in with Apple · StoreKit 2 (subscriptions)</text>
+        <text class="subw"  x="60" y="118">Push notifications · Background tasks</text>
+        <text class="subw"  x="60" y="136">Local SQLite cache · Keychain (tokens)</text>
+        <text class="subw"  x="60" y="160">Accessibility: WCAG 2.2 AA, VoiceOver tuned</text>
+        <text class="subw"  x="60" y="180">Offline-friendly: queue + retry on resume</text>
+
+        <!-- ON-DEVICE INFERENCE -->
+        <rect class="boxGold" x="500" y="30"  rx="14" ry="14" width="380" height="170"/>
+        <text class="ttl" x="520" y="60" fill="#995213">🧠 On-Device Inference (iOS 18+)</text>
+        <text class="sub" x="520" y="82">Apple Foundation Models · Core ML · MLX</text>
+        <text class="sub" x="520" y="100">Intent routing, entity extraction, classification</text>
+        <text class="sub" x="520" y="118">Private/sensitive prompts never leave device</text>
+        <text class="sub" x="520" y="136">~$0 marginal cost · sub-100ms latency</text>
+        <text class="sub" x="520" y="160">Fallback to cloud when context > local budget</text>
+        <text class="sub" x="520" y="180">Battery + thermal aware; throttles gracefully</text>
+
+        <!-- ORCHESTRATOR -->
+        <rect class="box" x="40"  y="240" rx="14" ry="14" width="840" height="150"/>
+        <text class="ttl lbl" x="60" y="270">⚙️  Agent Orchestration Layer (FastAPI · Pydantic AI)</text>
+        <text class="lbl" x="60" y="294">• Tool routing &amp; multi-step planning</text>
+        <text class="lbl" x="60" y="312">• Streaming responses (SSE) with cancellation</text>
+        <text class="lbl" x="60" y="330">• Conversation/memory store (Postgres + pgvector)</text>
+        <text class="lbl" x="60" y="348">• Guardrails: input/output moderation, PII scrub, cost caps</text>
+        <text class="lbl" x="60" y="366">• Observability: Langfuse traces · token/cost metrics · evals</text>
+        <text class="lbl" x="500" y="294">• Model routing: cheap → escalate on complexity</text>
+        <text class="lbl" x="500" y="312">• Caching: prompt + response, semantic dedupe</text>
+        <text class="lbl" x="500" y="330">• Auth handoff: Sign in with Apple → JWT</text>
+        <text class="lbl" x="500" y="348">• Rate limits per user / per tier</text>
+        <text class="lbl" x="500" y="366">• Background jobs (Celery / RQ) for long agent runs</text>
+
+        <!-- LLM PROVIDERS -->
+        <rect class="box" x="40"  y="430" rx="14" ry="14" width="250" height="100"/>
+        <text class="ttl lbl" x="60" y="458">🤖 LLM Providers</text>
+        <text class="sub" x="60" y="478">OpenAI · Anthropic · Gemini</text>
+        <text class="sub" x="60" y="494">Groq / Cerebras for low-latency</text>
+        <text class="sub" x="60" y="510">Own fine-tunes (Bedrock / Vertex)</text>
+        <text class="sub" x="60" y="524">Routed by cost + capability</text>
+
+        <!-- TOOLS -->
+        <rect class="box" x="335" y="430" rx="14" ry="14" width="250" height="100"/>
+        <text class="ttl lbl" x="355" y="458">🧰 Tools</text>
+        <text class="sub" x="355" y="478">Web search · Browser automation</text>
+        <text class="sub" x="355" y="494">Vector + SQL retrieval</text>
+        <text class="sub" x="355" y="510">Code interpreter · Image / OCR</text>
+        <text class="sub" x="355" y="524">Internal APIs (Stripe, calendar...)</text>
+
+        <!-- INFRA -->
+        <rect class="box" x="630" y="430" rx="14" ry="14" width="250" height="100"/>
+        <text class="ttl lbl" x="650" y="458">📊 Storage &amp; Ops</text>
+        <text class="sub" x="650" y="478">Postgres + pgvector · Redis</text>
+        <text class="sub" x="650" y="494">S3/R2 for artifacts &amp; uploads</text>
+        <text class="sub" x="650" y="510">Langfuse / Helicone / Sentry</text>
+        <text class="sub" x="650" y="524">Fly.io / Modal / Railway</text>
+
+        <!-- LINES -->
+        <path class="line" d="M 230 200 V 240" marker-end="url(#arrow)"/>
+        <path class="ldash" d="M 690 200 V 240" marker-end="url(#arrow)"/>
+        <path class="line" d="M 165 390 V 430" marker-end="url(#arrow)"/>
+        <path class="line" d="M 460 390 V 430" marker-end="url(#arrow)"/>
+        <path class="line" d="M 755 390 V 430" marker-end="url(#arrow)"/>
+        <text class="sub" x="240" y="226" fill="#1c2530">SSE / HTTPS</text>
+        <text class="sub" x="700" y="226" fill="#6b7280">fallback only</text>
+      </svg>
+      <figcaption class="mt-2 text-xs text-ink-160/60">Solid arrows: primary path. Dashed: on-device → cloud fallback only when needed.</figcaption>
+    </figure>
+
+    <h3 class="text-xl font-bold mt-10">Pattern Choices</h3>
+    <div class="mt-3 card overflow-hidden">
+      <table>
+        <thead><tr><th>Layer</th><th>Recommended</th><th>When to choose alt</th></tr></thead>
+        <tbody>
+          <tr><td><b>App shell</b></td><td>SwiftUI native</td><td>React Native / Expo for cross-plat speed</td></tr>
+          <tr><td><b>Inference</b></td><td>Cloud for reasoning</td><td>Foundation Models on-device for privacy + routing</td></tr>
+          <tr><td><b>Orchestration</b></td><td>Pydantic AI or LangGraph in FastAPI</td><td>OpenAI Agents SDK if you want batteries included</td></tr>
+          <tr><td><b>Streaming</b></td><td>Server-Sent Events</td><td>WebSocket only for bidirectional voice</td></tr>
+          <tr><td><b>Memory</b></td><td>Postgres + pgvector</td><td>Pinecone / Qdrant past ~10M embeddings</td></tr>
+          <tr><td><b>Auth</b></td><td>Sign in with Apple (required if any social login)</td><td>Magic links for web-first</td></tr>
+          <tr><td><b>Payments</b></td><td>StoreKit 2 IAP (15–30% Apple)</td><td>External links allowed in EU iOS 17.4+</td></tr>
+          <tr><td><b>Deploy</b></td><td>Fly.io / Modal / Railway</td><td>Cloudflare Workers for edge latency</td></tr>
+          <tr><td><b>Observability</b></td><td>Langfuse (OSS) or Helicone</td><td>Arize for ML drift, Datadog for ops</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="text-xl font-bold mt-10">App Store Gotchas (real ones)</h3>
+    <ul class="mt-3 list-disc pl-6 prose-list">
+      <li><b>Guideline 4.7</b> — agent apps need clear content controls; jailbreak/uncensored = rejection.</li>
+      <li><b>Sign in with Apple required</b> if you offer Google/Facebook login.</li>
+      <li><b>Privacy Nutrition Label</b> — be precise about what is sent to LLM providers.</li>
+      <li><b>Guideline 5.2.3</b> — no misleading "AI-generated" claims; disclose generated content.</li>
+      <li><b>iOS kills long requests</b> — chunk over SSE, resume via background tasks + push.</li>
+      <li><b>First-token latency &lt; 800ms</b> or you bleed users. Groq/Cerebras when it matters.</li>
+      <li><b>IAP cut</b>: 30% standard · 15% subs after year 1 · 15% under the $1M Small Business Program.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- CONSUMER APPS -->
+<section id="apps" class="pad">
+  <h2 class="text-3xl font-bold">What's actually shipping</h2>
+  <p class="mt-2 text-ink-160/70 max-w-3xl">
+    Two distinct categories: <b>(A) chat-with-an-agent</b> apps where the agent is the product, and
+    <b>(B) agents inside consumer apps</b> where the agent is invisible plumbing powering a workflow.
+  </p>
+
+  <h3 class="text-xl font-bold mt-8">A) Agent-as-product (you talk to it)</h3>
+  <div class="mt-3 card overflow-x-auto">
+    <table>
+      <thead><tr><th>App</th><th>Category</th><th>Scale (est.)</th><th>Monetization</th><th>Signal</th></tr></thead>
+      <tbody>
+        <tr><td><b>ChatGPT</b></td><td>General assistant</td><td>200M+ MAU; top-3 Productivity</td><td>$20/mo Plus · $200/mo Pro</td><td>$200M+ mobile rev '24; D30 ~50%</td></tr>
+        <tr><td><b>Claude</b></td><td>General + coding</td><td>~30M MAU est.</td><td>$20/mo Pro</td><td>Lower vol, higher ARPU, dev-loved</td></tr>
+        <tr><td><b>Perplexity</b></td><td>Search agent</td><td>15M+ MAU; $9B valuation</td><td>$20/mo Pro + ads</td><td>Now shipping Comet browser</td></tr>
+        <tr><td><b>Google Gemini</b></td><td>Assistant</td><td>350M+ MAU (Q4'24 disclosure)</td><td>Bundled + Advanced $19.99</td><td>Android distribution moat</td></tr>
+        <tr><td><b>Copilot</b></td><td>Productivity</td><td>100M+ M365 seats claimed</td><td>$30/seat/mo enterprise</td><td>Bundling beats standalone UX</td></tr>
+        <tr><td><b>Character.AI</b></td><td>Companion agents</td><td>20M+ MAU; 2hr+ daily sessions</td><td>$9.99/mo c.ai+</td><td>Google paid $2.7B for the team</td></tr>
+        <tr><td><b>Replika</b></td><td>Companion</td><td>10M+ downloads</td><td>$69.99/yr</td><td>~$80M ARR est.; D30 ~40%</td></tr>
+        <tr><td><b>Pi (Inflection)</b></td><td>Companion</td><td>6M+ MAU pre-acq</td><td>Free</td><td>MSFT paid ~$650M for team</td></tr>
+        <tr><td><b>Khanmigo</b></td><td>Education tutor</td><td>Khan Academy install base</td><td>$4/mo or institutional</td><td>Vertical agent w/ trust brand</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="text-xl font-bold mt-10">B) Agents <em>inside</em> consumer apps (the new wave)</h3>
+  <p class="text-sm text-ink-160/70">These ship in the App Store as regular apps; the agent <em>is</em> the engine.</p>
+  <div class="mt-3 card overflow-x-auto">
+    <table>
+      <thead><tr><th>App</th><th>What the agent does</th><th>Scale / signal</th></tr></thead>
+      <tbody>
+        <tr><td><b>Amazon Rufus</b></td><td>In-app shopping agent: product research, comparisons, Q&amp;A inline in the Amazon app</td><td>Rolled out to all US Amazon shoppers (2024); now international expansion</td></tr>
+        <tr><td><b>Walmart Sparky</b></td><td>Conversational shopping + reorder + recipe-to-cart inside the Walmart app</td><td>Launched 2025 to US customers — early agent inside a top-10 US app</td></tr>
+        <tr><td><b>Arc Search</b></td><td>"Browse for me" agent that reads pages and assembles an answer page</td><td>1M+ downloads in first months; The Browser Company's flagship</td></tr>
+        <tr><td><b>Granola</b></td><td>Meeting agent: listens, structures notes, drafts follow-ups</td><td>~$20M ARR est. mid-2025; loved by founders &amp; PMs</td></tr>
+        <tr><td><b>Otter / Fathom / Fireflies</b></td><td>Meeting agents — transcribe, summarize, action-extract</td><td>Otter 18M+ users; Fathom rocketing post-2024</td></tr>
+        <tr><td><b>Cursor (desktop, but pattern-defining)</b></td><td>Coding agent that edits files autonomously</td><td>$100M+ ARR in &lt; 18 months — proof of pure-agent monetization</td></tr>
+        <tr><td><b>Replit Agent</b></td><td>Builds + deploys a working app from a prompt, in the mobile/web app</td><td>App Store + Android; powering Replit's growth narrative</td></tr>
+        <tr><td><b>NotebookLM (Google)</b></td><td>Agent that grounds answers in user-uploaded docs + generates podcasts</td><td>Audio Overviews went viral 2024; iOS app shipped 2025</td></tr>
+        <tr><td><b>Suno · Udio</b></td><td>Music-generation agent (prompt → song)</td><td>Suno 10M+ users; top Music app in early 2024</td></tr>
+        <tr><td><b>ElevenLabs Reader</b></td><td>Voice agent that reads anything aloud in any voice</td><td>iOS app; rapid B2C uptake on top of B2B base</td></tr>
+        <tr><td><b>Be My Eyes (Be My AI)</b></td><td>GPT-4V agent describes the world to blind/low-vision users</td><td>Apple Design Award 2024 finalist; cited as flagship accessibility AI</td></tr>
+        <tr><td><b>Headspace Ebb</b></td><td>Empathic companion agent inside Headspace</td><td>Launched 2024 to Headspace's 100M+ install base</td></tr>
+        <tr><td><b>Wysa</b></td><td>CBT-trained mental-health agent</td><td>6M+ users; NHS &amp; insurer partnerships</td></tr>
+        <tr><td><b>Snapchat My AI</b></td><td>Conversational agent embedded in Snap</td><td>~150M users tried it in first months (Snap disclosure)</td></tr>
+        <tr><td><b>Meta AI (in IG / WhatsApp / Messenger)</b></td><td>In-thread agent; image gen, search, character chat</td><td>500M+ MAU claimed by Meta (Q4'24)</td></tr>
+        <tr><td><b>Duolingo Max</b></td><td>"Roleplay" + "Explain My Answer" GPT-powered agents inside the lesson loop</td><td>Premium tier; cited as a driver of '24 ARPU growth</td></tr>
+        <tr><td><b>Khan Khanmigo</b></td><td>Tutor agent in the Khan Academy app</td><td>Education vertical, Microsoft-funded</td></tr>
+        <tr><td><b>DoorDash / Instacart copilots</b></td><td>List-to-cart, recipe-to-cart, restock agents</td><td>Shipping inside the existing super-apps</td></tr>
+        <tr><td><b>Klarna AI assistant</b></td><td>Customer service agent — handled work of "700 FTE" per Klarna</td><td>Inside the Klarna app; widely cited 2024 case study</td></tr>
+        <tr><td><b>Expedia / Kayak / Booking agents</b></td><td>"Plan my trip" conversational booking</td><td>Live in flagship travel apps</td></tr>
+        <tr><td><b>Rabbit r1 / Humane (hardware)</b></td><td>Pure-agent device UX — companion apps in the App Store</td><td>Mixed reception, but reset expectations for "agent as UI"</td></tr>
+        <tr><td><b>Friend / Tab / Limitless</b></td><td>Always-on wearable agents — phone app does heavy lifting</td><td>Form-factor experiments, sub + hardware combo</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="mt-4 text-sm text-ink-160/70">
+    <b>Pattern to notice:</b> the breakout commercial winners (Cursor, Granola, Klarna's CS agent, Rufus) are
+    <em>vertical agents owning a specific workflow</em>. Horizontal chat is a winner-take-most race already
+    decided. New entrants are betting on depth, not breadth.
+  </p>
+
+  <h3 class="text-xl font-bold mt-10">C) Solo &amp; small-team builders shipping agent apps</h3>
+  <p class="text-sm text-ink-160/70">Living proof that one focused person + modern AI tooling can ship to the App Store.</p>
+  <div class="mt-3 card overflow-x-auto">
+    <table>
+      <thead><tr><th>Builder</th><th>What they ship</th><th>Why follow</th></tr></thead>
+      <tbody>
+        <tr><td><b>Pieter Levels</b> (@levelsio)</td><td>Photo AI, Interior AI, RemoteOK</td><td>Solo, multi-$M/yr, openly AI-assisted, ships in days</td></tr>
+        <tr><td><b>Marc Lou</b> (@marc_louvion)</td><td>ShipFast + ~30 micro-SaaS</td><td>$1M+ ARR solo; also sells the boilerplate</td></tr>
+        <tr><td><b>Danny Postma</b> (@dannypostmaa)</td><td>Headlime (sold), Interior AI</td><td>Multiple 6–7-figure exits</td></tr>
+        <tr><td><b>Tony Dinh</b> (@tdinh_me)</td><td>DevUtils, TypingMind</td><td>Quietly $50K+/mo solo</td></tr>
+        <tr><td><b>Riley Brown</b> (@rileybrown_ai)</td><td>Multiple iOS apps weekly</td><td>Vibe-coding evangelist with huge audience</td></tr>
+        <tr><td><b>Yohei Nakajima</b> (@yoheinakajima)</td><td>BabyAGI &amp; many agent demos</td><td>Agent experimentation playbook in public</td></tr>
+        <tr><td><b>Greg Isenberg</b> (@gregisenberg)</td><td>LateChecker, Late, community ideas</td><td>Idea → MVP → monetize patterns</td></tr>
+        <tr><td><b>Pratham Prasoon</b> (@PrasoonPratham)</td><td>AI tools as a young founder, India</td><td>Energetic build-in-public from India</td></tr>
+        <tr><td><b>Paras Chopra</b> (@paraschopra)</td><td>Wingify founder, LossFunk</td><td>India SaaS-to-AI playbook + community</td></tr>
+        <tr><td><b>Rohit Krishnan</b> (@krishnanrohit)</td><td>Strategy + AI essays from Bangalore</td><td>If you want to write seriously about AI strategy</td></tr>
+        <tr><td><b>Akshay Bhat</b> (@akshay_pachaar)</td><td>Practical ML/AI tooling content</td><td>India-based builder shipping in public</td></tr>
+        <tr><td><b>Subhash Choudhary</b></td><td>Dukaan; famously replaced support team with AI</td><td>Bold AI bets in Indian SaaS</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="mt-4 text-sm text-ink-160/70">
+    Communities worth lurking in: <b>Indian Indie Hackers</b>, <b>WIP (work in progress)</b>, <b>The Product Folks</b>
+    (India PM/founder), <b>Headstart Network Bangalore</b>, <b>MicroConf</b>. Newsletters: <b>Lenny's</b>,
+    <b>Indie Hackers</b>, <b>The Pragmatic Engineer</b>, <b>Latent Space</b>.
+  </p>
+</section>
+
+<!-- BENCHMARKS -->
+<section id="bench" class="bg-white border-y border-ink-100">
+  <div class="pad">
+    <h2 class="text-3xl font-bold">Benchmarks &amp; Unit Economics</h2>
+
+    <h3 class="text-xl font-bold mt-6">Consumer-agent app benchmarks</h3>
+    <div class="mt-3 card overflow-x-auto">
+      <table>
+        <thead><tr><th>Metric</th><th>Top quartile</th><th>Median</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td>D1 retention</td><td>50%+</td><td>30–35%</td><td>Hooked moment in first session</td></tr>
+          <tr><td>D30 retention</td><td>30–40%</td><td>12–18%</td><td>ChatGPT &amp; Character.AI break the chart</td></tr>
+          <tr><td>DAU/MAU</td><td>30–40%</td><td>15–25%</td><td>Higher = daily habit</td></tr>
+          <tr><td>Free → paid</td><td>5–10%</td><td>2–3%</td><td>Workflow agents beat chat</td></tr>
+          <tr><td>ARPU (paid)</td><td>$15–20/mo</td><td>$9–12/mo</td><td>After Apple cut</td></tr>
+          <tr><td>Cost / session</td><td>$0.01–0.05</td><td>$0.05–0.15</td><td>Aggressive routing matters</td></tr>
+          <tr><td>1st-token latency</td><td>&lt; 500ms</td><td>1–2s</td><td>Streaming hides total time</td></tr>
+          <tr><td>Sessions / day</td><td>4–8 (winners)</td><td>1–2</td><td>Companions skew highest</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="text-xl font-bold mt-8">Sustainable unit economics</h3>
+    <pre><code>ARPU       $10–15 /user /mo  (after Apple cut)
+Inference  $1–3   /user /mo  (with routing + caching)
+Infra      $0.50  /user /mo
+─────────────────────────────
+Gross margin  ≈ 70–80%
+Payback       &lt; 6 months  if CAC &lt; $30
+</code></pre>
+    <p class="text-sm mt-3 text-ink-160/70">
+      Cursor's tell: <b>$100M+ ARR in 18 months</b> with a small team — proves the agent-app monetization thesis
+      if you nail a single high-value workflow.
+    </p>
+  </div>
+</section>
+
+<!-- STARTER -->
+<section id="starter" class="pad">
+  <h2 class="text-3xl font-bold">A working starter</h2>
+  <p class="mt-2 text-ink-160/70 max-w-3xl">
+    I built a minimal end-to-end scaffold — FastAPI + Pydantic AI on the backend, SwiftUI on the front — so you
+    can stop reading and start shipping.
+  </p>
+  <div class="mt-4">
+    <a class="inline-block bg-gray-400 text-white px-5 py-2.5 rounded-lg font-semibold cursor-default"
+       title="Private repo — available on request">
+      🔒 mobile-agent-starter (private — available on request)
+    </a>
+  </div>
+  <div class="mt-6 grid md:grid-cols-2 gap-4">
+    <div class="card p-5">
+      <h3 class="font-bold">Backend (FastAPI + Pydantic AI)</h3>
+      <ul class="text-sm mt-2 list-disc pl-5 prose-list">
+        <li>SSE streaming endpoint</li>
+        <li>Pydantic-typed agent w/ tool calling</li>
+        <li>Pluggable model routing (OpenAI / Anthropic / Groq)</li>
+        <li>Per-user rate limiting + cost cap stubs</li>
+      </ul>
+    </div>
+    <div class="card p-5">
+      <h3 class="font-bold">iOS (SwiftUI)</h3>
+      <ul class="text-sm mt-2 list-disc pl-5 prose-list">
+        <li>Streaming chat UI with cancellation</li>
+        <li>Sign in with Apple stub</li>
+        <li>Keychain token storage</li>
+        <li>App Intent for Siri / Spotlight handoff</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="bg-gradient-to-br from-wmblue-130 via-wmblue-110 to-wmblue-100 text-white">
+  <div class="pad">
+    <h2 class="text-3xl font-bold">If you're hiring for product / platform leadership</h2>
+    <p class="mt-3 text-white/90 max-w-2xl">
+      This is the kind of work I love — turning emergent capabilities into reusable platform bets that ship across
+      markets and surfaces. I'm exploring Sr Director / VP Product roles in consumer, fintech, and global SaaS.
+    </p>
+    <div class="mt-6 flex gap-3 flex-wrap">
+      <a href="mailto:sauravi.rai@gmail.com" class="bg-white text-wmblue-100 px-5 py-2.5 rounded-lg font-semibold">Email me</a>
+      <a href="https://www.linkedin.com/in/sauravirai/" class="bg-wmblue-130 border border-white/30 px-5 py-2.5 rounded-lg font-semibold">LinkedIn</a>
+      <a href="https://sauravirai.github.io" class="text-white underline underline-offset-4 px-2 py-2.5">Back to portfolio →</a>
+    </div>
+  </div>
+</section>
+
+<footer class="bg-ink-160 text-white/70 text-sm">
+  <div class="max-w-5xl mx-auto px-6 py-8 flex flex-wrap items-center justify-between gap-3">
+    <div>© 2026 Sauravi Rai · Bengaluru</div>
+    <div class="text-white/50">Numbers are public estimates; ±20%. Verify before pitching.</div>
+  </div>
+</footer>
+
+</body>
+</html>
