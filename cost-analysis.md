@@ -2,7 +2,7 @@
 
 How much would it cost to run an AI agent CLI setup personally — based on **actual measured 90-day usage**.
 
-> 📅 Snapshot taken: May 2026
+> 📅 Snapshot updated: May 2026
 > 🧮 Pricing changes constantly — re-check provider sites before committing to a plan.
 
 ---
@@ -14,14 +14,14 @@ Pulled from a real telemetry-backed adoption tracker (live BigQuery numbers).
 | Metric | Last 90 days | Per month (avg) |
 |---|---|---|
 | Model requests | 11,429 | ~3,810 |
-| **Tokens consumed** | **680,367,022** (680M) | **~227M** |
+| **Tokens consumed** | **1,000,000,000+** (1B+) | **~340M** |
 | Code-completion requests | 5,479 | ~1,826 |
 | Lines of code touched | 160,389 | ~53,463 |
 | Distinct programming languages | 17 | — |
 | Distinct models used | 5 | — |
 | Tool-call success rate | 94% | — |
 
-**~7.5M tokens/day, every day. Top-1% power-user volume.**
+**~11M tokens/day, every day. Top-1% power-user volume.**
 
 This sets the worst-case ceiling. Personal use will be a fraction (5–30%) of this — see scenarios below.
 
@@ -53,18 +53,18 @@ Blend ratio chosen to match agent workloads (lots of context input, smaller outp
 
 ---
 
-## 💰 Monthly cost if I replicated my full 227M-token volume on personal API
+## 💰 Monthly cost if I replicated my full 340M-token volume on personal API
 
 | Model | Monthly cost |
 |---|---|
-| Claude 3.5 Haiku | $363 |
-| Claude 3.5 Sonnet | $1,362 |
-| **Claude Opus 4** | **$6,810** 💀 |
-| GPT-5 nano | $30 |
-| GPT-5 mini | $156 |
-| GPT-5 | $782 |
-| Gemini 2.5 Flash | $193 |
-| Gemini 2.5 Pro | $782 |
+| Claude 3.5 Haiku | $544 |
+| Claude 3.5 Sonnet | $2,040 |
+| **Claude Opus 4** | **$10,200** 💀 |
+| GPT-5 nano | $44 |
+| GPT-5 mini | $235 |
+| GPT-5 | $1,170 |
+| Gemini 2.5 Flash | $289 |
+| Gemini 2.5 Pro | $1,170 |
 
 **Lesson:** raw API at this volume is brutal for top-tier models.
 
@@ -102,14 +102,14 @@ For heavy users, capped-but-generous subscriptions crush per-token API pricing.
 
 ## 📈 Realistic personal usage scenarios
 
-I won't actually use 227M tokens/month for hobby work. Here's what's likely:
+I won't actually use 340M tokens/month for hobby work. Here's what's likely:
 
 | Scenario | Tokens/mo | Best fit | Monthly cost |
 |---|---|---|---|
 | **Light hobby** — recipe agent, occasional Qs | ~5M | Gemini 2.5 Flash API or free tier | **$0–5** |
 | **Weekend coder** — 1–2 personal projects | ~25M | GPT-5 mini API OR Claude Code Pro | **$17–20** |
 | **Active hacker** — multi-agent stack at home | ~75M | Claude Code Max 5x | **$100** |
-| **Replicate work-level use** | ~227M | Claude Code Max 20x or Mac Studio | **$200/mo** OR one-time **$3,200** |
+| **Replicate work-level use** | ~340M | Claude Code Max 20x or Mac Studio | **$200/mo** OR one-time **$3,200** |
 | **Open-source purist** | unlimited | Ollama + Mac Studio | **~$5/mo + $3,200 hardware** |
 
 ---
