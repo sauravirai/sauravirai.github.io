@@ -21,7 +21,7 @@ Pulled from a real telemetry-backed adoption tracker (live BigQuery numbers).
 | Distinct models used | 5 | — |
 | Tool-call success rate | 94% | — |
 
-**~11M tokens/day, every day. Top-1% power-user volume.**
+**~11M tokens/day, every day. The number speaks for itself.**
 
 This sets the worst-case ceiling. Personal use will be a fraction (5–30%) of this — see scenarios below.
 
