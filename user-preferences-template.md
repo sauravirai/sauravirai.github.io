@@ -1,6 +1,6 @@
-# [USER_NAME]'s AgentRunner Preferences 🐾
+# [USER_NAME]'s AI agent CLI Preferences 🐾
 
-> **Future AgentRunner: read this first at session start!**
+> **Future AI agent CLI: read this first at session start!**
 > Last updated: 2026-05-05
 
 ## 🏠 Default Workspace
@@ -15,7 +15,7 @@
 |---|---|
 | `~/workspace/avatars/` | Avatar assets |
 | `~/workspace/[VP_LEADER]-team-report/` | [VP_LEADER] team report |
-| `~/workspace/code-agent-team-report/` | AgentRunner adoption report |
+| `~/workspace/code-agent-team-report/` | AI agent CLI adoption report |
 | `~/workspace/meeting-room-bridge/` | Meeting room bridge |
 | `~/workspace/meeting-room-copilot-studio/` | Copilot Studio meeting agent |
 | `~/workspace/org-context-agent/` | Org change agent + ground truth |

@@ -8,7 +8,7 @@ How the five agents in this stack compose. The interesting leverage is here, not
 
 ### 1. Shared preference profiles
 
-Two agents touch calendar/meeting flows: the **Room Agent** (AgentRunner subagent) and the **Copilot Studio meeting plugin**. Both read the same per-user JSON profile.
+Two agents touch calendar/meeting flows: the **Room Agent** (agent CLI subagent) and the **Copilot Studio meeting plugin**. Both read the same per-user JSON profile.
 
 ```
 ~/.config/meeting-prefs/<userId>.json
@@ -97,7 +97,7 @@ These are the gaps targeted by the published plan.
 
 ## How to extend this stack
 
-1. **Build your agent** as a normal AgentRunner subagent (`~/.agentrunner/agents/<name>.json`)
+1. **Build your agent** as a normal agent CLI subagent (`~/.agentrunner/agents/<name>.json`)
 2. **Pick a composition pattern** from above (or invent a new one)
 3. **Document the contract** — what does it own, what does it query, what does it project?
 4. **Open a PR** against this repo with the JSON config + a brief addition to this file

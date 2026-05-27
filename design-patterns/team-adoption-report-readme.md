@@ -15,8 +15,8 @@ Most "PM productivity AI" pitches give you one bot for one workflow. This stack 
 | 📅 **[Meeting Room Agent](agents/meeting-room-agent.json)** | Books M365 rooms respecting per-user prefs, manages recurring series, onboards new users | 12 |
 | 🪢 **[Task Wrangler](agents/daily-task-agent.json)** | One daily digest pulling action items from Outlook, Jira, Confluence, OneNote, and the org-change agent. Drafts polite follow-ups | 26 |
 | 🏗️ **[Org Change Agent](agents/[USER_NAME]-org-context-agent.json)** | Re-org transitions: stakeholder maps, hierarchy tracking, OKR resets, Rewards & Calibration guidance | 4 |
-| 📊 **[AI Usage Tracker](agents/ai-usage-tracker.json)** | Live 90-day AgentRunner + InternalAgentPlatform adoption stats; benchmarks against [SENIOR_LEADER]+ network and the [OFFICE_LOCATION] PM cohort | 6 |
-| 📖 **[Storyteller](agents/storyteller.json)** | Turns an associate's AgentRunner journey into a self-contained, branded HTML slide deck | 7 |
+| 📊 **[AI Usage Tracker](agents/ai-usage-tracker.json)** | Live 90-day AI agent CLI + InternalAgentPlatform adoption stats; benchmarks against [SENIOR_LEADER]+ network and the [OFFICE_LOCATION] PM cohort | 6 |
+| 📖 **[Storyteller](agents/storyteller.json)** | Turns an associate's AI agent CLI journey into a self-contained, branded HTML slide deck | 7 |
 | 🐑 **[Stack Shepherd](agents/stack-shepherd.json)** | Tends this stack itself — keeps artifacts fresh, pushes updates to GHE, drafts community comms, onboards new agents | 9 |
 
 **Headcount of agents in daily use: 6** — well past [SENIOR_LEADER] "3–5 per PM" bar.
@@ -43,7 +43,7 @@ The AI Usage Tracker doesn't store its own state — it pulls live from the Inte
 ## 🚀 Quick start (use any agent)
 
 ```bash
-# In AgentRunner:
+# In AI agent CLI:
 /agent meeting-room-agent
 /agent daily-task-agent
 /agent [USER_NAME]-org-context-agent
@@ -89,7 +89,7 @@ This repo is the open invitation: **fork it, plug in, improve it, share back.** 
 - **Use it:** copy any `agents/*.json` into your `~/.agentrunner/agents/` and run
 - **Fork it:** strip my ground-truth files, swap in yours, you're off
 - **Contribute:** open a PR with a new agent that fits the orchestration pattern
-- **Talk:** find me in the [AgentRunner Teams channel](https://teams.example.com/channel/redacted)
+- **Talk:** find me in the [AI agent CLI Teams channel](https://teams.example.com/channel/redacted)
 
 ---
 
@@ -108,4 +108,4 @@ I'm tracking my own adoption + roadmap publicly:
 
 ---
 
-_Built on [AgentRunner](https://agent-platform.example.com ExampleCorp-internal._
+_Built on [AI agent CLI](https://agent-platform.example.com ExampleCorp-internal._
