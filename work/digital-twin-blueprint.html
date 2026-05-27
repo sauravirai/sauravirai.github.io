@@ -423,7 +423,7 @@
             <span class="text-3xl">✈️</span>
             <div class="flex-1">
               <div class="font-bold text-lg">Travel Planner Agent</div>
-              <div class="text-purple-200 text-sm">Task 2 — Plan Travel · Bengaluru Walmart Special Process</div>
+              <div class="text-purple-200 text-sm">Task 2 — Plan Travel · Bengaluru [Company] Travel Process</div>
             </div>
             <span class="text-2xl">▾</span>
           </div>
@@ -435,7 +435,7 @@
                 <span class="text-2xl">⚠️</span>
                 <div>
                   <div class="font-bold text-amber-900 mb-1">Bengaluru Travel Is NOT Self-Serve — Important Constraints</div>
-                  <p class="text-sm text-amber-800">Walmart Bengaluru follows a <strong>mandatory multi-step approval + the travel booking system travel desk process</strong>. The agent <strong>cannot book anything directly</strong>. Its role is to orchestrate the humans in the loop (EA, VP, the travel booking system) with the right information at the right time — not to bypass them.</p>
+                  <p class="text-sm text-amber-800">Walmart Bengaluru follows a <strong>mandatory multi-step approval + [Company] travel desk process</strong>. The agent <strong>cannot book anything directly</strong>. Its role is to orchestrate the humans in the loop (EA, VP, the travel booking system) with the right information at the right time — not to bypass them.</p>
                 </div>
               </div>
 
@@ -806,7 +806,7 @@
             <span class="text-orange-500 text-xl">→</span>
             <div class="bg-orange-100 border border-orange-400 rounded-xl px-4 py-2 text-orange-900">📢 Content Agent<br/>ai-usage-tracker: pull metrics<br/>bigquery: usage data</div>
             <span class="text-orange-500 text-xl">→</span>
-            <div class="bg-orange-100 border border-orange-400 rounded-xl px-4 py-2 text-orange-900">🎨 slide-creator<br/>Walmart branded deck<br/>w/ charts + insights</div>
+            <div class="bg-orange-100 border border-orange-400 rounded-xl px-4 py-2 text-orange-900">🎨 slide-creator<br/>company-branded deck<br/>w/ charts + insights</div>
             <span class="text-orange-500 text-xl">→</span>
             <div class="bg-green-100 border border-green-400 rounded-xl px-4 py-2 text-green-900">🌐 share-puppy<br/>Published link<br/>returned to Sauravi</div>
           </div>
@@ -1053,7 +1053,7 @@
             <div>
               <div class="font-bold text-gray-800 mb-1">🔒 Data Privacy — PII in prompts sent to LLM</div>
               <p class="text-sm text-gray-600 mb-2">Calendar events, emails, and meeting notes may contain sensitive PII or confidential info sent to InternalLLMGateway LLM.</p>
-              <div class="bg-red-50 rounded-lg p-3 text-sm"><strong>Mitigation:</strong> PII scrubbing layer before any LLM call. Use InternalLLMGateway (Walmart-internal LLM) — no data leaves the company. No external APIs for sensitive content. Audit log all LLM calls.</div>
+              <div class="bg-red-50 rounded-lg p-3 text-sm"><strong>Mitigation:</strong> PII scrubbing layer before any LLM call. Use InternalLLMGateway (enterprise LLM gateway) — no data leaves the company. No external APIs for sensitive content. Audit log all LLM calls.</div>
             </div>
           </div>
         </div>
@@ -1311,7 +1311,7 @@
               <span class="bg-yellow-50 px-2 py-1 rounded">Voice clone (ElevenLabs / internal)</span>
               <span class="bg-yellow-50 px-2 py-1 rounded">Real-time STT/TTS</span>
               <span class="bg-yellow-50 px-2 py-1 rounded">&lt;500ms latency target</span>
-              <span class="bg-yellow-50 px-2 py-1 rounded">Disclosure required by Walmart policy</span>
+              <span class="bg-yellow-50 px-2 py-1 rounded">Disclosure required by company policy</span>
             </div>
           </div>
         </div>
@@ -1403,7 +1403,7 @@
             </div>
           </div>
           <p class="text-sm text-gray-600 mb-3">The next frontier: Sauravi's agent talks directly to a colleague's agent to negotiate meeting times, exchange context, and coordinate work — without either human being in the loop. Google just released the A2A spec; Microsoft is building toward it.</p>
-          <div class="bg-purple-50 rounded-lg p-3 text-xs text-purple-800"><strong>Blueprint Implication:</strong> Our Orchestrator should expose an A2A-compatible endpoint so future Walmart agent ecosystems can communicate with Sauravi's twin peer-to-peer.</div>
+          <div class="bg-purple-50 rounded-lg p-3 text-xs text-purple-800"><strong>Blueprint Implication:</strong> Our Orchestrator should expose an A2A-compatible endpoint so future enterprise agent ecosystems can communicate with Sauravi's twin peer-to-peer.</div>
         </div>
 
         <div class="bg-white rounded-2xl border border-green-200 shadow p-5">
@@ -1451,7 +1451,7 @@
             </div>
           </div>
           <p class="text-sm text-gray-600 mb-3">The most sensitive parts of Sauravi's identity model (private thoughts, draft communications, sensitive decisions) could be processed on-device or in a private enclave — never touching a cloud LLM. Apple Intelligence is pioneering Private Cloud Compute for exactly this.</p>
-          <div class="bg-red-50 rounded-lg p-3 text-xs text-red-800"><strong>Blueprint Implication:</strong> Tiered data classification for the identity model. Sensitive layer runs on-device or in Walmart's private enclave. Less-sensitive data goes to InternalLLMGateway LLM. Architect this boundary clearly.</div>
+          <div class="bg-red-50 rounded-lg p-3 text-xs text-red-800"><strong>Blueprint Implication:</strong> Tiered data classification for the identity model. Sensitive layer runs on-device or in company's private enclave. Less-sensitive data goes to InternalLLMGateway LLM. Architect this boundary clearly.</div>
         </div>
 
         <div class="bg-white rounded-2xl border border-orange-200 shadow p-5">
@@ -1474,7 +1474,7 @@
               <div class="text-xs text-gray-600">Microsoft 365 Copilot Agents · Salesforce Agentforce</div>
             </div>
           </div>
-          <p class="text-sm text-gray-600 mb-3">The endgame isn't one digital twin — it's an organization of them. Sauravi's twin coordinates with her team's twins, her manager's twin, and Walmart's enterprise agent infrastructure. Meetings between agents happen at millisecond speed. Humans ratify at human speed.</p>
+          <p class="text-sm text-gray-600 mb-3">The endgame isn't one digital twin — it's an organization of them. Sauravi's twin coordinates with her team's twins, her manager's twin, and enterprise agent infrastructure. Meetings between agents happen at millisecond speed. Humans ratify at human speed.</p>
           <div class="bg-gray-50 rounded-lg p-3 text-xs text-gray-800"><strong>Blueprint Implication:</strong> Design with org-wide interop in mind. Use standard formats (A2A, MCP). Contribute Sauravi's Digital Twin architecture as the reference model for the broader Walmart AI agent program.</div>
         </div>
 
@@ -1535,7 +1535,7 @@
             <p class="text-yellow-300 text-sm font-bold mb-1">Global Product Leader</p>
             <p class="text-blue-300 text-sm mb-4">Walmart · eCommerce Platform</p>
             <div class="space-y-2 text-sm">
-              <div class="flex items-center gap-2 text-gray-300"><span class="text-yellow-400">💼</span> 22 years · Product, TPM &amp; Engineering</div>
+              <div class="flex items-center gap-2 text-gray-300"><span class="text-yellow-400">💼</span> 23 years · Product, TPM &amp; Engineering</div>
               <div class="flex items-center gap-2 text-gray-300"><span class="text-yellow-400">🌍</span> US · India</div>
               <div class="flex items-center gap-2 text-gray-300"><span class="text-yellow-400">🔗</span> <a href="https://linkedin.com/in/sauravirai" class="text-blue-400 underline">linkedin.com/in/sauravirai</a></div>
             </div>
@@ -1545,7 +1545,7 @@
           <div class="md:col-span-2">
             <h3 class="text-yellow-400 font-bold text-sm uppercase tracking-wider mb-3">What She Does Now</h3>
             <p class="text-gray-300 text-sm leading-relaxed mb-4">
-              Sauravi leads the <strong class="text-white">Identity, Profile and Omnichannel Accounts platform for Walmart. globally</strong> — the enterprise gateway spanning identity, user understanding, access, and trust across click-and-brick. She is building the foundation for <strong class="text-white">AI agentic shopping</strong>, enabling controlled, trusted access to Walmart through customer accounts, and deepening "Know Your Customer" capabilities across all markets.
+              Sauravi leads the <strong class="text-white">Identity, Profile and Omnichannel Accounts platform globally</strong> — the enterprise gateway spanning identity, user understanding, access, and trust across click-and-brick. She is building the foundation for <strong class="text-white">AI agentic shopping</strong>, enabling controlled, trusted access to Walmart through customer accounts, and deepening "Know Your Customer" capabilities across all markets.
             </p>
             <p class="text-gray-300 text-sm leading-relaxed">
               A <strong class="text-white">servant leader</strong> known for combining deep technical roots with strategic product thinking — she operates at global scale across US, India, MX, and CA, bringing a principle-led, ROI-anchored, evidence-first approach to every problem she takes on.
@@ -1587,9 +1587,9 @@
                   <div class="w-2 h-2 rounded-full bg-white"></div>
                 </div>
                 <div class="bg-blue-400/10 border border-blue-400/20 rounded-xl p-4 flex-1 text-xs">
-                  <div class="text-blue-300 font-bold mb-0.5">Aug 2021 – Jan 2026 · Walmart Bengaluru, Bengaluru</div>
+                  <div class="text-blue-300 font-bold mb-0.5">Aug 2021 – Dec 2025 · Walmart International, Bengaluru</div>
                   <div class="text-white font-semibold text-sm mb-1">Senior Director — Walmart International eCommerce</div>
-                  <div class="text-gray-400 leading-relaxed">Led a large global product organisation · multi-year platform investment · Portfolio: Accounts, Care, AdTech, i18n · 80+ language translation platform · the platform tech modernisation (build once, use everywhere) · multi-million-dollar Ads revenue &amp; GMV lift</div>
+                  <div class="text-gray-400 leading-relaxed">Built a 90-person org from 15 — including a 35+ data analytics team serving all pillars of Walmart International · Portfolio: Accounts, Care, Membership, Monetize (AdTech), Growth/MarTech, Financial Services (Cashi), Post-Purchase · 80+ language LLM translation platform · Cashi fintech wallet (presented to CEO Doug McMillon &amp; Intl CEO Judith McKenna) · GenAI voicebot, chatbot, post-order agent · BrandSpark award (Delivery Pass)</div>
                 </div>
               </div>
 
@@ -1711,7 +1711,7 @@
           <div class="text-white font-bold mb-2">🛠️ Tech Stack Decision</div>
           <ul class="space-y-1 list-disc ml-4">
             <li>Backend: FastAPI + Pydantic AI</li>
-            <li>LLM: InternalLLMGateway (Walmart internal)</li>
+            <li>LLM: InternalLLMGateway (enterprise gateway)</li>
             <li>Memory: SQLite → BQ for analytics</li>
             <li>UI: HTMX + Tailwind (fast, accessible)</li>
             <li>Agents: AgentRunner sub-agents as tools</li>
