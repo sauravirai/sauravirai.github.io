@@ -38,14 +38,68 @@
   </nav>
   <main class="max-w-3xl mx-auto px-6 py-10">
     <!-- Intro card -->
-    <div class="mb-8 bg-blue-50 border border-blue-100 rounded-xl p-5">
-      <p class="text-xs font-bold uppercase tracking-wider text-blue-600 mb-1">What you’re looking at</p>
-      <p class="text-sm text-gray-700 leading-relaxed">
-        This page documents three real composition patterns from a personal multi-agent stack — how five specialized agents share context, query each other, and stay loosely coupled.
-        The patterns are implementation-agnostic: shared preference profiles, cross-agent queries with a single source of truth, and read-side projections (disposable reports, durable upstream data).
-        There’s also a meta-pattern: an agent that tends the stack itself.
-        Written as a reference, not a tutorial — closer to an ADR than a how-to guide.
-      </p>
+    <div class="mb-8 space-y-4">
+
+      <!-- Pre-read nudge -->
+      <div class="flex items-start gap-3 bg-wm-spark-10 border border-wm-spark-100/30 rounded-xl p-4">
+        <span class="text-xl mt-0.5" aria-hidden="true">📖</span>
+        <div>
+          <p class="text-xs font-bold uppercase tracking-wider text-wm-spark-140 mb-1">Pre-read recommended</p>
+          <p class="text-sm text-gray-700 leading-relaxed">
+            New here? Read the
+            <a href="/work/agent-stack-journey-story.html" class="text-blue-600 underline underline-offset-2 font-semibold">PM Agentic Leverage — A Stack You Can Fork</a>
+            first. It explains why this stack exists and the composability mindset behind it.
+          </p>
+        </div>
+      </div>
+
+      <!-- What you're looking at -->
+      <div class="bg-blue-50 border border-blue-100 rounded-xl p-5">
+        <p class="text-xs font-bold uppercase tracking-wider text-blue-600 mb-2">What you’re looking at</p>
+        <p class="text-sm text-gray-700 leading-relaxed mb-4">
+          Three real composition patterns from a five-agent personal stack — how the agents share context, query each other, and stay loosely coupled.
+          Documented as a reference (closer to an ADR than a tutorial).
+        </p>
+        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">The five agents</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div class="flex items-start gap-2 bg-white rounded-lg px-3 py-2 border border-blue-100">
+            <span class="text-base mt-0.5">🚪</span>
+            <div>
+              <p class="text-xs font-bold text-gray-800">Room Agent</p>
+              <p class="text-xs text-gray-500">Books meeting rooms; reads shared preference profile</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-2 bg-white rounded-lg px-3 py-2 border border-blue-100">
+            <span class="text-base mt-0.5">🗒️</span>
+            <div>
+              <p class="text-xs font-bold text-gray-800">Task Wrangler</p>
+              <p class="text-xs text-gray-500">Pulls Outlook, Jira, Confluence into a daily digest</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-2 bg-white rounded-lg px-3 py-2 border border-blue-100">
+            <span class="text-base mt-0.5">🏷️</span>
+            <div>
+              <p class="text-xs font-bold text-gray-800">Org Change Agent</p>
+              <p class="text-xs text-gray-500">Owns stakeholder maps, OKRs, re-org context</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-2 bg-white rounded-lg px-3 py-2 border border-blue-100">
+            <span class="text-base mt-0.5">📊</span>
+            <div>
+              <p class="text-xs font-bold text-gray-800">AI Usage Tracker</p>
+              <p class="text-xs text-gray-500">Pulls live adoption data; renders disposable HTML reports</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-2 bg-white rounded-lg px-3 py-2 border border-blue-100 sm:col-span-2">
+            <span class="text-base mt-0.5">👁️</span>
+            <div>
+              <p class="text-xs font-bold text-gray-800">Stack Shepherd</p>
+              <p class="text-xs text-gray-500">The meta-agent — tends the stack itself: updates docs, pushes to git, re-invokes stale agents</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div id="content" class="prose"></div>
   </main>

@@ -81,7 +81,7 @@ The patterns above let you:
 - **Add new surfaces** (Slack, mobile) without rewriting agents (shared profiles)
 - **Regenerate reports/decks at zero cost** (read-side projections)
 
-This is what [SENIOR_LEADER] by "platform level leverage" — agents that *compose* instead of accumulate.
+This is what "platform level leverage" means — agents that *compose* instead of accumulate.
 
 ---
 
