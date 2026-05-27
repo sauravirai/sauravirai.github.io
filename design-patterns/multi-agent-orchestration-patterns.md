@@ -87,7 +87,7 @@ This is what [SENIOR_LEADER] by "platform level leverage" — agents that *compo
 
 ## What's NOT here yet (roadmap)
 
-- **Persistent memory layer** — currently each agent has its own context window. Eval Gana's PM Chief of Staff for upstream decision capture (see PLAN.md Phase 4)
+- **Persistent memory layer** — currently each agent has its own context window. Eval a PM Chief of Staff agent for upstream decision capture (see PLAN.md Phase 4)
 - **Always-on customer intelligence** — no VoC agent in the stack yet (Phase 4)
 - **Experiment monitor** — A/B test outcome tracking against PRD criteria (Phase 4)
 
