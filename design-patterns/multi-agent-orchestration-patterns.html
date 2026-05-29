@@ -4,113 +4,254 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Multi-Agent Orchestration Patterns · Sauravi Rai</title>
+  <meta name="description" content="Three reusable composition patterns — and one meta-pattern — from a personal multi-agent PM stack: shared profiles, cross-agent queries, and read-side projections."/>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            wblue:  { 5: '#e6f0ff', 10: '#cce0ff', 100: '#0053e2', 110: '#0046c2', 130: '#003494' },
+            spark:  { 10: '#fff8e0', 100: '#ffc220', 140: '#995213' },
+            wgray:  { 5: '#fafafa', 10: '#f2f2f2', 30: '#e6e6e6', 50: '#9f9f9f', 100: '#5e5e5e', 130: '#404040', 160: '#1a1a1a' },
+            wgreen: { 100: '#2a8703' }
+          }
+        }
+      }
+    }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    body { font-family: 'Inter', system-ui, sans-serif; }
-    .prose h1 { font-size: 1.875rem; font-weight: 700; margin-top: 2rem; margin-bottom: 0.75rem; color: #1c2530; }
-    .prose h2 { font-size: 1.5rem; font-weight: 700; margin-top: 1.75rem; margin-bottom: 0.5rem; color: #1c2530; border-bottom: 1px solid #e5e9f0; padding-bottom: 0.3rem; }
-    .prose h3 { font-size: 1.125rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.4rem; color: #1c2530; }
-    .prose p { margin: 0.75rem 0; line-height: 1.7; color: #374151; }
-    .prose ul, .prose ol { margin: 0.5rem 0 0.5rem 1.5rem; color: #374151; }
-    .prose li { margin: 0.25rem 0; line-height: 1.6; }
-    .prose code { background: #f3f4f6; padding: 0.15rem 0.35rem; border-radius: 0.25rem; font-size: 0.875rem; }
-    .prose pre { background: #1c2530; color: #e5e9f0; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin: 1rem 0; }
-    .prose pre code { background: none; padding: 0; color: inherit; }
-    .prose table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.875rem; }
-    .prose th { background: #f9fafb; font-weight: 600; text-align: left; padding: 0.5rem 0.75rem; border: 1px solid #e5e9f0; }
-    .prose td { padding: 0.5rem 0.75rem; border: 1px solid #e5e9f0; }
-    .prose strong { color: #1c2530; }
-    .prose a { color: #0053e2; text-decoration: underline; text-underline-offset: 2px; }
-    .prose blockquote { border-left: 3px solid #0053e2; padding-left: 1rem; color: #6b7280; margin: 1rem 0; }
-    .prose hr { border: none; border-top: 1px solid #e5e9f0; margin: 1.5rem 0; }
-    .prose em { color: #6b7280; }
+    body { font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a:focus-visible { outline: 3px solid #ffc220; outline-offset: 2px; border-radius: 4px; }
+    code, pre { font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
+    .pattern-card { border-left: 4px solid #0053e2; }
+    .meta-card   { border-left: 4px solid #ffc220; }
   </style>
 </head>
-<body class="bg-white">
-  <nav class="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-gray-100">
-    <div class="max-w-3xl mx-auto px-6 flex items-center justify-between h-14">
-      <a href="/" class="text-sm font-semibold text-gray-900">Sauravi Rai</a>
-      <a href="/" class="text-sm text-gray-500 hover:text-gray-900 transition">← Back to portfolio</a>
-    </div>
-  </nav>
-  <main class="max-w-3xl mx-auto px-6 py-10">
-    <!-- Intro card -->
-    <div class="mb-8 space-y-4">
+<body class="bg-wgray-5 text-wgray-160">
 
-      <!-- Pre-read nudge -->
-      <div class="flex items-start gap-3 bg-wm-spark-10 border border-wm-spark-100/30 rounded-xl p-4">
-        <span class="text-xl mt-0.5" aria-hidden="true">📖</span>
-        <div>
-          <p class="text-xs font-bold uppercase tracking-wider text-wm-spark-140 mb-1">Pre-read recommended</p>
-          <p class="text-sm text-gray-700 leading-relaxed">
-            New here? Read the
-            <a href="/work/agent-stack-journey-story.html" class="text-blue-600 underline underline-offset-2 font-semibold">PM Agentic Leverage — A Stack You Can Fork</a>
-            first. It explains why this stack exists and the composability mindset behind it.
-          </p>
-        </div>
+<!-- NAV -->
+<nav class="bg-white border-b border-wgray-10 sticky top-0 z-30" aria-label="Site navigation">
+  <div class="max-w-4xl mx-auto px-6 flex items-center justify-between h-14">
+    <a href="../index.html" class="text-sm font-bold text-wblue-100 tracking-tight">SR</a>
+    <a href="../index.html#writing" class="text-sm text-wgray-100 hover:text-wgray-160 transition">← Back to portfolio</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="bg-wblue-100 text-white py-14 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="text-spark-100 text-xs font-bold uppercase tracking-widest mb-3">Design Pattern · Multi-Agent Systems</div>
+    <h1 class="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">🧠 How My Agent Stack Composes</h1>
+    <p class="text-wblue-10 text-lg max-w-2xl leading-relaxed">
+      Three reusable patterns — and one meta-pattern — that let five agents share state, delegate context,
+      and serve new surfaces without rewriting each other.
+    </p>
+    <p class="text-wblue-10/60 text-sm mt-5">Sauravi Rai · Personal agent stack · May 2026</p>
+  </div>
+</header>
+
+<main class="max-w-4xl mx-auto px-6 py-14 space-y-14" id="main">
+
+  <!-- INTRO -->
+  <section aria-labelledby="intro">
+    <p class="text-wgray-130 text-lg leading-relaxed max-w-3xl">
+      Single agents are easy. The leverage is in <strong>how they compose</strong>.
+      Most "PM agent" stacks are point solutions: one agent, one workflow, opaque state — they don't compound.
+      These patterns are what change that.
+    </p>
+  </section>
+
+  <!-- PATTERN 1 -->
+  <section aria-labelledby="p1">
+    <div class="pattern-card bg-white rounded-r-xl p-6 border border-wgray-10 shadow-sm">
+      <div class="text-wblue-100 text-xs font-bold uppercase tracking-widest mb-1">Pattern 1</div>
+      <h2 id="p1" class="text-2xl font-bold mb-3">Shared Preference Profiles</h2>
+      <p class="text-wgray-100 leading-relaxed mb-5">
+        Two agents touch the same workflow — the <strong>Room Agent</strong> and the <strong>Copilot Studio meeting plugin</strong>
+        both read the same per-user JSON preference file.
+        Onboard once, behave consistently across every surface.
+        New surfaces (Slack shortcut, mobile) plug into the same profile without touching any existing agent.
+      </p>
+      <pre class="bg-wgray-160 text-wgray-5 text-xs p-4 rounded-lg overflow-x-auto leading-relaxed mb-4"><code>~/.config/meeting-prefs/&lt;userId&gt;.json
+       ↑                ↑
+       │                │
+   Room Agent      Copilot Plugin
+   (AgentRunner)   (Teams surface)</code></pre>
+      <div class="bg-wblue-5 border-l-4 border-wblue-100 p-3 rounded-r-lg text-sm text-wgray-130">
+        <strong>Why it matters:</strong> The profile is the contract. Add a new surface — Slack bot, mobile shortcut, web widget —
+        without writing a single new rule.
       </div>
+    </div>
+  </section>
 
-      <!-- What you're looking at -->
-      <div class="bg-blue-50 border border-blue-100 rounded-xl p-5">
-        <p class="text-xs font-bold uppercase tracking-wider text-blue-600 mb-2">What you’re looking at</p>
-        <p class="text-sm text-gray-700 leading-relaxed mb-4">
-          Three real composition patterns from a five-agent personal stack — how the agents share context, query each other, and stay loosely coupled.
-          Documented as a reference (closer to an ADR than a tutorial).
+  <!-- PATTERN 2 -->
+  <section aria-labelledby="p2">
+    <div class="pattern-card bg-white rounded-r-xl p-6 border border-wgray-10 shadow-sm">
+      <div class="text-wblue-100 text-xs font-bold uppercase tracking-widest mb-1">Pattern 2</div>
+      <h2 id="p2" class="text-2xl font-bold mb-3">Cross-Agent Queries — Decoupled, Single Source of Truth</h2>
+      <p class="text-wgray-100 leading-relaxed mb-5">
+        The <strong>Task Wrangler</strong> doesn't <em>store</em> re-org context — it <em>queries</em> the
+        <strong>Org Change Agent</strong> when assembling the daily digest. Update the org structure once;
+        every downstream digest reflects it. Each agent owns its domain. No agent duplicates another's state.
+      </p>
+      <pre class="bg-wgray-160 text-wgray-5 text-xs p-4 rounded-lg overflow-x-auto leading-relaxed mb-4"><code>Outlook    ─┐
+Jira       ─┼──→ Task Wrangler ──→ Daily digest
+Confluence ─┤         │
+OneNote    ─┘         │  query("priority stakeholders this week?")
+                      ▼
+               Org Change Agent ──→ stakeholder map + OKRs
+                      │
+                      └─ owns the source of truth</code></pre>
+      <div class="bg-wblue-5 border-l-4 border-wblue-100 p-3 rounded-r-lg text-sm text-wgray-130">
+        <strong>Why it matters:</strong> This is microservice composition applied to LLM agents.
+        The org-change context belongs to one agent. Everything else just <em>asks</em>.
+      </div>
+    </div>
+  </section>
+
+  <!-- PATTERN 3 -->
+  <section aria-labelledby="p3">
+    <div class="pattern-card bg-white rounded-r-xl p-6 border border-wgray-10 shadow-sm">
+      <div class="text-wblue-100 text-xs font-bold uppercase tracking-widest mb-1">Pattern 3</div>
+      <h2 id="p3" class="text-2xl font-bold mb-3">Read-Side Projections — Disposable Views, Durable Truth</h2>
+      <p class="text-wgray-100 leading-relaxed mb-5">
+        The <strong>AI Usage Tracker</strong> stores nothing. Each invocation pulls live from the platform API
+        and renders a flat HTML report, published via the share agent.
+        Reports go stale; APIs don't. Keep the source authoritative — treat reports as cheap, regenerate on demand.
+        The <strong>Storyteller</strong> uses the same pattern for slide decks.
+      </p>
+      <pre class="bg-wgray-160 text-wgray-5 text-xs p-4 rounded-lg overflow-x-auto leading-relaxed mb-4"><code>Platform API ──→ AI Usage Tracker ──→ flat HTML ──→ share-agent ──→ published URL
+   ↑                                                      │
+   └───────────────── (re-pull anytime) ─────────────────┘</code></pre>
+      <div class="bg-wblue-5 border-l-4 border-wblue-100 p-3 rounded-r-lg text-sm text-wgray-130">
+        <strong>Why it matters:</strong> Zero stale data problem. Any report is disposable. Pull fresh, publish, move on.
+      </div>
+    </div>
+  </section>
+
+  <!-- META-PATTERN -->
+  <section aria-labelledby="meta">
+    <div class="meta-card bg-spark-10 border border-spark-100 rounded-r-xl p-6">
+      <div class="text-spark-140 text-xs font-bold uppercase tracking-widest mb-1">Meta-Pattern</div>
+      <h2 id="meta" class="text-2xl font-bold mb-3">🐑 The Stack Shepherd — An Agent That Tends the Stack Itself</h2>
+      <p class="text-wgray-130 leading-relaxed mb-5">
+        Agent #6 operates <em>on</em> the stack rather than alongside it. It edits READMEs, pushes to GHE,
+        regenerates the dashboard, re-invokes Storyteller when the deck goes stale, and onboards new agents
+        into the config itself. Maintenance becomes a tool call — not a calendar reminder you'll ignore.
+      </p>
+      <pre class="bg-wgray-160 text-wgray-5 text-xs p-4 rounded-lg overflow-x-auto leading-relaxed mb-4"><code>        ┌──────── Stack Shepherd ────────┐
+        │                               │
+        ▼                               ▼
+README, ORCHESTRATION.md       invokes: task-agent,
+agents/, PLAN.md                        share-agent,
+        │                               storyteller,
+        ▼                               agent-creator
+ git push → GHE
+        │
+        ▼
+ share-agent → published URL</code></pre>
+      <div class="bg-white/70 border-l-4 border-spark-100 p-3 rounded-r-lg text-sm text-wgray-130">
+        <strong>Why it matters:</strong> Every published stack rots without a steward.
+        Embedding the steward <em>as</em> an agent makes maintenance automatic.
+        This is the pattern that makes a community-of-practice sustainable long term.
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY IT MATTERS -->
+  <section aria-labelledby="platform">
+    <h2 id="platform" class="text-2xl font-bold mb-6">Why This Matters at Platform Level</h2>
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="bg-white border border-wgray-10 rounded-xl p-5">
+        <div class="text-3xl mb-3">🔌</div>
+        <h3 class="font-bold mb-2">Add agents without rewriting old ones</h3>
+        <p class="text-sm text-wgray-100 leading-relaxed">
+          Cross-agent queries mean new agents just ask existing ones for what they need.
+          No agent needs to know about every other agent.
         </p>
-        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">The five agents</p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          <div class="flex items-start gap-2 bg-white rounded-lg px-3 py-2 border border-blue-100">
-            <span class="text-base mt-0.5">🚪</span>
-            <div>
-              <p class="text-xs font-bold text-gray-800">Room Agent</p>
-              <p class="text-xs text-gray-500">Books meeting rooms; reads shared preference profile</p>
-            </div>
-          </div>
-          <div class="flex items-start gap-2 bg-white rounded-lg px-3 py-2 border border-blue-100">
-            <span class="text-base mt-0.5">🗒️</span>
-            <div>
-              <p class="text-xs font-bold text-gray-800">Task Wrangler</p>
-              <p class="text-xs text-gray-500">Pulls Outlook, Jira, Confluence into a daily digest</p>
-            </div>
-          </div>
-          <div class="flex items-start gap-2 bg-white rounded-lg px-3 py-2 border border-blue-100">
-            <span class="text-base mt-0.5">🏷️</span>
-            <div>
-              <p class="text-xs font-bold text-gray-800">Org Change Agent</p>
-              <p class="text-xs text-gray-500">Owns stakeholder maps, OKRs, re-org context</p>
-            </div>
-          </div>
-          <div class="flex items-start gap-2 bg-white rounded-lg px-3 py-2 border border-blue-100">
-            <span class="text-base mt-0.5">📊</span>
-            <div>
-              <p class="text-xs font-bold text-gray-800">AI Usage Tracker</p>
-              <p class="text-xs text-gray-500">Pulls live adoption data; renders disposable HTML reports</p>
-            </div>
-          </div>
-          <div class="flex items-start gap-2 bg-white rounded-lg px-3 py-2 border border-blue-100 sm:col-span-2">
-            <span class="text-base mt-0.5">👁️</span>
-            <div>
-              <p class="text-xs font-bold text-gray-800">Stack Shepherd</p>
-              <p class="text-xs text-gray-500">The meta-agent — tends the stack itself: updates docs, pushes to git, re-invokes stale agents</p>
-            </div>
-          </div>
+      </div>
+      <div class="bg-white border border-wgray-10 rounded-xl p-5">
+        <div class="text-3xl mb-3">📱</div>
+        <h3 class="font-bold mb-2">Add surfaces without rewriting agents</h3>
+        <p class="text-sm text-wgray-100 leading-relaxed">
+          Shared profiles mean a new Slack shortcut or mobile surface inherits the exact same
+          per-user behaviour with zero new code.
+        </p>
+      </div>
+      <div class="bg-white border border-wgray-10 rounded-xl p-5">
+        <div class="text-3xl mb-3">🔄</div>
+        <h3 class="font-bold mb-2">Regenerate reports at zero cost</h3>
+        <p class="text-sm text-wgray-100 leading-relaxed">
+          Read-side projections make every report disposable.
+          Pull fresh, publish, move on. No stale data debt accumulates.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section aria-labelledby="roadmap">
+    <h2 id="roadmap" class="text-2xl font-bold mb-4">What's Not Here Yet</h2>
+    <div class="space-y-3">
+      <div class="flex items-start gap-4 bg-white border border-wgray-10 rounded-xl p-4">
+        <span class="text-wgray-30 text-xl shrink-0 mt-0.5" aria-hidden="true">◻</span>
+        <div>
+          <div class="font-semibold">Persistent memory layer</div>
+          <p class="text-sm text-wgray-100 mt-1">Each agent currently has its own context window. Evaluating a PM Chief of Staff agent for shared decision capture across the stack.</p>
         </div>
       </div>
-
+      <div class="flex items-start gap-4 bg-white border border-wgray-10 rounded-xl p-4">
+        <span class="text-wgray-30 text-xl shrink-0 mt-0.5" aria-hidden="true">◻</span>
+        <div>
+          <div class="font-semibold">Always-on customer intelligence</div>
+          <p class="text-sm text-wgray-100 mt-1">No Voice-of-Customer agent in the stack yet. Evaluating existing tools before building.</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-4 bg-white border border-wgray-10 rounded-xl p-4">
+        <span class="text-wgray-30 text-xl shrink-0 mt-0.5" aria-hidden="true">◻</span>
+        <div>
+          <div class="font-semibold">Experiment monitor</div>
+          <p class="text-sm text-wgray-100 mt-1">A/B test outcome tracking against PRD criteria — planned for A/B-heavy cycles.</p>
+        </div>
+      </div>
     </div>
-    <div id="content" class="prose"></div>
-  </main>
-  <footer class="border-t border-gray-100 text-gray-400 text-xs">
-    <div class="max-w-3xl mx-auto px-6 py-5">© <script>document.write(new Date().getFullYear())</script> Sauravi Rai</div>
-  </footer>
-  <script>
-    fetch('./multi-agent-orchestration-patterns.md')
-      .then(r => r.text())
-      .then(md => { document.getElementById('content').innerHTML = marked.parse(md); })
-      .catch(() => { document.getElementById('content').innerHTML = '<p>Failed to load content.</p>'; });
-  </script>
+  </section>
+
+  <!-- HOW TO EXTEND -->
+  <section aria-labelledby="extend" class="bg-wblue-100 text-white rounded-xl p-8">
+    <h2 id="extend" class="text-2xl font-bold mb-5">How to Extend This Stack</h2>
+    <ol class="space-y-4 text-wblue-10">
+      <li class="flex gap-3">
+        <span class="font-bold text-spark-100 text-lg shrink-0">1.</span>
+        <span><strong class="text-white">Build your agent</strong> as a normal subagent config — one capability, one JSON file.</span>
+      </li>
+      <li class="flex gap-3">
+        <span class="font-bold text-spark-100 text-lg shrink-0">2.</span>
+        <span><strong class="text-white">Pick a composition pattern</strong> from above — or document a fourth one.</span>
+      </li>
+      <li class="flex gap-3">
+        <span class="font-bold text-spark-100 text-lg shrink-0">3.</span>
+        <span><strong class="text-white">Document the contract:</strong> what does this agent <em>own</em>, what does it <em>query</em>, what does it <em>project</em>?</span>
+      </li>
+      <li class="flex gap-3">
+        <span class="font-bold text-spark-100 text-lg shrink-0">4.</span>
+        <span><strong class="text-white">Open a PR</strong> with the config + a brief addition to this doc. Forks welcome. PRs welcomer.</span>
+      </li>
+    </ol>
+  </section>
+
+</main>
+
+<footer class="border-t border-wgray-10 py-8 text-center text-xs text-wgray-100">
+  <div class="max-w-4xl mx-auto px-6">
+    <p>© 2026 Sauravi Rai &middot;
+      <a href="../index.html#writing" class="text-wblue-100 hover:underline">Back to portfolio</a>
+    </p>
+  </div>
+</footer>
+
 </body>
 </html>

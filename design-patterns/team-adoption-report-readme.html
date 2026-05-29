@@ -3,50 +3,320 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Agent Stack Overview · Sauravi Rai</title>
+  <title>Personal Agent Stack · Sauravi Rai</title>
+  <meta name="description" content="Six composable AI agents that take coordination overhead off a PM's plate — meeting rooms, daily digest, org-change tracking, AI adoption metrics, storytelling, and a stack shepherd."/>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            wblue:  { 5: '#e6f0ff', 10: '#cce0ff', 100: '#0053e2', 110: '#0046c2', 130: '#003494' },
+            spark:  { 10: '#fff8e0', 100: '#ffc220', 140: '#995213' },
+            wgray:  { 5: '#fafafa', 10: '#f2f2f2', 30: '#e6e6e6', 50: '#9f9f9f', 100: '#5e5e5e', 130: '#404040', 160: '#1a1a1a' },
+            wgreen: { 100: '#2a8703' }
+          }
+        }
+      }
+    }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    body { font-family: 'Inter', system-ui, sans-serif; }
-    .prose h1 { font-size: 1.875rem; font-weight: 700; margin-top: 2rem; margin-bottom: 0.75rem; color: #1c2530; }
-    .prose h2 { font-size: 1.5rem; font-weight: 700; margin-top: 1.75rem; margin-bottom: 0.5rem; color: #1c2530; border-bottom: 1px solid #e5e9f0; padding-bottom: 0.3rem; }
-    .prose h3 { font-size: 1.125rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.4rem; color: #1c2530; }
-    .prose p { margin: 0.75rem 0; line-height: 1.7; color: #374151; }
-    .prose ul, .prose ol { margin: 0.5rem 0 0.5rem 1.5rem; color: #374151; }
-    .prose li { margin: 0.25rem 0; line-height: 1.6; }
-    .prose code { background: #f3f4f6; padding: 0.15rem 0.35rem; border-radius: 0.25rem; font-size: 0.875rem; }
-    .prose pre { background: #1c2530; color: #e5e9f0; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin: 1rem 0; }
-    .prose pre code { background: none; padding: 0; color: inherit; }
-    .prose table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.875rem; }
-    .prose th { background: #f9fafb; font-weight: 600; text-align: left; padding: 0.5rem 0.75rem; border: 1px solid #e5e9f0; }
-    .prose td { padding: 0.5rem 0.75rem; border: 1px solid #e5e9f0; }
-    .prose strong { color: #1c2530; }
-    .prose a { color: #0053e2; text-decoration: underline; text-underline-offset: 2px; }
-    .prose blockquote { border-left: 3px solid #0053e2; padding-left: 1rem; color: #6b7280; margin: 1rem 0; }
-    .prose hr { border: none; border-top: 1px solid #e5e9f0; margin: 1.5rem 0; }
-    .prose em { color: #6b7280; }
+    body { font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a:focus-visible { outline: 3px solid #ffc220; outline-offset: 2px; border-radius: 4px; }
+    code, pre { font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
+    .agent-card { transition: box-shadow 0.15s, transform 0.15s; }
+    .agent-card:hover { box-shadow: 0 8px 24px rgba(0,83,226,0.10); transform: translateY(-2px); }
   </style>
 </head>
-<body class="bg-white">
-  <nav class="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-gray-100">
-    <div class="max-w-3xl mx-auto px-6 flex items-center justify-between h-14">
-      <a href="/" class="text-sm font-semibold text-gray-900">Sauravi Rai</a>
-      <a href="/" class="text-sm text-gray-500 hover:text-gray-900 transition">← Back to portfolio</a>
+<body class="bg-wgray-5 text-wgray-160">
+
+<!-- NAV -->
+<nav class="bg-white border-b border-wgray-10 sticky top-0 z-30" aria-label="Site navigation">
+  <div class="max-w-4xl mx-auto px-6 flex items-center justify-between h-14">
+    <a href="../index.html" class="text-sm font-bold text-wblue-100 tracking-tight">SR</a>
+    <a href="../index.html#writing" class="text-sm text-wgray-100 hover:text-wgray-160 transition">← Back to portfolio</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="bg-wblue-100 text-white py-14 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="text-spark-100 text-xs font-bold uppercase tracking-widest mb-3">Personal Agent Stack · PM Productivity</div>
+    <h1 class="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">🐾 Personal Agent Stack</h1>
+    <p class="text-wblue-10 text-lg max-w-2xl leading-relaxed">
+      Six composable agents that take the coordination overhead off a PM's plate —
+      so the human can do product thinking.
+    </p>
+    <div class="mt-6 inline-flex items-center gap-2 bg-white/10 border border-white/30 text-white text-sm font-semibold px-4 py-2 rounded-full">
+      <span>🤖</span><span>6 agents · 64 combined tools · daily use</span>
     </div>
-  </nav>
-  <main class="max-w-3xl mx-auto px-6 py-10">
-    <div id="content" class="prose"></div>
-  </main>
-  <footer class="border-t border-gray-100 text-gray-400 text-xs">
-    <div class="max-w-3xl mx-auto px-6 py-5">© <script>document.write(new Date().getFullYear())</script> Sauravi Rai</div>
-  </footer>
-  <script>
-    fetch('./team-adoption-report-readme.md')
-      .then(r => r.text())
-      .then(md => { document.getElementById('content').innerHTML = marked.parse(md); })
-      .catch(() => { document.getElementById('content').innerHTML = '<p>Failed to load content.</p>'; });
-  </script>
+    <p class="text-wblue-10/60 text-sm mt-5">Sauravi Rai · Senior Director, Product Management · May 2026</p>
+  </div>
+</header>
+
+<main class="max-w-4xl mx-auto px-6 py-14 space-y-14" id="main">
+
+  <!-- TL;DR -->
+  <section aria-labelledby="tldr">
+    <h2 id="tldr" class="text-2xl font-bold mb-2">⚡ TL;DR</h2>
+    <p class="text-wgray-100 text-sm mb-5">
+      Most "PM productivity AI" pitches give you one bot for one workflow.
+      This stack is different: <strong>six agents that share state and compose</strong>,
+      so context moves with the work — across calendar, tasks, org-change, adoption metrics, and storytelling.
+    </p>
+    <div class="overflow-x-auto rounded-xl border border-wgray-30">
+      <table class="min-w-full text-sm bg-white">
+        <thead class="bg-wgray-10">
+          <tr class="text-left">
+            <th class="px-4 py-3 font-semibold">Agent</th>
+            <th class="px-4 py-3 font-semibold">What it does</th>
+            <th class="px-4 py-3 font-semibold text-center">Tools</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-wgray-10">
+          <tr>
+            <td class="px-4 py-3 font-semibold whitespace-nowrap">📅 Meeting Room Agent</td>
+            <td class="px-4 py-3 text-wgray-130">Books M365 rooms respecting per-user prefs, manages recurring series, onboards new users</td>
+            <td class="px-4 py-3 text-center font-semibold text-wblue-100">12</td>
+          </tr>
+          <tr class="bg-wgray-5">
+            <td class="px-4 py-3 font-semibold whitespace-nowrap">🪢 Task Wrangler</td>
+            <td class="px-4 py-3 text-wgray-130">Daily digest pulling action items from Outlook, Jira, Confluence, OneNote, and the org-change agent. Drafts polite follow-ups.</td>
+            <td class="px-4 py-3 text-center font-semibold text-wblue-100">26</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-semibold whitespace-nowrap">🏗️ Org Change Agent</td>
+            <td class="px-4 py-3 text-wgray-130">Re-org transitions: stakeholder maps, hierarchy tracking, OKR resets, Rewards &amp; Calibration guidance</td>
+            <td class="px-4 py-3 text-center font-semibold text-wblue-100">4</td>
+          </tr>
+          <tr class="bg-wgray-5">
+            <td class="px-4 py-3 font-semibold whitespace-nowrap">📊 AI Usage Tracker</td>
+            <td class="px-4 py-3 text-wgray-130">Live 90-day AI-tools adoption stats; benchmarks against director+ network and local PM cohort</td>
+            <td class="px-4 py-3 text-center font-semibold text-wblue-100">6</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-semibold whitespace-nowrap">📖 Storyteller</td>
+            <td class="px-4 py-3 text-wgray-130">Turns an associate's agent journey into a self-contained, branded HTML slide deck</td>
+            <td class="px-4 py-3 text-center font-semibold text-wblue-100">7</td>
+          </tr>
+          <tr class="bg-wgray-5">
+            <td class="px-4 py-3 font-semibold whitespace-nowrap">🐑 Stack Shepherd</td>
+            <td class="px-4 py-3 text-wgray-130">Tends this stack itself — keeps artifacts fresh, pushes updates to GHE, onboards new agents</td>
+            <td class="px-4 py-3 text-center font-semibold text-wblue-100">9</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- AGENT CARDS -->
+  <section aria-labelledby="agents">
+    <h2 id="agents" class="text-2xl font-bold mb-6">The Agents</h2>
+    <div class="grid md:grid-cols-2 gap-4">
+
+      <article class="agent-card bg-white border border-wgray-10 rounded-xl p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-2xl" aria-hidden="true">📅</span>
+          <h3 class="font-bold text-base">Meeting Room Agent</h3>
+        </div>
+        <p class="text-sm text-wgray-100 leading-relaxed mb-3">
+          Books M365 conference rooms while respecting per-user preferences — buffer times, room size, AV needs.
+          Manages recurring series updates. Onboards new users with a one-time setup flow.
+        </p>
+        <div class="text-xs font-bold uppercase tracking-widest text-wblue-100">On marketplace · Multi-tenant</div>
+      </article>
+
+      <article class="agent-card bg-white border border-wgray-10 rounded-xl p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-2xl" aria-hidden="true">🪢</span>
+          <h3 class="font-bold text-base">Task Wrangler (Daily Digest)</h3>
+        </div>
+        <p class="text-sm text-wgray-100 leading-relaxed mb-3">
+          Aggregates action items from Outlook, Jira, Confluence, and OneNote into one ranked daily brief.
+          Queries the Org Change Agent for stakeholder context. Drafts polite follow-up messages.
+        </p>
+        <div class="text-xs font-bold uppercase tracking-widest text-spark-140">26 tools · Personal instance</div>
+      </article>
+
+      <article class="agent-card bg-white border border-wgray-10 rounded-xl p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-2xl" aria-hidden="true">🏗️</span>
+          <h3 class="font-bold text-base">Org Change Agent</h3>
+        </div>
+        <p class="text-sm text-wgray-100 leading-relaxed mb-3">
+          Single source of truth for re-org transitions. Owns stakeholder maps, hierarchy tracking,
+          OKR resets, and Rewards &amp; Calibration guidance. Queried by the Task Wrangler — never duplicated.
+        </p>
+        <div class="text-xs font-bold uppercase tracking-widest text-wgray-100">Keep-local · HR-adjacent context</div>
+      </article>
+
+      <article class="agent-card bg-white border border-wgray-10 rounded-xl p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-2xl" aria-hidden="true">📊</span>
+          <h3 class="font-bold text-base">AI Usage Tracker</h3>
+        </div>
+        <p class="text-sm text-wgray-100 leading-relaxed mb-3">
+          Live 90-day AI-tools adoption stats for the team. Benchmarks against Director+ network
+          and the local PM cohort. Publishes a flat HTML report on demand — zero stored state.
+        </p>
+        <div class="text-xs font-bold uppercase tracking-widest text-wblue-100">Read-side projection pattern</div>
+      </article>
+
+      <article class="agent-card bg-white border border-wgray-10 rounded-xl p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-2xl" aria-hidden="true">📖</span>
+          <h3 class="font-bold text-base">Storyteller</h3>
+        </div>
+        <p class="text-sm text-wgray-100 leading-relaxed mb-3">
+          Interviews an associate over 3 rounds, then generates a self-contained branded HTML slide deck
+          of their agent-building journey — published and shareable in minutes. On the marketplace.
+        </p>
+        <div class="text-xs font-bold uppercase tracking-widest text-wblue-100">On marketplace · 7 tools</div>
+      </article>
+
+      <article class="agent-card bg-white border border-spark-100 border-2 rounded-xl p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-2xl" aria-hidden="true">🐑</span>
+          <h3 class="font-bold text-base">Stack Shepherd</h3>
+          <span class="text-spark-140 text-xs font-bold uppercase tracking-widest bg-spark-10 px-2 py-0.5 rounded">Meta</span>
+        </div>
+        <p class="text-sm text-wgray-100 leading-relaxed mb-3">
+          Tends the stack itself. Edits READMEs, pushes to GHE, regenerates dashboards, re-invokes Storyteller
+          when decks go stale. Maintenance as a tool call — not a forgotten calendar reminder.
+        </p>
+        <div class="text-xs font-bold uppercase tracking-widest text-spark-140">Operates on the stack · 9 tools</div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ORCHESTRATION -->
+  <section aria-labelledby="orchestration">
+    <h2 id="orchestration" class="text-2xl font-bold mb-4">🧠 The Orchestration Pattern</h2>
+    <p class="text-wgray-100 leading-relaxed mb-6">
+      Single agents are easy. The leverage comes from how they share state.
+      This stack uses three composition patterns — <a href="./multi-agent-orchestration-patterns.html" class="text-wblue-100 font-semibold underline underline-offset-2 hover:text-wblue-110 transition">full pattern doc ↗</a>
+    </p>
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="bg-wblue-5 border-l-4 border-wblue-100 rounded-r-xl p-4">
+        <div class="font-bold mb-2 text-sm">1. Shared Preference Profiles</div>
+        <p class="text-xs text-wgray-130 leading-relaxed">Room Agent and Copilot Plugin both read the same per-user preference JSON. Onboard once, consistent across every surface.</p>
+      </div>
+      <div class="bg-wblue-5 border-l-4 border-wblue-100 rounded-r-xl p-4">
+        <div class="font-bold mb-2 text-sm">2. Cross-Agent Queries</div>
+        <p class="text-xs text-wgray-130 leading-relaxed">Task Wrangler doesn't store re-org context — it queries the Org Change Agent for stakeholder priorities. Decoupled, single source of truth.</p>
+      </div>
+      <div class="bg-wblue-5 border-l-4 border-wblue-100 rounded-r-xl p-4">
+        <div class="font-bold mb-2 text-sm">3. Read-Side Projections</div>
+        <p class="text-xs text-wgray-130 leading-relaxed">AI Usage Tracker stores nothing — pulls live from the platform API and renders a fresh HTML report. Disposable views, durable upstream truth.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- REPO LAYOUT -->
+  <section aria-labelledby="layout">
+    <h2 id="layout" class="text-2xl font-bold mb-4">🗂 Repo Layout</h2>
+    <pre class="bg-wgray-160 text-wgray-5 text-xs p-5 rounded-xl overflow-x-auto leading-relaxed"><code>agent-stack/
+├── README.md                        ← you are here
+├── ORCHESTRATION.md                 ← how agents compose
+├── agents/                          ← agent contracts (JSON configs)
+│   ├── meeting-room-agent.json
+│   ├── daily-task-agent.json
+│   ├── org-context-agent.json
+│   ├── ai-usage-tracker.json
+│   ├── storyteller.json
+│   └── stack-shepherd.json
+├── services/
+│   ├── meeting-room-bridge/         ← M365 backend for Room Agent
+│   ├── meeting-room-copilot-studio/ ← Copilot Studio surface
+│   ├── org-context-agent/           ← re-org tracking app
+│   └── ai-usage-reports/            ← adoption report tooling
+└── docs/
+    ├── examples/
+    └── adoption-stories.md</code></pre>
+  </section>
+
+  <!-- WHY IT EXISTS -->
+  <section aria-labelledby="why" class="bg-spark-10 border border-spark-100 rounded-xl p-8">
+    <h2 id="why" class="text-2xl font-bold mb-4">🎯 Why This Exists</h2>
+    <blockquote class="text-wgray-130 italic text-base leading-relaxed mb-4 border-l-4 border-spark-100 pl-4">
+      "This stack is one of the closest examples of multiple agents running together across workflows.
+      This is where agents start to compound into platform-level leverage."
+    </blockquote>
+    <p class="text-wgray-130 text-sm">— Note from senior leadership that anchored a community-of-practice around PM-built agents, May 2026</p>
+    <p class="text-wgray-130 mt-4 leading-relaxed">
+      This repo is the open invitation: <strong>fork it, plug in, improve it, share back.</strong>
+      If you're a PM trying to get to 3–5 agents in your day-to-day, start here.
+    </p>
+  </section>
+
+  <!-- QUICK START -->
+  <section aria-labelledby="quickstart">
+    <h2 id="quickstart" class="text-2xl font-bold mb-4">🚀 Quick Start</h2>
+    <p class="text-wgray-100 text-sm mb-4">Each agent's JSON config is portable — drop into your agent runner's config directory and it's wired in.</p>
+    <pre class="bg-wgray-160 text-wgray-5 text-xs p-5 rounded-xl overflow-x-auto leading-relaxed"><code># Copy any agent config into your local agent runner:
+cp agents/meeting-room-agent.json ~/.agentrunner/agents/
+cp agents/daily-task-agent.json   ~/.agentrunner/agents/
+cp agents/storyteller.json        ~/.agentrunner/agents/
+
+# Then invoke:
+/agent meeting-room-agent
+/agent daily-task-agent
+/agent storyteller</code></pre>
+  </section>
+
+  <!-- USE / FORK / CONTRIBUTE -->
+  <section aria-labelledby="contribute">
+    <h2 id="contribute" class="text-2xl font-bold mb-6">🤝 Use it · Fork it · Contribute</h2>
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="bg-white border border-wgray-10 rounded-xl p-5">
+        <div class="text-2xl mb-3">📦</div>
+        <h3 class="font-bold mb-2">Use it</h3>
+        <p class="text-sm text-wgray-100">Copy any <code>agents/*.json</code> into your agent runner config and start running immediately. No setup ceremony.</p>
+      </div>
+      <div class="bg-white border border-wgray-10 rounded-xl p-5">
+        <div class="text-2xl mb-3">🍴</div>
+        <h3 class="font-bold mb-2">Fork it</h3>
+        <p class="text-sm text-wgray-100">Strip my ground-truth files, swap in yours. The composition patterns are yours to keep — the personal context is easy to replace.</p>
+      </div>
+      <div class="bg-white border border-wgray-10 rounded-xl p-5">
+        <div class="text-2xl mb-3">🔧</div>
+        <h3 class="font-bold mb-2">Contribute</h3>
+        <p class="text-sm text-wgray-100">Open a PR with a new agent that fits one of the three composition patterns. Document the contract: what it owns, queries, or projects.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RELATED PIECES -->
+  <section aria-labelledby="related">
+    <h2 id="related" class="text-2xl font-bold mb-4">Related Portfolio Pieces</h2>
+    <div class="grid md:grid-cols-2 gap-4">
+      <a href="./multi-agent-orchestration-patterns.html"
+         class="bg-white border border-wgray-10 rounded-xl p-5 hover:border-wblue-10 hover:shadow-sm transition block">
+        <div class="text-xs font-bold uppercase tracking-widest text-wblue-100 mb-1">Design Pattern</div>
+        <div class="font-bold mb-1 text-sm">Multi-Agent Orchestration Patterns ↗</div>
+        <p class="text-xs text-wgray-100">Full writeup of the three composition patterns with architecture diagrams.</p>
+      </a>
+      <a href="./rules-based-agent-governance-example.html"
+         class="bg-white border border-wgray-10 rounded-xl p-5 hover:border-wblue-10 hover:shadow-sm transition block">
+        <div class="text-xs font-bold uppercase tracking-widest text-spark-140 mb-1">Design Pattern</div>
+        <div class="font-bold mb-1 text-sm">Rules-Based Agent Governance ↗</div>
+        <p class="text-xs text-wgray-100">20 governance rules baked into the AI Tools Adoption Tracker — from 73 real iteration cycles.</p>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="border-t border-wgray-10 py-8 text-center text-xs text-wgray-100">
+  <div class="max-w-4xl mx-auto px-6">
+    <p>© 2026 Sauravi Rai &middot;
+      <a href="../index.html#writing" class="text-wblue-100 hover:underline">Back to portfolio</a>
+    </p>
+  </div>
+</footer>
+
 </body>
 </html>

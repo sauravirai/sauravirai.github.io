@@ -4,49 +4,487 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Rules-Based Agent Governance · Sauravi Rai</title>
+  <meta name="description" content="20 governance rules baked into an AI agent that generates a team AI-tools adoption report. A behind-the-scenes look at intentional AI product design."/>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            wblue:  { 5: '#e6f0ff', 10: '#cce0ff', 100: '#0053e2', 110: '#0046c2', 130: '#003494' },
+            spark:  { 10: '#fff8e0', 100: '#ffc220', 140: '#995213' },
+            wgray:  { 5: '#fafafa', 10: '#f2f2f2', 30: '#e6e6e6', 50: '#9f9f9f', 100: '#5e5e5e', 130: '#404040', 160: '#1a1a1a' },
+            wgreen: { 100: '#2a8703' },
+            wred:   { 5: '#fde2df', 100: '#ea1100' }
+          }
+        }
+      }
+    }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    body { font-family: 'Inter', system-ui, sans-serif; }
-    .prose h1 { font-size: 1.875rem; font-weight: 700; margin-top: 2rem; margin-bottom: 0.75rem; color: #1c2530; }
-    .prose h2 { font-size: 1.5rem; font-weight: 700; margin-top: 1.75rem; margin-bottom: 0.5rem; color: #1c2530; border-bottom: 1px solid #e5e9f0; padding-bottom: 0.3rem; }
-    .prose h3 { font-size: 1.125rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.4rem; color: #1c2530; }
-    .prose p { margin: 0.75rem 0; line-height: 1.7; color: #374151; }
-    .prose ul, .prose ol { margin: 0.5rem 0 0.5rem 1.5rem; color: #374151; }
-    .prose li { margin: 0.25rem 0; line-height: 1.6; }
-    .prose code { background: #f3f4f6; padding: 0.15rem 0.35rem; border-radius: 0.25rem; font-size: 0.875rem; }
-    .prose pre { background: #1c2530; color: #e5e9f0; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin: 1rem 0; }
-    .prose pre code { background: none; padding: 0; color: inherit; }
-    .prose table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.875rem; }
-    .prose th { background: #f9fafb; font-weight: 600; text-align: left; padding: 0.5rem 0.75rem; border: 1px solid #e5e9f0; }
-    .prose td { padding: 0.5rem 0.75rem; border: 1px solid #e5e9f0; }
-    .prose strong { color: #1c2530; }
-    .prose a { color: #0053e2; text-decoration: underline; text-underline-offset: 2px; }
-    .prose blockquote { border-left: 3px solid #0053e2; padding-left: 1rem; color: #6b7280; margin: 1rem 0; }
-    .prose hr { border: none; border-top: 1px solid #e5e9f0; margin: 1.5rem 0; }
-    .prose em { color: #6b7280; }
+    body { font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a:focus-visible { outline: 3px solid #ffc220; outline-offset: 2px; border-radius: 4px; }
+    details > summary { cursor: pointer; list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] > summary .chevron { transform: rotate(180deg); }
+    .chevron { transition: transform 0.2s; display: inline-block; }
+    .rule-card { transition: box-shadow 0.15s; }
+    .rule-card:hover { box-shadow: 0 4px 16px rgba(0,83,226,0.08); }
   </style>
 </head>
-<body class="bg-white">
-  <nav class="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-gray-100">
-    <div class="max-w-3xl mx-auto px-6 flex items-center justify-between h-14">
-      <a href="/" class="text-sm font-semibold text-gray-900">Sauravi Rai</a>
-      <a href="/" class="text-sm text-gray-500 hover:text-gray-900 transition">← Back to portfolio</a>
+<body class="bg-wgray-5 text-wgray-160">
+
+<!-- NAV -->
+<nav class="bg-white border-b border-wgray-10 sticky top-0 z-30" aria-label="Site navigation">
+  <div class="max-w-4xl mx-auto px-6 flex items-center justify-between h-14">
+    <a href="../index.html" class="text-sm font-bold text-wblue-100 tracking-tight">SR</a>
+    <a href="../index.html#writing" class="text-sm text-wgray-100 hover:text-wgray-160 transition">← Back to portfolio</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="bg-wblue-100 text-white py-14 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="text-spark-100 text-xs font-bold uppercase tracking-widest mb-3">Design Pattern · Agent Governance</div>
+    <h1 class="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">📋 Rules-Based Agent Governance</h1>
+    <p class="text-wblue-10 text-lg max-w-2xl leading-relaxed">
+      20 rules — sourced verbatim from real iteration history — baked into an AI agent
+      to ensure consistent, respectful, and signal-rich adoption reporting.
+    </p>
+    <p class="text-wblue-10/60 text-sm mt-5">Sauravi Rai · AI Tools Adoption Tracker · April 2026</p>
+  </div>
+</header>
+
+<main class="max-w-4xl mx-auto px-6 py-14 space-y-14" id="main">
+
+  <!-- INTRO -->
+  <section aria-labelledby="intro">
+    <div class="bg-white border border-wgray-10 rounded-xl p-6 shadow-sm">
+      <h2 id="intro" class="text-xl font-bold mb-3">What this is</h2>
+      <p class="text-wgray-130 leading-relaxed mb-4">
+        When an AI agent generates a recurring report for a real team, "it worked this time" isn't enough.
+        The agent needs to behave consistently across every run — even when the model changes, even when data is noisy,
+        even when someone who's never edited the code regenerates the report six months later.
+      </p>
+      <p class="text-wgray-130 leading-relaxed">
+        This document captures the 20 governance rules encoded into the AI Tools Adoption Tracker agent —
+        distilled from 73 real iteration cycles. Each rule is sourced verbatim from the session history
+        that produced it. Nothing invented retroactively.
+      </p>
     </div>
-  </nav>
-  <main class="max-w-3xl mx-auto px-6 py-10">
-    <div id="content" class="prose"></div>
-  </main>
-  <footer class="border-t border-gray-100 text-gray-400 text-xs">
-    <div class="max-w-3xl mx-auto px-6 py-5">© <script>document.write(new Date().getFullYear())</script> Sauravi Rai</div>
-  </footer>
-  <script>
-    fetch('./rules-based-agent-governance-example.md')
-      .then(r => r.text())
-      .then(md => { document.getElementById('content').innerHTML = marked.parse(md); })
-      .catch(() => { document.getElementById('content').innerHTML = '<p>Failed to load content.</p>'; });
-  </script>
+  </section>
+
+  <!-- GOLDEN SENTENCE -->
+  <section aria-labelledby="golden">
+    <h2 id="golden" class="text-2xl font-bold mb-4">The Golden Sentence</h2>
+    <blockquote class="bg-spark-10 border-l-4 border-spark-100 p-6 rounded-r-xl">
+      <p class="text-lg font-semibold text-wgray-160 italic leading-relaxed">
+        "[User] first, team second, everything else collapsed. No charts (they don't render).
+        No named peer embarrassment. Leaderboards open and high. Leader benchmarks in a collapsed section,
+        not at the top. Fun stuff at the bottom. Keep it tight."
+      </p>
+    </blockquote>
+    <p class="text-sm text-wgray-100 mt-3">This sentence overrides any competing instruction. Every rule below is a specific elaboration of it.</p>
+  </section>
+
+  <!-- ADOPTION TIERS -->
+  <section aria-labelledby="tiers">
+    <h2 id="tiers" class="text-2xl font-bold mb-2">Canonical Adoption Tiers</h2>
+    <p class="text-wgray-100 text-sm mb-4">Single source of truth — overrides anything in the system prompt. All status chips, leaderboard ranks, and copy must use these labels verbatim.</p>
+    <div class="overflow-x-auto rounded-xl border border-wgray-30">
+      <table class="min-w-full text-sm bg-white">
+        <thead class="bg-wgray-10">
+          <tr class="text-left">
+            <th class="px-4 py-3 font-semibold">Tier</th>
+            <th class="px-4 py-3 font-semibold">Threshold (90-day requests)</th>
+            <th class="px-4 py-3 font-semibold">Display label</th>
+            <th class="px-4 py-3 font-semibold">Emoji</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-wgray-10">
+          <tr><td class="px-4 py-3 font-semibold">Power</td><td class="px-4 py-3">≥ 5,000</td><td class="px-4 py-3">Power user</td><td class="px-4 py-3 text-lg">🔥</td></tr>
+          <tr class="bg-wgray-5"><td class="px-4 py-3 font-semibold">Heavy</td><td class="px-4 py-3">≥ 500</td><td class="px-4 py-3">Heavy</td><td class="px-4 py-3 text-lg">⚡</td></tr>
+          <tr><td class="px-4 py-3 font-semibold">Active</td><td class="px-4 py-3">≥ 100</td><td class="px-4 py-3">Active</td><td class="px-4 py-3 text-lg">🟢</td></tr>
+          <tr class="bg-wgray-5"><td class="px-4 py-3 font-semibold">Light</td><td class="px-4 py-3">≥ 10</td><td class="px-4 py-3">Light</td><td class="px-4 py-3 text-lg">🌤</td></tr>
+          <tr><td class="px-4 py-3 font-semibold">Tried</td><td class="px-4 py-3">1 – 9</td><td class="px-4 py-3">Tried</td><td class="px-4 py-3 text-lg">👋</td></tr>
+          <tr class="bg-wgray-5"><td class="px-4 py-3 font-semibold">Getting started</td><td class="px-4 py-3">0</td><td class="px-4 py-3">Getting started</td><td class="px-4 py-3 text-lg">🌱</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="mt-3 bg-wred-5 border-l-4 border-wred-100 p-3 rounded-r-lg text-sm text-wgray-130">
+      <strong>Note:</strong> The system prompt may list <code>❌ None</code> for 0 requests. That label is wrong for display. Rule 13 always takes precedence: use <strong>🌱 Getting started</strong>.
+    </div>
+  </section>
+
+  <!-- THE 20 RULES -->
+  <section aria-labelledby="rules">
+    <h2 id="rules" class="text-2xl font-bold mb-2">The 20 Rules</h2>
+    <p class="text-sm text-wgray-100 mb-5">Verbatim from command history, distilled. Each rule includes the originating verbatim quote that generated it.</p>
+
+    <div class="space-y-3">
+
+      <!-- Rule 1 -->
+      <details class="rule-card bg-white border border-wgray-10 rounded-xl overflow-hidden">
+        <summary class="px-5 py-4 flex items-center justify-between gap-4 hover:bg-wgray-5 transition">
+          <div class="flex items-center gap-3">
+            <span class="bg-wblue-100 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">1</span>
+            <span class="font-semibold text-sm">Strip inactive leaders; thin out senior-leader data</span>
+          </div>
+          <span class="chevron text-wgray-50 text-lg shrink-0">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-2 border-t border-wgray-10 space-y-2">
+          <blockquote class="text-xs text-wgray-100 italic bg-wgray-5 p-2 rounded">"remove inactive leaders from report. senior leader — only put as inspirational note, not the full data."</blockquote>
+          <p class="text-sm text-wgray-130">Only active leaders in always-visible sections. Senior-leader peers = inspirational note only, not a full leaderboard row.</p>
+        </div>
+      </details>
+
+      <!-- Rule 2 -->
+      <details class="rule-card bg-white border border-wgray-10 rounded-xl overflow-hidden">
+        <summary class="px-5 py-4 flex items-center justify-between gap-4 hover:bg-wgray-5 transition">
+          <div class="flex items-center gap-3">
+            <span class="bg-wblue-100 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">2</span>
+            <span class="font-semibold text-sm">Focus = user and their team. Rest takes a back seat</span>
+          </div>
+          <span class="chevron text-wgray-50 text-lg shrink-0">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-2 border-t border-wgray-10 space-y-2">
+          <blockquote class="text-xs text-wgray-100 italic bg-wgray-5 p-2 rounded">"focus the insights around me and my team. Don't say anything that may be hurtful to folks not adopting the tools as fast."</blockquote>
+          <p class="text-sm text-wgray-130">User's stats and direct team are primary. Broader org data is secondary. Never shame non-adopters.</p>
+        </div>
+      </details>
+
+      <!-- Rule 3 -->
+      <details class="rule-card bg-white border border-wgray-10 rounded-xl overflow-hidden">
+        <summary class="px-5 py-4 flex items-center justify-between gap-4 hover:bg-wgray-5 transition">
+          <div class="flex items-center gap-3">
+            <span class="bg-wblue-100 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">3</span>
+            <span class="font-semibold text-sm">Standardise labels; scrub redundant icons</span>
+          </div>
+          <span class="chevron text-wgray-50 text-lg shrink-0">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-2 border-t border-wgray-10 space-y-2">
+          <blockquote class="text-xs text-wgray-100 italic bg-wgray-5 p-2 rounded">"Standardize on the labels you use on the report. Scrub the icons and redundant section names."</blockquote>
+          <p class="text-sm text-wgray-130">Every section uses consistent naming. No duplicate icons, no inconsistent header styles.</p>
+        </div>
+      </details>
+
+      <!-- Rule 4 -->
+      <details class="rule-card bg-white border border-wgray-10 rounded-xl overflow-hidden">
+        <summary class="px-5 py-4 flex items-center justify-between gap-4 hover:bg-wgray-5 transition">
+          <div class="flex items-center gap-3">
+            <span class="bg-wblue-100 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">4</span>
+            <span class="font-semibold text-sm">Leader benchmarks OUT of always-visible; collapsed only</span>
+          </div>
+          <span class="chevron text-wgray-50 text-lg shrink-0">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-2 border-t border-wgray-10 space-y-2">
+          <blockquote class="text-xs text-wgray-100 italic bg-wgray-5 p-2 rounded">"removed leader benchmarks from the top section. just lump a) Team drilldown b) Leader benchmarks."</blockquote>
+          <p class="text-sm text-wgray-130">Leadership benchmark data must live in a collapsed <code>&lt;details&gt;</code> block. Active leaderboard tables are always-visible.</p>
+        </div>
+      </details>
+
+      <!-- Rule 5 -->
+      <details class="rule-card bg-white border border-wgray-10 rounded-xl overflow-hidden">
+        <summary class="px-5 py-4 flex items-center justify-between gap-4 hover:bg-wgray-5 transition">
+          <div class="flex items-center gap-3">
+            <span class="bg-wblue-100 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">5</span>
+            <span class="font-semibold text-sm">No named peer comparisons — aggregate insight only</span>
+          </div>
+          <span class="chevron text-wgray-50 text-lg shrink-0">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-2 border-t border-wgray-10 space-y-2">
+          <blockquote class="text-xs text-wgray-100 italic bg-wgray-5 p-2 rounded">"remove Benchmark vs [senior peers] — instead give insights how I am performing against the org, but label it that way."</blockquote>
+          <p class="text-sm text-wgray-130">Never call out individual peers by name in comparison framing. "Top 25% of org" = fine. "[Name] — 419M tokens" as a direct comparison = not fine.</p>
+        </div>
+      </details>
+
+      <!-- Rules 6-10 collapsed into combined cards for brevity -->
+      <details class="rule-card bg-white border border-wgray-10 rounded-xl overflow-hidden">
+        <summary class="px-5 py-4 flex items-center justify-between gap-4 hover:bg-wgray-5 transition">
+          <div class="flex items-center gap-3">
+            <span class="bg-wblue-100 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">6</span>
+            <span class="font-semibold text-sm">No standalone Recommendations section — fold into Team Drilldown first</span>
+          </div>
+          <span class="chevron text-wgray-50 text-lg shrink-0">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-2 border-t border-wgray-10 space-y-2">
+          <blockquote class="text-xs text-wgray-100 italic bg-wgray-5 p-2 rounded">"remove the section on Team Recommendations and within Team Drilldown, just make the insights and recommendations the first section."</blockquote>
+          <p class="text-sm text-wgray-130">Recommendations live inside Team Drilldown as the FIRST sub-section — not a standalone page element.</p>
+        </div>
+      </details>
+
+      <details class="rule-card bg-white border border-wgray-10 rounded-xl overflow-hidden">
+        <summary class="px-5 py-4 flex items-center justify-between gap-4 hover:bg-wgray-5 transition">
+          <div class="flex items-center gap-3">
+            <span class="bg-wblue-100 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">7</span>
+            <span class="font-semibold text-sm">Top hero = tool-agnostic; no PM/DA split at hero level</span>
+          </div>
+          <span class="chevron text-wgray-50 text-lg shrink-0">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-2 border-t border-wgray-10 space-y-2">
+          <blockquote class="text-xs text-wgray-100 italic bg-wgray-5 p-2 rounded">"the overall Team AI usage snapshot — it's as much about which tools we are using than how much usage. no need to divide by functional and local or by PM and DA at the top."</blockquote>
+          <p class="text-sm text-wgray-130">Top stat strip shows unified numbers only. Role splits go in drilldowns.</p>
+        </div>
+      </details>
+
+      <details class="rule-card bg-white border border-wgray-10 rounded-xl overflow-hidden">
+        <summary class="px-5 py-4 flex items-center justify-between gap-4 hover:bg-wgray-5 transition">
+          <div class="flex items-center gap-3">
+            <span class="bg-wblue-100 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">8</span>
+            <span class="font-semibold text-sm">Zero repetition — merge duplicate sections</span>
+          </div>
+          <span class="chevron text-wgray-50 text-lg shrink-0">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-2 border-t border-wgray-10 space-y-2">
+          <blockquote class="text-xs text-wgray-100 italic bg-wgray-5 p-2 rounded">"annoying repetitions. e.g. What your team is building with AI is unnecessary, just merge in with Full team."</blockquote>
+          <p class="text-sm text-wgray-130">Zero duplicate section headings or content. "What your team is building" is retired — folds into Team section.</p>
+        </div>
+      </details>
+
+      <details class="rule-card bg-white border border-wgray-10 rounded-xl overflow-hidden">
+        <summary class="px-5 py-4 flex items-center justify-between gap-4 hover:bg-wgray-5 transition">
+          <div class="flex items-center gap-3">
+            <span class="bg-wblue-100 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">9</span>
+            <span class="font-semibold text-sm">Pro Tips → merge into Fun Stuff at the bottom</span>
+          </div>
+          <span class="chevron text-wgray-50 text-lg shrink-0">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-2 border-t border-wgray-10 space-y-2">
+          <blockquote class="text-xs text-wgray-100 italic bg-wgray-5 p-2 rounded">"take out Pro Tips — across all tools combine with Fun Stuff and put right at the bottom of the report."</blockquote>
+          <p class="text-sm text-wgray-130">Any "tips" or "how to" content belongs at the very bottom. Not mid-report.</p>
+        </div>
+      </details>
+
+      <details class="rule-card bg-white border border-wgray-10 rounded-xl overflow-hidden">
+        <summary class="px-5 py-4 flex items-center justify-between gap-4 hover:bg-wgray-5 transition">
+          <div class="flex items-center gap-3">
+            <span class="bg-wblue-100 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">10</span>
+            <span class="font-semibold text-sm">Team Drilldown: default OPEN. Fun Stuff: default COLLAPSED</span>
+          </div>
+          <span class="chevron text-wgray-50 text-lg shrink-0">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-2 border-t border-wgray-10 space-y-2">
+          <blockquote class="text-xs text-wgray-100 italic bg-wgray-5 p-2 rounded">"Team drilldown keep expanded as default. Fun Stuff keep collapsed by default."</blockquote>
+          <p class="text-sm text-wgray-130"><code>&lt;details open&gt;</code> on Team Drilldown. <code>&lt;details&gt;</code> (no <code>open</code>) on Fun Stuff.</p>
+        </div>
+      </details>
+
+      <!-- Rule 11 — the big one -->
+      <details class="rule-card bg-white border-2 border-wred-100 rounded-xl overflow-hidden">
+        <summary class="px-5 py-4 flex items-center justify-between gap-4 hover:bg-wgray-5 transition">
+          <div class="flex items-center gap-3">
+            <span class="bg-wred-100 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">11</span>
+            <span class="font-semibold text-sm">Kill all charts — text insights only</span>
+          </div>
+          <span class="chevron text-wgray-50 text-lg shrink-0">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-2 border-t border-wgray-10 space-y-2">
+          <blockquote class="text-xs text-wgray-100 italic bg-wgray-5 p-2 rounded">"remove all charts, they occupy too much space and hardly ever render."</blockquote>
+          <p class="text-sm text-wgray-130"><strong>Zero <code>&lt;canvas&gt;</code> or Chart.js elements.</strong> Replace with stat cards and bulleted text insights. If it doesn't render reliably — kill it.</p>
+        </div>
+      </details>
+
+      <details class="rule-card bg-white border border-wgray-10 rounded-xl overflow-hidden">
+        <summary class="px-5 py-4 flex items-center justify-between gap-4 hover:bg-wgray-5 transition">
+          <div class="flex items-center gap-3">
+            <span class="bg-wblue-100 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">12</span>
+            <span class="font-semibold text-sm">Agents + published pages → top section with a CTA</span>
+          </div>
+          <span class="chevron text-wgray-50 text-lg shrink-0">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-2 border-t border-wgray-10 space-y-2">
+          <blockquote class="text-xs text-wgray-100 italic bg-wgray-5 p-2 rounded">"move Agents You've Built and My Share Pages to my main section at the top. Put a call to action to encourage people to try them."</blockquote>
+          <p class="text-sm text-wgray-130">Published agents and reports live in the about-me section with a clear CTA so visitors know to install and use them.</p>
+        </div>
+      </details>
+
+      <details class="rule-card bg-white border border-wgray-10 rounded-xl overflow-hidden">
+        <summary class="px-5 py-4 flex items-center justify-between gap-4 hover:bg-wgray-5 transition">
+          <div class="flex items-center gap-3">
+            <span class="bg-wblue-100 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">13</span>
+            <span class="font-semibold text-sm">Zero-usage = 🌱 Getting Started, always consistent</span>
+          </div>
+          <span class="chevron text-wgray-50 text-lg shrink-0">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-2 border-t border-wgray-10 space-y-2">
+          <blockquote class="text-xs text-wgray-100 italic bg-wgray-5 p-2 rounded">"people with zero usage, mark all as getting started with a consistent icon."</blockquote>
+          <p class="text-sm text-wgray-130">Any team member with 0 requests in 90 days gets exactly one label: <strong>🌱 Getting started</strong>. No ad-hoc icon variations.</p>
+        </div>
+      </details>
+
+      <details class="rule-card bg-white border border-wgray-10 rounded-xl overflow-hidden">
+        <summary class="px-5 py-4 flex items-center justify-between gap-4 hover:bg-wgray-5 transition">
+          <div class="flex items-center gap-3">
+            <span class="bg-wblue-100 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">14</span>
+            <span class="font-semibold text-sm">Active leaderboards: default OPEN and placed HIGH</span>
+          </div>
+          <span class="chevron text-wgray-50 text-lg shrink-0">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-2 border-t border-wgray-10 space-y-2">
+          <blockquote class="text-xs text-wgray-100 italic bg-wgray-5 p-2 rounded">"keep the active leaderboards as open and maybe move them further up on the report to gain prominence."</blockquote>
+          <p class="text-sm text-wgray-130">Leaderboard <code>&lt;details&gt;</code> MUST have the <code>open</code> attribute. Placed directly in the about-me wrapper — NOT inside a collapsed parent.</p>
+        </div>
+      </details>
+
+      <details class="rule-card bg-white border border-wgray-10 rounded-xl overflow-hidden">
+        <summary class="px-5 py-4 flex items-center justify-between gap-4 hover:bg-wgray-5 transition">
+          <div class="flex items-center gap-3">
+            <span class="bg-wblue-100 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">15</span>
+            <span class="font-semibold text-sm">Page order: user #1 → team → drilldowns → fun stuff</span>
+          </div>
+          <span class="chevron text-wgray-50 text-lg shrink-0">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-2 border-t border-wgray-10 space-y-2">
+          <p class="text-sm text-wgray-130">Canonical page order: (1) about-me hero + AI Corner + leaderboards · (2) Team snapshot · (3) Agents &amp; Skills · (4) Team Drilldown [open] · (5) Fun Stuff [collapsed].</p>
+        </div>
+      </details>
+
+      <details class="rule-card bg-white border border-wgray-10 rounded-xl overflow-hidden">
+        <summary class="px-5 py-4 flex items-center justify-between gap-4 hover:bg-wgray-5 transition">
+          <div class="flex items-center gap-3">
+            <span class="bg-wblue-100 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">16</span>
+            <span class="font-semibold text-sm">Exact rank must appear in the hero section</span>
+          </div>
+          <span class="chevron text-wgray-50 text-lg shrink-0">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-2 border-t border-wgray-10 space-y-2">
+          <blockquote class="text-xs text-wgray-100 italic bg-wgray-5 p-2 rounded">"state my rank up in the top section rather than saying it somewhere buried."</blockquote>
+          <p class="text-sm text-wgray-130">The hero must show the specific rank ("Rank #3 of 44 — org+"), not just a vague "Top 25%".</p>
+        </div>
+      </details>
+
+      <details class="rule-card bg-white border border-wgray-10 rounded-xl overflow-hidden">
+        <summary class="px-5 py-4 flex items-center justify-between gap-4 hover:bg-wgray-5 transition">
+          <div class="flex items-center gap-3">
+            <span class="bg-wblue-100 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">17</span>
+            <span class="font-semibold text-sm">Show the gap to the next tier — motivate, don't just report</span>
+          </div>
+          <span class="chevron text-wgray-50 text-lg shrink-0">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-2 border-t border-wgray-10 space-y-2">
+          <blockquote class="text-xs text-wgray-100 italic bg-wgray-5 p-2 rounded">"In my section put my status and what will get me to Power users to encourage me."</blockquote>
+          <p class="text-sm text-wgray-130">About-me section must include a "next tier" nudge — how many more requests to reach Power User — plus a positive acknowledgment of current standing.</p>
+        </div>
+      </details>
+
+      <details class="rule-card bg-white border border-wgray-10 rounded-xl overflow-hidden">
+        <summary class="px-5 py-4 flex items-center justify-between gap-4 hover:bg-wgray-5 transition">
+          <div class="flex items-center gap-3">
+            <span class="bg-wblue-100 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">18</span>
+            <span class="font-semibold text-sm">No private or cross-org work shown on the report</span>
+          </div>
+          <span class="chevron text-wgray-50 text-lg shrink-0">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-2 border-t border-wgray-10 space-y-2">
+          <blockquote class="text-xs text-wgray-100 italic bg-wgray-5 p-2 rounded">"No private access work can be shown on this report."</blockquote>
+          <p class="text-sm text-wgray-130">Only publicly accessible work appears. No private reports, no cross-org content, no unlisted pages.</p>
+        </div>
+      </details>
+
+      <details class="rule-card bg-white border border-wgray-10 rounded-xl overflow-hidden">
+        <summary class="px-5 py-4 flex items-center justify-between gap-4 hover:bg-wgray-5 transition">
+          <div class="flex items-center gap-3">
+            <span class="bg-wblue-100 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">19</span>
+            <span class="font-semibold text-sm">All tables sorted by token count descending</span>
+          </div>
+          <span class="chevron text-wgray-50 text-lg shrink-0">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-2 border-t border-wgray-10 space-y-2">
+          <blockquote class="text-xs text-wgray-100 italic bg-wgray-5 p-2 rounded">"order the tables by token usage not by reqs and mark status accordingly."</blockquote>
+          <p class="text-sm text-wgray-130">Every leaderboard and member table sorted by tokens descending, not requests. Rank indicators reflect that token-based sort order.</p>
+        </div>
+      </details>
+
+      <details class="rule-card bg-white border border-wgray-10 rounded-xl overflow-hidden">
+        <summary class="px-5 py-4 flex items-center justify-between gap-4 hover:bg-wgray-5 transition">
+          <div class="flex items-center gap-3">
+            <span class="bg-wblue-100 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">20</span>
+            <span class="font-semibold text-sm">Agent inventory: data-driven from skills.json, always fresh</span>
+          </div>
+          <span class="chevron text-wgray-50 text-lg shrink-0">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-2 border-t border-wgray-10 space-y-2">
+          <blockquote class="text-xs text-wgray-100 italic bg-wgray-5 p-2 rounded">"meeting-room-agent is also on marketplace. Always pull the fresh state when generating this report."</blockquote>
+          <p class="text-sm text-wgray-130">Marketplace skill cards are fully data-driven from a live JSON file refreshed on each rebuild. No hardcoding of marketplace status.</p>
+        </div>
+      </details>
+
+    </div>
+  </section>
+
+  <!-- INFERRED PATTERNS -->
+  <section aria-labelledby="inferred">
+    <h2 id="inferred" class="text-2xl font-bold mb-4">Inferred Meta-Patterns</h2>
+    <div class="overflow-x-auto rounded-xl border border-wgray-30">
+      <table class="min-w-full text-sm bg-white">
+        <thead class="bg-wgray-10">
+          <tr class="text-left">
+            <th class="px-4 py-3 font-semibold w-1/3">Pattern</th>
+            <th class="px-4 py-3 font-semibold">Evidence</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-wgray-10">
+          <tr>
+            <td class="px-4 py-3 font-semibold">"If it doesn't render, kill it"</td>
+            <td class="px-4 py-3 text-wgray-130">Charts removed twice — org/lang chart, then all Chart.js. Applies to any UI element that breaks silently.</td>
+          </tr>
+          <tr class="bg-wgray-5">
+            <td class="px-4 py-3 font-semibold">"Named peer comparisons feel uncomfortable"</td>
+            <td class="px-4 py-3 text-wgray-130">Removed from peer benchmarks in three separate sessions. Aggregate benchmarks only.</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-semibold">"User's section = hero; everything else = supporting cast"</td>
+            <td class="px-4 py-3 text-wgray-130">Same request phrased three separate ways across different sessions.</td>
+          </tr>
+          <tr class="bg-wgray-5">
+            <td class="px-4 py-3 font-semibold">"If data is stale or noisy, trim it"</td>
+            <td class="px-4 py-3 text-wgray-130">Inactive leaders removed; thin out senior-leader data. Don't show outdated or misleading numbers.</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-semibold">"Collapsed by default = low priority"</td>
+            <td class="px-4 py-3 text-wgray-130">Fun Stuff, non-leaderboard drilldowns = collapsed. Only high-signal content is always-visible.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- KEY INSIGHT -->
+  <section class="bg-wblue-100 text-white rounded-xl p-8">
+    <h2 class="text-2xl font-bold mb-4">The Actual Lesson</h2>
+    <p class="text-wblue-10 leading-relaxed mb-4">
+      Building an AI agent that generates recurring reports for real people requires more than prompting.
+      It requires <strong>governance</strong> — explicit, versioned, sourced rules that an agent will honour
+      even when the model changes, the data shifts, or someone new re-runs the script.
+    </p>
+    <p class="text-wblue-10 leading-relaxed">
+      The 20 rules above weren't designed upfront — they were discovered through 73 iterations of building
+      the actual product. The discipline is to capture them the moment they emerge, before they're forgotten.
+      That's what makes the next build faster and the output consistent.
+    </p>
+  </section>
+
+</main>
+
+<footer class="border-t border-wgray-10 py-8 text-center text-xs text-wgray-100">
+  <div class="max-w-4xl mx-auto px-6">
+    <p>© 2026 Sauravi Rai &middot;
+      <a href="../index.html#writing" class="text-wblue-100 hover:underline">Back to portfolio</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+  // Animate chevrons on details toggle
+  document.querySelectorAll('details').forEach(function(el) {
+    el.addEventListener('toggle', function() {
+      var chevron = el.querySelector('.chevron');
+      if (chevron) chevron.style.transform = el.open ? 'rotate(180deg)' : '';
+    });
+  });
+</script>
+
 </body>
 </html>
