@@ -2,47 +2,38 @@
 
 🌐 **Live:** https://sauravirai.github.io
 
-Personal portfolio site for **Sauravi Rai** — Global Product Leader · Walmart Inc. (eCommerce). 23 years across Walmart, Amazon, Microsoft, Nordstrom, and Oracle. Bengaluru-based, open to opportunities.
+Personal portfolio for **Sauravi Rai** — product leader, 23 years across Walmart, Amazon, Microsoft, Nordstrom, Oracle. Building AI agents and evals frameworks.
 
-## Structure
+- LinkedIn: [linkedin.com/in/sauravirai](https://www.linkedin.com/in/sauravirai/)
+- Email: sauravi.rai@gmail.com
 
-| File / Directory | Purpose |
-|---|---|
-| `index.html` | Single-page landing site — About, What I Do, Career, Awards, Writing & Experiments, Contact |
-| `resume.pdf` | Current résumé (May 2026) — linked from the homepage hero and the Writing section |
-| `work/` | Nine deep-dive AI experiment pages — architecture blueprints, runtime portability analysis, deployment postmortems, dashboards, narrative stories. Indexed at `work/index.html`. |
-| `design-patterns/` | Reference patterns for multi-agent system design and governance |
-| `cost-analysis.md` | 90-day telemetry-backed breakdown of personal AI agent CLI costs across providers |
-| `user-preferences-template.md` | Sanitized template of the agent assistant preferences file — fork for your own setup |
+---
 
-## Stack
+## Contents
 
-- Single-page static site (`index.html`) + individual deep-dive pages under `work/`
-- [Tailwind CSS](https://tailwindcss.com) via CDN
-- Inter (Google Fonts)
-- WCAG 2.2 Level AA — skip-to-content link, focus rings, semantic landmarks, color contrast checked
-- No build step. No tracking. No external JS beyond Tailwind CDN.
+| File | What it is |
+|------|-----------|
+| [index.html](index.html) | Portfolio homepage (live site) |
+| [music-super-agent.md](music-super-agent.md) | AI music pipeline — concept, week-1 results, open questions |
+| [ai-pm-learning-path.md](ai-pm-learning-path.md) | 12-week plan to close the technical depth gap for frontier AI roles |
+| [cost-analysis.md](cost-analysis.md) | Real 90-day telemetry: what it costs to run an enterprise-grade AI agent stack personally |
+| [work/](work/) | AI experiment write-ups: virtual EA, digital twin, agent stack story |
+| [design-patterns/](design-patterns/) | Multi-agent orchestration, governance, and composition patterns |
+| [resume.pdf](resume.pdf) | Current résumé |
 
-## Local preview
+---
+
+## Site
+
+Static HTML (`index.html`) + Markdown content files. Tailwind CSS via CDN. WCAG 2.2 AA. No tracking. No build step.
 
 ```bash
-python3 -m http.server 8000
-# open http://localhost:8000
+python3 -m http.server 8000   # local preview
 ```
 
 ## Sanitization
 
-All `work/` pieces and `user-preferences-template.md` were derived from real engagements and run through a multi-pass sanitizer:
-- Colleague names → role placeholders (`a colleague`, `the EA`, etc.)
-- Internal vendor/system names → genericized
-- Personality assessments kept generic (no trait specifics)
-- Zero placeholders, zero internal hostnames, zero PII verified
-
-## License
-
-Content © Sauravi Rai. Code (HTML/CSS structure) under MIT — fork if useful.
-
-## Contact
-
-- LinkedIn: [linkedin.com/in/sauravirai](https://www.linkedin.com/in/sauravirai/)
-- Email: sauravi.rai@gmail.com
+All `work/` and `design-patterns/` pieces were derived from real engagements and sanitized:
+- Colleague names → role placeholders
+- Internal system/vendor names → genericized
+- No PII, no internal hostnames, no placeholders
