@@ -1,112 +1,70 @@
 # MusicSuperAgent
 
-**Sauravi Rai · August 2026 · Live**
+**Sauravi Rai · September 2026 · In active product discovery**
 
-An AI pipeline that goes from a song idea to a published YouTube video in under an hour, with cross-platform distribution built in.
-
----
-
-## What it does
-
-You start with a song idea. An AI music platform generates the audio. The pipeline takes it from there — downloads the audio, builds an animated music video with a waveform, writes the YouTube title, description and tags, and uploads automatically. The only human step is approving the sync before the final render.
-
-**One pipeline. One hour. One human checkpoint.**
+An AI pipeline that turns a song idea into a published, produced video in under an hour — built to test one specific hypothesis: that preserving a loved one's voice as a musical keepsake is a real product, not just a novelty of generative AI.
 
 ---
 
-## Batch 1 results — Aug 13–19, 2026
+## The hypothesis
 
-12 videos published in 6 days, starting from 3 subscribers.
+Most AI-music tools compete on generation quality — better prompts, better voices, faster iteration. That's a commodity race.
 
-| Metric | Value |
-|--------|-------|
-| YouTube views (6 days) | 399 |
-| Subscribers | 3 → 23 (+667%) |
-| Monthly audience | 16 → 96 (+500%) |
-| Avg CTR | 6.43% |
-| Instagram reel views | 2,156 |
-| Instagram unique viewers | 1,247 |
+The sharper question: is there a *keepsake* product here — a parent's voice, still living, recreated singing a song they've always loved; a couple's own anniversary song; a tribute nobody else could write? Not "make me a song," but "preserve *this specific person*, in music." Closer to Saregama's Carvaan (a preloaded nostalgia player that's sold 2M+ units to families buying for their parents) than to a generic AI song generator — except Carvaan gives your parent *other* people's songs. This asks: what if it were actually theirs?
 
-### Per-video highlights
-
-| Video | Views | CTR | Impressions | Watch hrs |
-|-------|-------|-----|-------------|-----------|
-| Walk Through the Storm (Original) ★ | 62 | 15.45% | 123 | 2.87 |
-| Fouq es-Sahab (Desert Rose Reprise) | 47 | 15.94% | 207 | 1.55 |
-| Itna Na Mujhse (Remix) | 43 | 12.23% | 229 | 0.60 |
-| Saanson Ki Maala (Remix) | 37 | 4.53% ⚠ | 552 | 0.49 |
-| Pal Pal (Remix) | 28 | 9.36% | 171 | 0.42 |
-| Paisa Paisa (Remix) | 12 | 16.22% | 37 | 0.35 |
-
-★ Original IP — only clean path to monetisation.
-
-### What the data shows
-
-**Distribution extends beyond the subscriber base immediately.** Browse features and Suggested videos delivered 142 combined views in 6 days from 3 subscribers.
-
-**CTR and consumption are separate problems.** Saanson Ki Maala has 552 impressions (most on the channel) but 4.53% CTR — a packaging failure. It also has ~25% estimated average viewing — a consumption problem. Fixing only the thumbnail tests one hypothesis at a time.
-
-**Walk Through the Storm is the strongest combined signal.** 15.45% CTR + ~86% estimated average viewing + original IP. Most important hypothesis to replicate.
-
-**One hashtag produced a 9.3% like rate on Instagram.** Pal Pal with `#newmusicalert`: 30 likes out of 322 views. Every other reel got 1–6. Testing whether it repeats before treating it as a rule.
+That's the bet this project is built to test, not just build toward.
 
 ---
 
-## How it works
+## What was built
+
+An end-to-end pipeline, not a demo:
 
 ```
-Audio generation → Cover art → Video production → YouTube publish → Instagram distribution
-                                                        ↑
-                                          One human checkpoint: sync approval
+Song idea → AI audio generation → cover art → animated video
+          → title/description/tags → YouTube publish
+                        ↑
+          One human checkpoint: sync approval before final render
 ```
 
-The pipeline runs locally — no cloud rendering, no upload limits, deterministic output.
+- **Audio & voice**: AI music generation, including father's-voice recreation from home-video audio extraction
+- **Video**: FFmpeg pipeline — Ken Burns motion, a generated waveform visualization, standardized artist branding, burned-in lyrics
+- **Metadata & distribution**: automated YouTube title/description/tag generation and upload; cross-posted to Instagram
+- **Cost-conscious by design**: lyric polishing routes to a small, cheap model (Claude Haiku) rather than a frontier model — this isn't a task that needs one. Per-video cost: **$0.02–0.69** depending on whether cover art comes free from the audio platform or needs a separate image-generation pass. All-in monthly cost at a 12-video/month pace: **~$145**, dominated by subscriptions, not usage.
 
-A second layer adds creative judgment: a persistent taste profile drives the concept and storyboard per video, an asset planning system handles generation and quality evaluation, and a retry loop catches failures before anything goes to the renderer.
+## What the data said
 
----
+12 videos in the first week; by the 28-day mark: **6,089 YouTube views**, 33 subscribers (from 3), ~1,250 unique viewers, 86% of traffic algorithm-delivered (Browse + Suggested) rather than search or shares.
 
-## Benchmarks
+Two findings mattered more than the headline numbers:
 
-| Metric | Industry range | Batch 1 | Signal |
-|--------|---------------|---------|--------|
-| YouTube CTR — all channels | 4–5% | 6.43% | Promising |
-| YouTube CTR — new channels (<1K subs) | 2–4% | 6.43% | Strong |
-| Top thumbnails | 10–15% | 15–16% (3 videos) | Strong, small sample |
-| Walk Through the Storm retention | 50–65% expected | ~86% | Strong |
-| Instagram reach vs followers | 5–10× | 17× | Strong |
-| Instagram top like rate | 1–3% | 9.3% (Pal Pal) | Outlier, testing |
-| Instagram saves | 0.5–1.5% | 0% | Gap |
+**Reach is borrowed, not earned.** The best-performing video by impressions — a cover of a well-known 1965 classic — pulled 45,307 impressions. An original composition, with a *better* engagement profile (27.7% first-day click-through, 99% average viewed — both far stronger than any cover), got roughly 300 lifetime views. The algorithm amplifies videos tied to already-searched songs; it doesn't amplify quality it can't route through an existing search pool. That's a hard ceiling on using YouTube discovery to validate an *original*-content product — the channel is a poor test bed for the thing actually being tested.
 
-*All signals are 6-day batch-1 data. Re-evaluate once multiple videos cross ~1,000–5,000 impressions.*
+**There are two distinct audiences, and they want different things.** A reach audience (18–34, male-skewed, arrives via algorithm, watches partially, drawn to recognizable covers) and an engagement audience (35–54, women over-index heavily on watch time — this group is 14% of views but nearly 39% of total watch hours — NRI-inclusive, watches father's-voice content end-to-end). The second group looks like the actual buyer for a keepsake product. The first group is just reach.
 
----
+Production spend didn't move either number: a Runway-produced cinematic cut of one video underperformed its plain sibling.
 
-## Cost
+## The pivot
 
-~$145/month in subscriptions across audio generation, visual generation, video processing, and publishing. At 12 videos/month that is roughly $12/video. Most spend is fixed, so the per-video cost drops significantly at scale.
+Twelve more videos wouldn't have resolved either finding — more content sharpens a distribution question, not a demand question. So the project paused shipping and started testing willingness-to-pay and required hand-holding directly: a short survey to friends and family, a structured read of informal reactions (WhatsApp, Instagram) bucketed by signal strength, and — the actual missing experiment — a small paid concierge run with real families.
 
-The marginal cost of one more video once infrastructure is built is approximately $0.02.
+One early, unprompted signal from that process: people didn't just want the *finished* thing — several said they'd want to try making one themselves, not have it made for them. That reframed the open question from "would you pay for this" to "do you want a service, a tool, or both" — which is what the next build tests directly.
 
----
+## Legacy Edition — the current prototype
 
-## Why I built this
+A guided intake experience — built to test that exact question. A visitor works through who the song is for, what they'd want to keep, and critically, whether they want it made for them or want to shape it themselves. It's deliberately not "self-service AI generation at scale" yet — no public music-generation API exists to build that safely on today — it's a structured brief that starts a real, produced project, dressed as a product rather than a form.
 
-I spent 23 years in product leadership at Walmart, Amazon, and Microsoft. In 2026, I started pursuing this passion — understanding AI agents from the inside, not as a PM reading docs, but as someone debugging 3am errors in a Selenium session.
+*Currently being tested one real person at a time before a public link goes up here.*
 
-Music was the domain. I don't play an instrument or produce audio. **That's the point.** If a solo creator with no production background can operate at studio output velocity using AI agents, the creative bottleneck is systems, not skill.
+## Open, honestly
 
-The channel is also a real-world evals framework. CTR is evidence about packaging. Estimated average viewing is evidence about post-click consumption. Every release is a test whose result informs the next creative decision.
+This is mid-discovery, not a finished case study:
 
----
-
-## Open questions (looking for input)
-
-1. The channel is a mix of Hindi, Punjabi, and English originals. Unified or split into genre-specific channels?
-2. Saanson Ki Maala: 552 impressions, 4.53% CTR, ~25% estimated viewing. How do you design the cleanest experiment to separate packaging failure from content failure?
-3. Walk Through the Storm: 15.45% CTR + ~86% viewing + original IP. What evidence would you need before shifting capacity from remixes to originals?
-4. Early audience: 35–54, India-first. At this sample size, what's a real signal worth encoding versus something too early to act on?
+- Willingness-to-pay is still unvalidated beyond a single-digit signal count
+- The keepsake hypothesis (vs. generic AI music) is the leading read, not a settled conclusion
+- Whether this becomes a tool, a service, or both is the open question the current prototype exists to answer
+- No public API exists yet for the AI music generation this depends on — a real platform-risk constraint on anything built past a prototype
 
 ---
 
-[sauravirai.github.io](https://sauravirai.github.io) · [LinkedIn](https://www.linkedin.com/in/sauravirai/)
+**Stack:** AI music generation · FFmpeg · Claude (Haiku for cost-sensitive steps) · Selenium browser automation · YouTube & Instagram distribution
