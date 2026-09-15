@@ -15,8 +15,8 @@ Personal portfolio for **Sauravi Rai** — product leader, 23 years across Walma
 |------|-----------|
 | [index.html](index.html) | Portfolio homepage (live site) |
 | [music-super-agent.md](music-super-agent.md) | AI music pipeline — concept, week-1 results, open questions |
-| [ai-pm-learning-path.md](ai-pm-learning-path.md) | 12-week plan to close the technical depth gap for frontier AI roles |
-| [cost-analysis.md](cost-analysis.md) | Real 90-day telemetry: what it costs to run an enterprise-grade AI agent stack personally |
+| [ai-pm-learning-path.html](ai-pm-learning-path.html) | 12-week plan to close the technical depth gap for frontier AI roles |
+| [cost-analysis.html](cost-analysis.html) | Real 90-day telemetry: what it costs to run an enterprise-grade AI agent stack personally |
 | [work/](work/) | AI experiment write-ups: virtual EA, digital twin, agent stack story |
 | [design-patterns/](design-patterns/) | Multi-agent orchestration, governance, and composition patterns |
 | [resume.pdf](resume.pdf) | Current résumé |
@@ -25,7 +25,7 @@ Personal portfolio for **Sauravi Rai** — product leader, 23 years across Walma
 
 ## Site
 
-Static HTML (`index.html`) + Markdown content files. Tailwind CSS via CDN. WCAG 2.2 AA. No tracking. No build step.
+Static, self-contained HTML pages (`index.html` + one styled page per project/pattern) plus `music-super-agent.md` for the one piece meant to be skimmed as plain Markdown on GitHub. No framework, no build step, no tracking.
 
 ```bash
 python3 -m http.server 8000   # local preview
