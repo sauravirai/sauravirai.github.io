@@ -8,11 +8,11 @@ An AI pipeline that turns a song idea into a published, produced video in under 
 
 ## The hypothesis
 
-Most AI-music tools compete on generation quality — better prompts, better voices, faster iteration. That's a commodity race.
+Most AI-music tools compete on generation quality — better prompts, better voices, faster iteration. That's a commodity race, and not the question this project set out to answer.
 
-The sharper question: is there a *keepsake* product here — a parent's voice, still living, recreated singing a song they've always loved; a couple's own anniversary song; a tribute nobody else could write? Not "make me a song," but "preserve *this specific person*, in music." Closer to Saregama's Carvaan (a preloaded nostalgia player that's sold 2M+ units to families buying for their parents) than to a generic AI song generator — except Carvaan gives your parent *other* people's songs. This asks: what if it were actually theirs?
+The actual question was narrower and harder to answer from a desk: who is this really for, and what would make them pay? Twelve videos, a friends-and-family survey, and a read of how people actually reacted — not how they said they'd react — were the instruments used to find out, not a conclusion assumed going in.
 
-That's the bet this project is built to test, not just build toward.
+The findings below are what that process surfaced.
 
 ---
 
@@ -48,7 +48,7 @@ Production spend didn't move either number: a Runway-produced cinematic cut of o
 
 Twelve more videos wouldn't have resolved either finding — more content sharpens a distribution question, not a demand question. So the project paused shipping and started testing willingness-to-pay and required hand-holding directly: a short survey to friends and family, a structured read of informal reactions (WhatsApp, Instagram) bucketed by signal strength, and — the actual missing experiment — a small paid concierge run with real families.
 
-One early, unprompted signal from that process: people didn't just want the *finished* thing — several said they'd want to try making one themselves, not have it made for them. That reframed the open question from "would you pay for this" to "do you want a service, a tool, or both" — which is what the next build tests directly.
+One early, unprompted signal from that process: people didn't just want the *finished* thing — several said they'd want to try making one themselves, not have it made for them. That reframed the open question from "would you pay for this" to "do you want a service, a tool, or both."
 
 ## Legacy Edition — the current prototype
 
@@ -61,8 +61,8 @@ A guided intake experience — built to test that exact question. A visitor work
 This is mid-discovery, not a finished case study:
 
 - Willingness-to-pay is still unvalidated beyond a single-digit signal count
-- The keepsake hypothesis (vs. generic AI music) is the leading read, not a settled conclusion
-- Whether this becomes a tool, a service, or both is the open question the current prototype exists to answer
+- Which specific use case resonates most is still an open read, not a settled conclusion
+- Product shape — tool, service, or some mix — is still unresolved
 - No public API exists yet for the AI music generation this depends on — a real platform-risk constraint on anything built past a prototype
 
 ---
