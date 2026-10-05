@@ -14,10 +14,10 @@ Personal portfolio for **Sauravi Rai** — product leader, 23 years across Walma
 | File | What it is |
 |------|-----------|
 | [index.html](index.html) | Portfolio homepage (live site) |
-| [music-super-agent.md](music-super-agent.md) | AI music pipeline — hypothesis, 28-day data, product-discovery pivot, working prototype |
-| [ai-pm-learning-path.html](ai-pm-learning-path.html) | 12-week plan to close the technical depth gap for frontier AI roles |
+| [work/keel.html](work/keel.html) | Keel — an anonymous team-diagnostic tool built end to end and handed over: privacy by architecture, tests, clean transfer |
+| [music-super-agent.html](music-super-agent.html) | MusicSuperAgent → Keepsake Studio — AI music-video pipeline, 28-day data, the pivot to a private self-serve tool; includes [overview deck](assets/keepsake-studio-overview.pdf) and walkthrough video |
 | [cost-analysis.html](cost-analysis.html) | Real 90-day telemetry: what it costs to run an enterprise-grade AI agent stack personally |
-| [work/](work/) | AI experiment write-ups: virtual EA, digital twin, agent stack story |
+| [work/](work/) | AI work: Keel case, virtual EA, digital twin, agent stack story |
 | [design-patterns/](design-patterns/) | Multi-agent orchestration, governance, and composition patterns |
 | [resume.pdf](resume.pdf) | Current résumé |
 
@@ -25,7 +25,7 @@ Personal portfolio for **Sauravi Rai** — product leader, 23 years across Walma
 
 ## Site
 
-Static, self-contained HTML pages (`index.html` + one styled page per project/pattern) plus `music-super-agent.md` for the one piece meant to be skimmed as plain Markdown on GitHub. No framework, no build step, no tracking.
+Static, self-contained HTML pages (`index.html` + one styled page per project/pattern). No framework, no build step, no tracking. Media lives in `assets/`.
 
 ```bash
 python3 -m http.server 8000   # local preview
@@ -33,7 +33,11 @@ python3 -m http.server 8000   # local preview
 
 ## Sanitization
 
-All `work/` and `design-patterns/` pieces were derived from real engagements and sanitized:
+All `work/`, `design-patterns/` and project pieces were derived from real engagements and sanitized:
 - Colleague names → role placeholders
 - Internal system/vendor names → genericized
 - No PII, no internal hostnames, no placeholders
+
+## Archive
+
+Older or less central pieces were retired from the site in Oct 2026 and are kept privately; they remain in this repo's git history.

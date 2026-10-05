@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keel — Team Diagnostic · Sauravi Rai</title>
+<meta name="description" content="A team-diagnostic tool built end to end for a practising team coach, with anonymity designed into the architecture, and handed over completely: code, hosting and data.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: { extend: {
+    colors: {
+      wmblue:  { 5: '#e6f0ff', 10: '#cce0ff', 100: '#0053e2', 110: '#0046c2', 130: '#003494', 160: '#001f5c' },
+      spark:   { 5: '#fff8e0', 10: '#fff2c2', 100: '#ffc220', 140: '#995213' },
+      wmgray:  { 5: '#f7f7f7', 10: '#eaeaea', 50: '#9f9f9f', 100: '#5e5e5e', 160: '#1a1a1a' }
+    },
+    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+  } }
+}
+</script>
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  .gradient-hero { background: radial-gradient(ellipse at top right, rgba(255,194,32,.18) 0%, transparent 50%), linear-gradient(135deg, #0053e2 0%, #003494 100%); }
+  .skip-link { position: absolute; top: -40px; left: 0; background: #ffc220; color: #1a1a1a; padding: 8px; z-index: 100; }
+  .skip-link:focus { top: 0; }
+  :focus-visible { outline: 3px solid #ffc220; outline-offset: 2px; }
+</style>
+</head>
+<body class="bg-white text-wmgray-160">
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-wmgray-10" aria-label="Main navigation">
+  <div class="max-w-5xl mx-auto px-6 py-3.5 flex items-center justify-between">
+    <a href="../" class="font-bold text-wmblue-100">← Sauravi Rai</a>
+    <div class="flex gap-5 text-sm font-medium text-wmgray-100">
+      <a href="#design" class="hover:text-wmblue-100">Design</a>
+      <a href="#engineering" class="hover:text-wmblue-100">Engineering</a>
+      <a href="#handover" class="hover:text-wmblue-100">Handover</a>
+    </div>
+  </div>
+</nav>
+
+<header class="gradient-hero text-white">
+  <div class="max-w-5xl mx-auto px-6 py-16 md:py-20">
+    <p class="text-sm font-bold uppercase tracking-widest text-spark-100">AI portfolio · shipped and handed over · Sep–Oct 2026</p>
+    <h1 class="mt-3 text-4xl md:text-5xl font-extrabold tracking-tight">Keel: a team diagnostic, built and handed over</h1>
+    <p class="mt-5 text-lg md:text-xl text-wmblue-10 max-w-3xl leading-relaxed">
+      A digital version of a paper team-assessment that coaches tally by hand. I took it from a draft whitepaper to a tested, deployed product in about a month, then transferred the repository, hosting and data path to the practitioner it was built for.
+    </p>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="py-14 px-6">
+  <div class="max-w-3xl mx-auto text-base md:text-lg leading-relaxed space-y-4">
+    <h2 class="text-3xl font-bold tracking-tight">The problem</h2>
+    <p>Team coaches often run a five-discipline team assessment on paper: hand out forms, tally the scores, draw a chart. The richest signal gets lost in that process. It is not the average score but the <strong>disagreement between team members</strong>, which a mean hides. A coach also cannot promise anonymity convincingly when they are the one holding the forms.</p>
+    <p>The sharpest small version that proves the idea: one coach, one team, one assessment. Members score anonymously; the coach sees the profile, the gap to where the team wants to be, and where members disagree.</p>
+    <figure class="pt-4">
+      <img src="../assets/keel-profile-radar.png" width="1070" height="660" loading="lazy"
+           alt="Radar chart on five axes (Commissioning, Clarifying, Co-creating, Connecting, Core Learning). A solid shape shows current scores; a dashed outer shape shows target scores, which sit above current on every axis. A table of current and target scores per discipline follows.">
+      <figcaption class="mt-2 text-sm text-wmgray-100">The results view on sample data: current profile (solid) against target (dashed), per discipline.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="design" class="py-14 px-6 bg-wmgray-5">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="text-3xl font-bold tracking-tight mb-2">Design: anonymity as architecture</h2>
+    <p class="text-wmgray-100 mb-8 max-w-3xl">Trust is the product in a diagnostic, so privacy is enforced by structure rather than promised in copy.</p>
+    <div class="grid md:grid-cols-2 gap-4 text-sm leading-relaxed">
+      <div class="bg-white border border-wmgray-10 rounded-xl p-5"><h3 class="font-bold text-base mb-1">No member accounts</h3><p class="text-wmgray-100">Each team link carries a long, unguessable token. Members open it on any device, nothing to install or sign into. Answers autosave on their device.</p></div>
+      <div class="bg-white border border-wmgray-10 rounded-xl p-5"><h3 class="font-bold text-base mb-1">A minimum-response gate</h3><p class="text-wmgray-100">Results stay hidden, showing only a count, until enough people have answered. In a small team that is what stops individual scores being identifiable. The floor is enforced server-side, with a minimum of two.</p></div>
+      <div class="bg-white border border-wmgray-10 rounded-xl p-5"><h3 class="font-bold text-base mb-1">Divergence, not just averages</h3><p class="text-wmgray-100">Beyond current and target, the results rank indicators by spread: where members score furthest apart. That is usually the conversation worth having.</p></div>
+      <div class="bg-white border border-wmgray-10 rounded-xl p-5"><h3 class="font-bold text-base mb-1">Trend across runs</h3><p class="text-wmgray-100">Re-running the same assessment later shows per-indicator movement, sorted by how much changed, with overlaid profiles.</p></div>
+    </div>
+
+    <h3 class="text-xl font-bold mt-10 mb-3">Engine and content kept separate</h3>
+    <p class="max-w-3xl leading-relaxed">The first version had the questionnaire hard-coded in the scoring code. I refactored it into a data model: questionnaire content now lives in a template table, and the shipped default is flagged as third-party licensed. The engine (scoring, aggregation, radar, PDF) is original and framework-agnostic, so a licensing question can only ever gate one template, never the whole platform.</p>
+  </div>
+</section>
+
+<section id="engineering" class="py-14 px-6">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="text-3xl font-bold tracking-tight mb-2">Engineering</h2>
+    <p class="text-wmgray-100 mb-8 max-w-3xl">Static-first, no tracking, WCAG 2.2 AA. A static frontend with no build step, a thin FastAPI backend, Postgres in production and SQLite locally.</p>
+    <div class="grid md:grid-cols-3 gap-4 text-sm leading-relaxed">
+      <div class="bg-white border border-wmgray-10 rounded-xl p-5"><h3 class="font-bold text-base mb-1">46 tests, CI on every push</h3><p class="text-wmgray-100">pytest covers auth, scoring validation, gate arithmetic, trend maths and PDF output, run in GitHub Actions.</p></div>
+      <div class="bg-white border border-wmgray-10 rounded-xl p-5"><h3 class="font-bold text-base mb-1">Found by testing the real thing</h3><p class="text-wmgray-100">My own click-through caught what automated tests missed: the PDF omitted the radar chart. Fixed with a server-rendered image that mirrors the on-screen geometry.</p></div>
+      <div class="bg-white border border-wmgray-10 rounded-xl p-5"><h3 class="font-bold text-base mb-1">Security pass before handover</h3><p class="text-wmgray-100">Fixed a stored-XSS bug (free-text notes rendered as raw HTML), throttled wrong-key attempts, and turned off the auto-generated API docs.</p></div>
+      <div class="bg-white border border-wmgray-10 rounded-xl p-5"><h3 class="font-bold text-base mb-1">Pinned dependencies</h3><p class="text-wmgray-100">A fresh install pulled a newer ORM release that breaks the app, so the next unpinned deploy would have taken it down. Versions are now pinned.</p></div>
+      <div class="bg-white border border-wmgray-10 rounded-xl p-5"><h3 class="font-bold text-base mb-1">Rehearsed deploys</h3><p class="text-wmgray-100">Two full dry runs on scratch hosting and a scratch database, both deleted after, surfaced a Postgres-only foreign-key ordering bug on delete and a root-directory misconfiguration.</p></div>
+      <div class="bg-white border border-wmgray-10 rounded-xl p-5"><h3 class="font-bold text-base mb-1">Backup and restore</h3><p class="text-wmgray-100">One-file export and import, tested for clean restore and for skipping duplicates, so ownership can move without losing data.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="handover" class="py-14 px-6 bg-wmgray-5">
+  <div class="max-w-3xl mx-auto text-base md:text-lg leading-relaxed space-y-4">
+    <h2 class="text-3xl font-bold tracking-tight">The handover</h2>
+    <p>The tool holds sensitive material by nature, so ownership mattered as much as features. The plan was simple: the practitioner owns everything and I keep zero access.</p>
+    <ul class="list-disc pl-6 space-y-2 text-base">
+      <li>A clean copy of the repository, scanned for keys, URLs and names, was built by a script that aborts if a sensitive file slips in, then <strong>transferred</strong> to the practitioner's own GitHub account.</li>
+      <li>They deployed it on their own hosting and database in a guided session. I wrote the browser-only setup guide, a developer guide and a sample walkthrough for whoever maintains it next.</li>
+      <li>I rotated the access key on my own test copy, which holds only sample data, and logged out of the hosting CLI, so nothing of mine sits in their path.</li>
+    </ul>
+    <p>Early use confirmed the core flow worked; the practitioner described it as promising after running a first diagnostic. What I would do next, and deliberately did not: multi-tenant support (separate accounts per coach) is a different product with its own licensing and data-isolation questions, and it is a conversation to have with the person it is for, not something to infer from the tool working.</p>
+    <p class="text-sm text-wmgray-100 pt-2"><strong>Stack:</strong> FastAPI · SQLModel · Postgres/SQLite · static HTML/CSS/JS · Pillow (server-rendered chart) · pytest · GitHub Actions · Vercel. Source repository now belongs to its new owner.</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="py-10 px-6 text-center text-sm text-wmgray-100 border-t border-wmgray-10">
+  <a href="../" class="font-semibold text-wmblue-100 hover:underline">← Back to sauravirai.github.io</a>
+  <p class="mt-2">© 2026 Sauravi Rai. A personal learning project.</p>
+</footer>
+</body>
+</html>
